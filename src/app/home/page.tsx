@@ -18,7 +18,7 @@ export default function HomePage() {
     <Fragment>
       {/* ========== header ========== */}
       <header className="wrapper bg-soft-primary">
-        <ViaLacteaNavbar button={<NextLink href="/contacto" title="Reservar consulta" className="btn btn-sm btn-primary rounded" />} />
+        <ViaLacteaNavbar button={<NextLink href="/contacto" title={<><i className="uil uil-whatsapp fs-25 me-1"></i> Valoracion GRATUITA</>} className="btn btn-sm btn-primary rounded" />} />
       </header>
 
       {/* ========== main content ========== */}

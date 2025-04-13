@@ -40,6 +40,10 @@ const changeTheme = (pathname: string) => {
     case "/":
       changeColor("/css/colors/grape.css", "/css/fonts/space.css");
       break;
+      
+    case "/home":
+      changeColor("/css/colors/grape.css", "/css/fonts/urbanist.css");
+      break;
 
     case "/demo-1":
       changeColor("/css/colors/yellow.css", "/css/fonts/thicccboi.css");

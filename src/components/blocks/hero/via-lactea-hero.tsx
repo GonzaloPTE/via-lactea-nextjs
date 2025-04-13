@@ -17,11 +17,11 @@ export default function ViaLacteaHero() {
             </p>
 
             <div className="d-inline-flex me-2">
-              <NextLink href="/servicios" title="Conoce mis servicios" className="btn btn-lg btn-grape rounded" />
-            </div>
-
-            <div className="d-inline-flex">
-              <NextLink href="/contacto" title="Reserva una consulta" className="btn btn-lg btn-outline-grape rounded" />
+              <NextLink 
+                href="/valoracion" 
+                title={<><i className="uil uil-calendar-alt fs-25 me-2"></i> Agenda YA tu valoración GRATUITA!</>} 
+                className="btn btn-lg btn-grape rounded" 
+              />
             </div>
           </div>
 
