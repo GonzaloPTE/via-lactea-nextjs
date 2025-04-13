@@ -12,6 +12,8 @@ import NextLink from "components/reuseable/links/NextLink";
 import ViaLacteaHero from "components/blocks/hero/via-lactea-hero";
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
 import ViaLacteaServices from "components/blocks/services/ViaLacteaServices";
+import ViaLacteaAbout from "components/blocks/about/ViaLacteaAbout";
+import ViaLacteaFacts from "components/blocks/facts/ViaLacteaFacts";
 
 export default function HomePage() {
   return (
@@ -25,6 +27,14 @@ export default function HomePage() {
       <main className="content-wrapper">
         {/* ========== hero section ========== */}
         <ViaLacteaHero />
+
+        {/* ========== sobre mi section ========== */}
+        <section className="wrapper bg-light">
+          <div className="container py-14 py-md-16">
+            <ViaLacteaAbout />
+            <ViaLacteaFacts />
+          </div>
+        </section>
 
         <section className="wrapper bg-white">
           <div className="container pt-15 pb-15 pb-md-17">
