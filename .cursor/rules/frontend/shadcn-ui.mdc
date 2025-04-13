@@ -1,0 +1,49 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Shadcn/UI
+
+## Filosofía y Uso
+- Shadcn/UI NO es una biblioteca de npm; es una colección de componentes reusables que se añaden directamente al proyecto
+- Implementa el modelo "copy and paste" donde los componentes viven en tu codebase
+- Prioriza la flexibilidad y personalización sobre convenciones rígidas
+- Utiliza Radix UI como base para la accesibilidad y comportamiento de componentes complejos
+
+## Instalación de Componentes
+- Añade nuevos componentes usando `npx shadcn-ui add [component]`
+- Mantén todos los componentes de Shadcn/UI en `components/ui/`
+- No modifiques la estructura interna de los componentes a menos que sea estrictamente necesario
+- Documenta cualquier modificación significativa a los componentes base
+
+## Composición Avanzada
+- Utiliza el patrón de componentes compuestos (Compound Components) para interfaces complejas
+- Aprovecha el sistema de slots de Radix UI para inyectar contenido personalizado
+- Combina múltiples componentes primitivos para crear interfaces más complejas
+- Usa la prop `asChild` cuando necesites envolver un componente con otro
+
+## Personalización
+- Extiende las variantes de componentes usando class-variance-authority (cva)
+- Modifica la paleta de colores y tokens a través de `tailwind.config.js`
+- Utiliza el archivo `components.json` para configurar las opciones globales de los componentes
+- Mantén consistencia en la personalización de componentes relacionados (por ejemplo, todos los inputs)
+
+## Formularios
+- Integra los componentes de Shadcn/UI con React Hook Form
+- Utiliza Zod para validación de esquemas de formularios
+- Crea wrappers personalizados sobre los inputs de Shadcn para casos de uso comunes
+- Implementa feedback de errores consistente en todos los formularios
+
+## Mejores Prácticas
+- Aprovecha las utilidades proporcionadas (cn, cva) para manejar clases CSS
+- Reutiliza componentes en lugar de duplicar código
+- Mantén el estado en el contenedor más alto posible, pasando props hacia abajo
+- Separa la lógica de negocio de los componentes de presentación
+- Usa Context API para datos que deben ser accesibles por múltiples componentes
+
+## Gestión de Temas
+- Implementa correctamente el cambio de tema claro/oscuro con next-themes
+- Asegúrate de que todas las variables CSS tengan valores para ambos temas
+- Prueba la aplicación en ambos modos para garantizar accesibilidad y apariencia correcta
+- Utiliza la clase `dark:` de Tailwind solo cuando sea absolutamente necesario 

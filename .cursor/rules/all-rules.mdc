@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+@base.mdc
+
+@frontend/react-components.mdc
+@frontend/nextjs.mdc
+@frontend/tailwind.mdc
+@frontend/shadcn-ui.mdc
+
+@task-management/todo-standards.mdc
+
+@content/lactancia-sueno.mdc

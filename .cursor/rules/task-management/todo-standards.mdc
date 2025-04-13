@@ -1,0 +1,49 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Gestión de Tareas
+
+## Estructura de Tareas
+Cada tarea debe incluir:
+- **ID**: Identificador único (por ejemplo, TASK-001)
+- **Título**: Título conciso y descriptivo
+- **Descripción**: Explicación detallada
+- **Prioridad**: Alta, Media o Baja
+- **Estado**: Por hacer, En progreso, Hecho
+- **Dependencias**: IDs de tareas prerrequisito
+- **Version**: 0, 1, 2... Se aumentará cada vez que se actualice la tarea
+
+## Operaciones con Tareas
+- Crear nuevas tareas con toda la información requerida
+- Actualizar tareas existentes (prioridad, estado, descripción, etc.)
+- Eliminar tareas cuando se solicite
+- Listar tareas filtradas por varios atributos
+- Reordenar tareas basadas en prioridad o dependencias
+- Identificar y resolver conflictos de dependencias
+
+## Mejores Prácticas de Planificación
+- Dividir tareas grandes en subtareas más pequeñas y manejables
+- Sugerir prioridades realistas basadas en dependencias y urgencia
+- Identificar tareas de ruta crítica que podrían bloquear el progreso
+- Recomendar una secuencia óptima de tareas
+- Señalar posibles cuellos de botella o conflictos de recursos
+
+## Formato del Archivo de Tareas
+Mantener siempre el archivo `llm-todos.md` con la siguiente estructura:
+```markdown
+# Lista de Tareas
+
+Última actualización: [FECHA Y HORA]
+
+## Tareas
+
+### [ID-TAREA] [TÍTULO] - [PRIORIDAD] - [ESTADO]
+**Descripción:** [DESCRIPCIÓN]
+**Dependencias:** [LISTA DE IDS DE TAREAS DEPENDIENTES SEPARADAS POR COMAS]
+**Versión:** [NÚMERO DE VERSION]
+
+### [ID-TAREA] [TÍTULO] - [PRIORIDAD] - [ESTADO]
+...
+``` 

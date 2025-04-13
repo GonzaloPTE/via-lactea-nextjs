@@ -1,0 +1,24 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Desarrollo Next.js
+
+## Estructura de Archivos
+- Sigue la estructura de carpetas del App Router
+- Organiza los componentes relacionados en directorios temáticos
+- Utiliza page.tsx para definir rutas y layout.tsx para definir layouts
+- Coloca operaciones asíncronas en funciones Server Components
+
+## Optimización de Rendimiento
+- Implementa correctamente Server Components vs Client Components
+- Marca componentes del lado cliente con 'use client'
+- Prioriza la carga estratégica de datos con Suspense
+- Utiliza metadatos dinámicos y estáticos apropiadamente
+
+## Patrones Recomendados
+- Implementa estrategias de caching adecuadas
+- Utiliza Streaming y carga progresiva para UX mejorada
+- Mantén los componentes de página enfocados en la composición y delegación
+- Separa claramente la lógica de servidor y cliente 

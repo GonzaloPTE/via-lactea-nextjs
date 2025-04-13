@@ -1,0 +1,44 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Componentes React
+
+## Principios de Codificación
+- Escribe código correcto, con buenas prácticas, principio DRY (No te repitas), sin errores
+- Prioriza la legibilidad y mantenibilidad sobre la optimización del rendimiento
+- Implementa completamente toda la funcionalidad solicitada sin TODOs o elementos provisionales
+- Incluye todas las importaciones requeridas con nombres apropiados para los componentes
+
+## Shadcn/UI
+- Preferir componentes de Shadcn/UI sobre implementaciones personalizadas cuando estén disponibles
+- Seguir el patrón de composición para componentes complejos (Card.Header, Card.Content, etc.)
+- Utilizar las variantes predefinidas de los componentes (variant="outline", size="sm", etc.)
+- Extender los componentes usando class-variance-authority (cva) cuando necesites variantes personalizadas
+- Mantener los componentes de Shadcn en el directorio `components/ui`
+- Personalizar los componentes mediante el sistema de slots cuando sea apropiado
+- Aprovechar el sistema completo de Radix UI para accesibilidad y estados interactivos
+- Usar los hooks asociados a los componentes (useToast, useDialog, etc.)
+
+## Estilo de Codificación
+- Utiliza retornos anticipados para mejorar la legibilidad
+- Usa clases de Tailwind para estilizar; evita CSS directo o etiquetas de estilo
+- Utiliza "class:" en lugar de operadores ternarios en las etiquetas de clase cuando sea posible
+- Usa nombres descriptivos para variables y funciones
+- Prefija los manejadores de eventos con "handle" (por ejemplo, handleClick, handleKeyDown)
+- Implementa características de accesibilidad (tabindex, aria-labels, etc.)
+- Prefiere funciones flecha constantes sobre declaraciones de funciones tradicionales
+- Define tipos TypeScript siempre que sea posible
+
+## Estructura de Componentes
+- Sigue el patrón de composición sobre herencia
+- Utiliza props con tipos bien definidos
+- Divide componentes complejos en subcomponentes más pequeños y manejables
+- Utiliza React hooks de manera eficiente (useState, useEffect, useCallback)
+
+## Optimización
+- Implementa React.memo para componentes que renderizan frecuentemente
+- Utiliza useCallback para funciones de eventos que se pasan como props
+- Usa useMemo para cálculos costosos
+- Implementa correctamente estrategias de carga diferida cuando sea apropiado 

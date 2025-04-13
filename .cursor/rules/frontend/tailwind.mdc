@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Tailwind CSS
+
+## Principios de Estilización
+- Usa clases de Tailwind para estilizar; evita CSS directo o etiquetas de estilo
+- Utiliza "class:" en lugar de operadores ternarios en las etiquetas de clase cuando sea posible
+- Respeta la paleta de colores definida en el proyecto
+- Mantén la coherencia con el diseño y la identidad visual establecida
+
+## Integración con Shadcn/UI
+- Utiliza el sistema de tokens CSS de Shadcn en lugar de valores directos de Tailwind
+- Aprovecha las variables CSS (--primary, --background, etc.) para mantener consistencia
+- Extiende los componentes de Shadcn usando la utilidad `cn()` para combinar clases
+- Respeta el sistema de temas (claro/oscuro) definido en los componentes de Shadcn
+- Personaliza los componentes de Shadcn a través del archivo de configuración de Tailwind
+- Mantén las modificaciones a los componentes en línea con la estética del proyecto
+- Combina el sistema de slots de Radix con clases de Tailwind para componentes complejos
+- Usa el patrón `className={cn("base-classes", className)}` para componentes reutilizables
+
+## Organización de Clases
+- Agrupa las clases por categoría (layout, spacing, typography, etc.)
+- Sigue un orden consistente en las clases de Tailwind
+- Extrae conjuntos de clases repetidas a componentes o constantes
+- Utiliza @apply en estilos globales solo cuando sea absolutamente necesario
+
+## Responsive Design
+- Diseña con enfoque mobile-first
+- Utiliza breakpoints estándar de Tailwind (sm, md, lg, xl, 2xl)
+- Implementa diseños que se adapten fluidamente a todos los tamaños de pantalla
+- Prueba en múltiples dispositivos y tamaños de pantalla
+
+## Accesibilidad
+- Mantén relaciones de contraste adecuadas para texto e interactivos
+- Utiliza clases de focus-visible para indicadores de enfoque del teclado
+- Implementa hover, focus, y active states para elementos interactivos
+- Asegura que todos los elementos sean accesibles por teclado 
