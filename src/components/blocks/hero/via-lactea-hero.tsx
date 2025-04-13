@@ -3,10 +3,10 @@ import NextLink from "components/reuseable/links/NextLink";
 export default function ViaLacteaHero() {
   return (
     <section className="wrapper bg-soft-primary">
-      <div className="container pt-10 pt-lg-12 pt-xl-12 pt-xxl-10 pb-lg-10 pb-xl-10 pb-xxl-0">
+      <div className="container pt-12 pt-lg-12 pt-xl-10 pt-xxl-10 pb-lg-10 pb-xl-10 pb-xxl-0">
         <div className="row gx-md-8 gx-xl-12 gy-10 align-items-center text-center text-lg-start">
           <div className="col-lg-6" data-cues="slideInDown" data-group="page-title" data-delay="900">
-            <h1 className="display-1 mb-4 me-xl-5 mt-lg-n10">
+            <h1 className="display-1 mb-4 me-xl-5 mt-lg-n6">
               Asesoría profesional en <br className="d-none d-md-block d-lg-none" />
               <span className="text-grape">sueño infantil y lactancia</span>
             </h1>
@@ -25,15 +25,17 @@ export default function ViaLacteaHero() {
             </div>
           </div>
 
-          <div className="col-10 col-md-7 mx-auto col-lg-6 col-xl-5 ms-xl-5">
-            <img
-              className="img-fluid mb-n12 mb-md-n14 mb-lg-n19"
-              srcSet="/img/illustrations/3d11@2x.png 2x"
-              src="/img/illustrations/3d11.png"
-              data-cue="fadeIn"
-              data-delay="300"
-              alt="3d"
-            />
+          <div className="col-10 col-md-7 mx-auto col-lg-6 col-xl-5 ms-xl-5 mt-13 mt-lg-n0 position-relative">
+            <div className="img-mask mask-3" style={{ transform: 'scale(1.2)', transformOrigin: 'center center' }}>
+                <img
+                className="img-fluid"
+                srcSet="/img/photos/about36@2x.jpg 2x"
+                src="/img/photos/about36.png"
+                data-cue="fadeIn"
+                data-delay="300"
+                alt="3d"
+                />
+            </div>
           </div>
         </div>
       </div>
