@@ -15,7 +15,7 @@ import ViaLacteaServices from "components/blocks/services/ViaLacteaServices";
 import ViaLacteaAbout from "components/blocks/about/ViaLacteaAbout";
 import ViaLacteaFacts from "components/blocks/facts/ViaLacteaFacts";
 import ViaLacteaTestimonials from "components/blocks/testimonial/ViaLacteaTestimonials";
-import Portfolio1 from "components/blocks/portfolio/Portfolio1";
+import ViaLacteaPortfolio from "components/blocks/portfolio/ViaLacteaPortfolio";
 
 export default function HomePage() {
   return (
@@ -47,7 +47,7 @@ export default function HomePage() {
             <ViaLacteaServices />
 
             {/* ========== partners section ========== */}
-            <Portfolio1 />
+            <ViaLacteaPortfolio />
 
             {/* ========== why choose us section ========== */}
             <About27 />
