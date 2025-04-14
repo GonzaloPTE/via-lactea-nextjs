@@ -4,7 +4,7 @@ import { miriamStats } from "../../../data/via-lactea-about";
 
 export default function ViaLacteaFacts() {
   return (
-    <section className="wrapper bg-soft-grape">
+    <section className="wrapper bg-soft-grape mb-50">
       <div className="container py-12 py-md-14">
         <div className="row">
           <div className="col-xl-10 mx-auto">

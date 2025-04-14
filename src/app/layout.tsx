@@ -23,17 +23,19 @@ import "glightbox/dist/css/glightbox.css";
 import "plugins/scrollcue/scrollCue.css";
 // BOOTSTRAP & CUSTOM CSS
 import "assets/scss/style.scss";
+// CUSTOM TESTIMONIALS CSS
+import "../../public/css/custom-testimonials.css";
 
 const manrope = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sandbox - Modern & Multipurpose NextJS Template",
-  description: "Sandbox is a beautiful and flawless site template."
+  title: "Vía Láctea - Asesoría de Sueño Infantil y Lactancia",
+  description: "Asesoría profesional en sueño infantil respetuoso y lactancia para familias que buscan descansar mejor."
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={manrope.className}>
         <ThemeProvider>{children}</ThemeProvider>
 

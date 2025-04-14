@@ -5,9 +5,9 @@ import { portfolioList1 } from "data/portfolio";
 
 export default function Portfolio1() {
   const carouselBreakpoints = {
-    0: { slidesPerView: 1 },
-    768: { slidesPerView: 2 },
-    992: { slidesPerView: 3 }
+    0: { slidesPerView: 3 },
+    768: { slidesPerView: 6 },
+    992: { slidesPerView: 6 }
   };
 
   return (

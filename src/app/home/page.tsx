@@ -14,6 +14,8 @@ import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar
 import ViaLacteaServices from "components/blocks/services/ViaLacteaServices";
 import ViaLacteaAbout from "components/blocks/about/ViaLacteaAbout";
 import ViaLacteaFacts from "components/blocks/facts/ViaLacteaFacts";
+import ViaLacteaTestimonials from "components/blocks/testimonial/ViaLacteaTestimonials";
+import Portfolio1 from "components/blocks/portfolio/Portfolio1";
 
 export default function HomePage() {
   return (
@@ -29,17 +31,23 @@ export default function HomePage() {
         <ViaLacteaHero />
 
         {/* ========== sobre mi section ========== */}
-        <section className="wrapper bg-light">
-          <div className="container py-14 py-md-16">
+        <section className="wrapper bg-light mb-md-custom-350">
+          <div className="container py-7 py-md-8">
             <ViaLacteaAbout />
             <ViaLacteaFacts />
           </div>
         </section>
 
+        {/* ========== testimonials section ========== */}
+        <ViaLacteaTestimonials />
+
         <section className="wrapper bg-white">
-          <div className="container pt-15 pb-15 pb-md-17">
+          <div className="container pt-20 pb-15 pb-md-17">
             {/* ========== what do we do section ========== */}
             <ViaLacteaServices />
+
+            {/* ========== partners section ========== */}
+            <Portfolio1 />
 
             {/* ========== why choose us section ========== */}
             <About27 />

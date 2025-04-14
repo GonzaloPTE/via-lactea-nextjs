@@ -116,7 +116,7 @@
 **Dependencias:** TASK-001
 **Version:** 2
 
-### TASK-005 Análisis de componentes del tema - Alta - NUEVA
+### TASK-005 Análisis de componentes del tema - Alta - Hecho [COMPLETADO]
 **Descripción:** Revisar y documentar los componentes disponibles en el tema adquirido para entender su estructura, funcionamiento y posibilidades de personalización.
 
 **Objetivos:**
@@ -129,7 +129,7 @@
 **Dependencias:** TASK-003
 **Version:** 0
 
-### TASK-006 Adaptación de la identidad visual al tema - Alta - NUEVA
+### TASK-006 Adaptación de la identidad visual al tema - Alta - [COMPLETADO]
 **Descripción:** Adaptar la identidad visual definida para "Vía Láctea" a los componentes y estilos del tema comprado.
 
 **Objetivos:**
@@ -142,7 +142,7 @@
 **Dependencias:** TASK-004, TASK-005
 **Version:** 1
 
-### TASK-007 Implementar página de inicio - Alta - NUEVA
+### TASK-007 Implementar página de inicio - Alta - [EN PROGRESO]
 **Descripción:** Adaptar y personalizar componentes del tema para crear la página de inicio que represente adecuadamente la marca "Vía Láctea" y sus servicios.
 
 **Objetivos:**
