@@ -39,3 +39,8 @@ next-env.d.ts
 # opennextjs
 .open-next
 .wrangler
+
+# backup
+.backup
+backup-app-dirs.ps1
+remove-app-dirs.ps1
