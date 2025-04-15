@@ -1,8 +1,8 @@
 export default function ViaLacteaContact() {
   return (
     <section className="wrapper bg-white">
-      <div className="container pt-15 pb-15 pb-md-17">
-        <div className="row gx-3 gy-10 mb-15 mb-md-18 align-items-center">
+      <div className="container pt-15">
+        <div className="row gx-3 gy-10 mb-8 mb-md-10 align-items-center">
           <div className="col-lg-6">
             <figure>
               <img
