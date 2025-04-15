@@ -50,7 +50,7 @@ export default function ViaLacteaTestimonialCard({
     if (isFullWidth !== expanded) {
       setExpanded(isFullWidth);
     }
-  }, [isFullWidth]);
+  }, [isFullWidth, expanded]);
 
   // Manejar cambio de estado expandido
   const handleExpandToggle = () => {

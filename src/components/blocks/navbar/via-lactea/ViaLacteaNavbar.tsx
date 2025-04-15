@@ -120,11 +120,14 @@ export default function ViaLacteaNavbar({
 
   return (
     <Fragment>
-      {stickyBox ? <div style={{ paddingTop: sticky ? navbarRef.current?.clientHeight : 0 }} /> : null}
+      {stickyBox ? <div className="d-sm-none" style={{ paddingTop: sticky ? navbarRef.current?.clientHeight : 0 }} /> : null}
 
       <nav 
         ref={navbarRef} 
-        className={clsx(navClassName, { "navbar-clone fixed navbar-stick": sticky })}
+        className={clsx(
+          navClassName, 
+          sticky ? "navbar-clone fixed navbar-stick d-sm-none" : ""
+        )}
         style={sticky ? { backgroundColor: 'rgba(255, 255, 255, 0.2)' } : {}}
       >
         <div className="container flex-lg-row flex-nowrap align-items-start mt-8">{headerContent}</div>
