@@ -8,55 +8,60 @@ export default function ViaLacteaPortfolio() {
     0: { slidesPerView: 1 },
     480: { slidesPerView: 2 },
     768: { slidesPerView: 3 },
-    992: { slidesPerView: 4 }
+    992: { slidesPerView: 5 },
+    1800: { slidesPerView: 6 }
   };
 
-  return (    
-    <div className="container-fluid px-md-6 mb-8 mb-md-10">
-      <div className="row text-center">
-        <div className="col-lg-9 col-xl-8 col-xxl-7 mx-auto">
-          <h2 className="fs-16 text-uppercase text-primary mb-3">Partners Colaboradores</h2>
+  return (
+    <section className="wrapper bg-white">
+      <div className="mx-md-10 mx-lg-10">
+        <div className="container-fluid px-md-6 mb-18 mb-md-18">
+          <div className="row text-center">
+            <div className="col-lg-9 col-xl-8 col-xxl-7 mx-auto">
+              <h2 className="fs-16 text-uppercase text-primary mb-3">Partners Colaboradores</h2>
+            </div>
+          </div>
+          <div className="swiper-container mb-10">
+            <Carousel grabCursor breakpoints={carouselBreakpoints}>
+              {viaLacteaBrands.map((item, index) => (
+                <figure
+                  className="d-flex align-items-center justify-content-center mx-2"
+                  key={index}
+                  style={{
+                    height: '170px',
+                    padding: '5px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <div style={{
+                    height: '160px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%'
+                  }}>
+                    <Image
+                      src={item}
+                      width={500}
+                      height={100}
+                      alt="colaborador"
+                      style={{
+                        maxHeight: '90px',
+                        minHeight: '80px',
+                        width: 'auto',
+                        objectFit: 'contain',
+                        maxWidth: '100%'
+                      }}
+                    />
+                  </div>
+                </figure>
+              ))}
+            </Carousel>
+          </div>
         </div>
       </div>
-      <div className="swiper-container mb-10">
-        <Carousel grabCursor breakpoints={carouselBreakpoints}>
-          {viaLacteaBrands.map((item, index) => (
-            <figure 
-              className="d-flex align-items-center justify-content-center mx-2" 
-              key={index}
-              style={{ 
-                height: '170px', 
-                padding: '5px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <div style={{ 
-                height: '160px', 
-                display: 'flex', 
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%' 
-              }}>
-                <Image 
-                  src={item} 
-                  width={500} 
-                  height={100} 
-                  alt="colaborador" 
-                  style={{ 
-                    maxHeight: '90px',
-                    minHeight: '80px',
-                    width: 'auto',
-                    objectFit: 'contain',
-                    maxWidth: '100%'
-                  }} 
-                />
-              </div>
-            </figure>
-          ))}
-        </Carousel>
-      </div>
-    </div>
+    </section>
   );
 }

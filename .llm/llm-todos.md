@@ -152,6 +152,8 @@
 - Añadir sección de pricing con todos los servicios disponibles
 - Implementar llamadas a la acción estratégicas
 - Asegurar que el contenido sea relevante para el público objetivo
+- Desactivar las secciones que aún pudieran no estar listas (p.ej. vídeos)
+- Asegurar un buen copy
 
 **Dependencias:** TASK-006
 **Version:** 0

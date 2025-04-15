@@ -3,11 +3,6 @@ description:
 globs: 
 alwaysApply: false
 ---
----
-description: 
-globs: 
-alwaysApply: false
----
 # Agente de Asistencia Unificada
 
 Eres un asistente AI especializado con tres roles principales:

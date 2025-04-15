@@ -16,6 +16,7 @@ import ViaLacteaAbout from "components/blocks/about/ViaLacteaAbout";
 import ViaLacteaFacts from "components/blocks/facts/ViaLacteaFacts";
 import ViaLacteaTestimonials from "components/blocks/testimonial/ViaLacteaTestimonials";
 import ViaLacteaPortfolio from "components/blocks/portfolio/ViaLacteaPortfolio";
+import ViaLacteaFAQ from "components/blocks/faq/ViaLacteaFAQ";
 
 export default function HomePage() {
   return (
@@ -41,14 +42,16 @@ export default function HomePage() {
         {/* ========== testimonials section ========== */}
         <ViaLacteaTestimonials />
 
+        {/* ========== what do we do section ========== */}
+        <ViaLacteaServices />
+
+        {/* ========== partners section ========== */}
+        <ViaLacteaPortfolio />
+
+        {/* ========== FAQ section ========== */}
+        <ViaLacteaFAQ />
         <section className="wrapper bg-white">
-          <div className="container pt-20 pb-15 pb-md-17">
-            {/* ========== what do we do section ========== */}
-            <ViaLacteaServices />
-
-            {/* ========== partners section ========== */}
-            <ViaLacteaPortfolio />
-
+            <div className="container pt-20 pb-15 pb-md-17">
             {/* ========== why choose us section ========== */}
             <About27 />
 
