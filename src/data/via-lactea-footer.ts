@@ -16,8 +16,7 @@ export const helps = [
 export const learnMore = [
   { id: 1, title: 'Asesoría de Sueño', url: '/servicios/sueno-infantil' },
   { id: 2, title: 'Asesoría de Lactancia', url: '/servicios/lactancia' },
-  { id: 3, title: 'Testimonios', url: '/testimonios' },
-  { id: 4, title: 'Recursos Gratuitos', url: '/recursos' }
+  { id: 3, title: 'Recursos Gratuitos', url: '/recursos' }
 ];
 
 export const tags = [

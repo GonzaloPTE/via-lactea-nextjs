@@ -15,9 +15,8 @@ export const mainNavigation = [
     ]
   },
   { id: 4, title: "Blog", url: "/blog" },
-  { id: 5, title: "Testimonios", url: "/testimonios" },
-  { id: 6, title: "Recursos", url: "/recursos" },
-  { id: 7, title: "Contacto", url: "/contacto" }
+  { id: 5, title: "Recursos", url: "/recursos" },
+  { id: 6, title: "Contacto", url: "/contacto" }
 ];
 
 // Información de contacto para el footer y la barra lateral móvil
@@ -39,8 +38,7 @@ export const footerNavigation = {
   ],
   company: [
     { id: 1, title: "Sobre mí", url: "/sobre-mi" },
-    { id: 2, title: "Testimonios", url: "/testimonios" },
-    { id: 3, title: "FAQ", url: "/faq" }
+    { id: 2, title: "FAQ", url: "/faq" }
   ],
   legal: [
     { id: 1, title: "Política de privacidad", url: "/politica-privacidad" },
