@@ -25,7 +25,7 @@ export default function ViaLacteaHero() {
             </div>
           </div>
 
-          <div className="col-10 col-md-7 mx-auto col-lg-6 col-xl-5 ms-xl-5 mt-13 mt-lg-n0 position-relative">
+          <div className="col-10 col-md-7 mx-auto col-lg-6 col-xl-5 ms-xl-5 mt-13 mt-lg-n8 position-relative">
             <div className="img-mask mask-3" style={{ transform: 'scale(1.2)', transformOrigin: 'center center' }}>
                 <img
                 className="img-fluid"

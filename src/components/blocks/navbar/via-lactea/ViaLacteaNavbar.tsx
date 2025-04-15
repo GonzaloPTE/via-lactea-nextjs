@@ -38,7 +38,7 @@ export default function ViaLacteaNavbar({
   social = false,
   search = false,
   stickyBox = true,
-  navOtherClass = "navbar-other w-100 d-flex ms-auto",
+  navOtherClass = "navbar-other d-flex",
   navClassName = "navbar navbar-expand-lg center-nav transparent navbar-light"
 }: ViaLacteaNavbarProps) {
   useNestedDropdown();
@@ -46,13 +46,25 @@ export default function ViaLacteaNavbar({
   const navbarRef = useRef<HTMLElement | null>(null);
 
   // dynamically render the logo
-  const logo = sticky ? "logo-dark" : logoAlt ?? "logo-dark";
+  const logo = sticky ? "via-lactea-logo" : logoAlt ?? "via-lactea-logo";
 
   // all main header contents
   const headerContent = (
     <Fragment>
-      <div className="navbar-brand w-100">
-        <NextLink href="/" title={<img alt="logo Vía Láctea" src={`/img/${logo}.png`} srcSet={`/img/${logo}@2x.png 2x`} />} />
+      <div className="navbar-brand flex-grow-1 mb-2 d-flex justify-content-center justify-content-lg-start">
+        <NextLink
+          href="/"
+          title={
+            <img
+                alt="logo Vía Láctea" 
+                src={`/img/via-lactea/svg/${logo}.svg`}
+                srcSet={`/img/via-lactea/svg/${logo}.svg 2x`}
+                width={sticky ? 100 : 200}
+                height={sticky ? 100 : 200}
+                className={sticky ? "d-none d-lg-block" : ""}
+            />
+          }
+        />
       </div>
 
       <div id="offcanvas-nav" data-bs-scroll="true" className="navbar-collapse offcanvas offcanvas-nav offcanvas-start">
@@ -64,6 +76,9 @@ export default function ViaLacteaNavbar({
             data-bs-dismiss="offcanvas"
             className="btn-close btn-close-white ms-auto"
           />
+        </div>
+        <div className="offcanvas-header d-lg-none">
+          <h2 className="text-white fs-20 mb-0 mt-n12">Sueño y Lactancia</h2>
         </div>
 
         <div className="offcanvas-body ms-lg-auto d-flex flex-column h-100">
@@ -107,8 +122,12 @@ export default function ViaLacteaNavbar({
     <Fragment>
       {stickyBox ? <div style={{ paddingTop: sticky ? navbarRef.current?.clientHeight : 0 }} /> : null}
 
-      <nav ref={navbarRef} className={clsx(navClassName, { "navbar-clone fixed navbar-stick": sticky })}>
-        <div className="container flex-lg-row flex-nowrap align-items-center">{headerContent}</div>
+      <nav 
+        ref={navbarRef} 
+        className={clsx(navClassName, { "navbar-clone fixed navbar-stick": sticky })}
+        style={sticky ? { backgroundColor: 'rgba(255, 255, 255, 0.2)' } : {}}
+      >
+        <div className="container flex-lg-row flex-nowrap align-items-start mt-8">{headerContent}</div>
       </nav>
 
       {/* ============= info sidebar ============= */}
