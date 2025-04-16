@@ -1,47 +1,6 @@
-"use client";
-
-import NextLink from "components/reuseable/links/NextLink";
-import { useEffect } from "react";
-import Head from "next/head";
-
-// Add Calendly type declaration for TypeScript
-declare global {
-  interface Window {
-    Calendly?: any;
-  }
-}
+import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 
 export default function ViaLacteaHero() {
-  useEffect(() => {
-    // Load Calendly script dynamically
-    const script = document.createElement("script");
-    script.src = "https://assets.calendly.com/assets/external/widget.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    // Add Calendly CSS
-    const link = document.createElement("link");
-    link.href = "https://assets.calendly.com/assets/external/widget.css";
-    link.rel = "stylesheet";
-    document.head.appendChild(link);
-
-    // Cleanup on component unmount
-    return () => {
-      document.body.removeChild(script);
-      document.head.removeChild(link);
-    };
-  }, []);
-
-  const handleCalendlyClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (window.Calendly) {
-      window.Calendly.initPopupWidget({
-        url: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba'
-      });
-    }
-    return false;
-  };
-
   return (
     <section className="wrapper bg-soft-primary">
       <div className="container pt-12 pt-lg-12 pt-xl-10 pt-xxl-10 pb-lg-10 pb-xl-10 pb-xxl-0">
@@ -58,13 +17,11 @@ export default function ViaLacteaHero() {
             </p>
 
             <div className="d-inline-flex me-2">
-              <a 
-                href="#" 
-                onClick={handleCalendlyClick} 
+              <CalendlyButton 
+                text="Agenda YA tu valoración GRATUITA"
+                icon="uil uil-calendar-alt"
                 className="btn btn-lg btn-grape rounded"
-              >
-                <i className="uil uil-calendar-alt fs-25 me-2"></i> Agenda YA tu valoración GRATUITA
-              </a>
+              />
             </div>
           </div>
 

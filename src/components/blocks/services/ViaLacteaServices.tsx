@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import NextLink from "components/reuseable/links/NextLink";
+import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 // Importamos los datos de servicios de Vía Láctea
 import { serviceList } from "../../../data/via-lactea-services";
 
@@ -15,14 +16,25 @@ export default function ViaLacteaServices() {
             </div>
           </div>
 
-          <div className="row gx-md-8 gy-8 mb-15 mb-md-17 text-center">
+          <div className="row gx-md-8 gy-12 mb-15 mb-md-17 text-center">
             {serviceList.map(({ id, Icon, title, description, url }) => (
               <div className="col-md-6 col-lg-3" key={id}>
                 <div className="px-md-3 px-lg-0 px-xl-3">
                   <Icon className="icon-svg-md text-grape mb-5" />
                   <h4>{title}</h4>
                   <p className="mb-3">{description}</p>
-                  <NextLink title="Saber más" href={url} className="more hover" />
+                  
+                  {id === 1 ? (
+                    // Para la tarjeta de valoración gratuita (id=1), usar el popup de Calendly
+                    <CalendlyButton 
+                      text="TE LLAMO" 
+                      icon="uil uil-phone-alt" 
+                      className="btn btn-sm btn-grape rounded" 
+                    />
+                  ) : (
+                    // Para el resto de tarjetas, usar el enlace normal
+                    <NextLink title="Saber más" href={url} className="more hover" />
+                  )}
                 </div>
               </div>
             ))}
