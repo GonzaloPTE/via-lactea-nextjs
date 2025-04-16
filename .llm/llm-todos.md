@@ -156,6 +156,9 @@
 - Asegurar un buen copy
 - Desplegar en CloudFlare una versión de la home sencilla (SSG)
 - Integrar con Calendly (Free Tier) las valoraciones gratuitas de la Home, conectado a HubSpot Free CRM. Ver razonamiento en `.llm/crm-hubspot.md` y detalles de scheduling en `.llm/meeting-scheduling.md`.
+- Integrar con Stripe los eventos como la Llamada SOS.
+- Integrar con Hubspot API para incluir suscriptores en las listas de newsletter. Añadir captcha de Cloudflare.
+- Configurar Hubspot y Calendly para que los leads de las valoraciones se creen como tales, mientras que se marquen como clientes los de la Llamada SOS. Ver `.llm/servicios.md`.
 
 **Dependencias:** TASK-006
 **Version:** 0
