@@ -1,15 +1,8 @@
 import { Fragment } from "react";
 // GLOBAL CUSTOM COMPONENTS
-import { About27 } from "components/blocks/about";
-import { Footer17, Footer3 } from "components/blocks/footer";
-import { Pricing9 } from "components/blocks/pricing";
-import { Process16 } from "components/blocks/process";
-import { Contact13 } from "components/blocks/contact";
-import { CTA10 } from "components/blocks/call-to-action";
-import { Testimonial20 } from "components/blocks/testimonial";
 import NextLink from "components/reuseable/links/NextLink";
 // VIA LACTEA CUSTOM COMPONENTS
-import ViaLacteaHero from "components/blocks/hero/via-lactea-hero";
+import ViaLacteaHero from "components/blocks/hero/ViaLacteaHero";
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
 import ViaLacteaServices from "components/blocks/services/ViaLacteaServices";
 import ViaLacteaAbout from "components/blocks/about/ViaLacteaAbout";
