@@ -155,7 +155,7 @@
 - Desactivar las secciones que aún pudieran no estar listas (p.ej. vídeos)
 - Asegurar un buen copy
 - Desplegar en CloudFlare una versión de la home sencilla (SSG)
-- Integrar con HubSpot Meetings (Free Tier) las valoraciones gratuitas de la Home. Ver razonamiento en `.llm/crm-hubspot.md`.
+- Integrar con Calendly (Free Tier) las valoraciones gratuitas de la Home, conectado a HubSpot Free CRM. Ver razonamiento en `.llm/crm-hubspot.md` y detalles de scheduling en `.llm/meeting-scheduling.md`.
 
 **Dependencias:** TASK-006
 **Version:** 0
