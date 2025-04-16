@@ -154,6 +154,8 @@
 - Asegurar que el contenido sea relevante para el público objetivo
 - Desactivar las secciones que aún pudieran no estar listas (p.ej. vídeos)
 - Asegurar un buen copy
+- Desplegar en CloudFlare una versión de la home sencilla (SSG)
+- Integrar con HubSpot Meetings (Free Tier) las valoraciones gratuitas de la Home. Ver razonamiento en `.llm/crm-hubspot.md`.
 
 **Dependencias:** TASK-006
 **Version:** 0
