@@ -10,6 +10,7 @@ alwaysApply: false
 - Prioriza la legibilidad y mantenibilidad sobre la optimización del rendimiento
 - Implementa completamente toda la funcionalidad solicitada sin TODOs o elementos provisionales
 - Incluye todas las importaciones requeridas con nombres apropiados para los componentes
+- Cada vex que uses el hook "useEffect", añade "use client" al principio del componente
 
 ## Shadcn/UI
 - Preferir componentes de Shadcn/UI sobre implementaciones personalizadas cuando estén disponibles

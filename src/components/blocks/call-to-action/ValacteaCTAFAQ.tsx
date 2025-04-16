@@ -1,5 +1,4 @@
-import NextLink from "components/reuseable/links/NextLink";
-import Link from "next/link";
+import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 
 export default function ValacteaCTAFAQ() {
   return (
@@ -11,11 +10,12 @@ export default function ValacteaCTAFAQ() {
             <h3 className="display-2 mb-9 px-xxl-10">
               Agenda una valoración con nosotros totalmente <span className="underline-3 style-1 primary">gratis</span> y sin compromiso
             </h3>
-            <NextLink 
-                href="/valoracion" 
-                title={<><i className="uil uil-calendar-alt fs-25 me-2"></i> Resuelve todas tus dudas</>} 
-                className="btn btn-lg btn-grape rounded" 
-              />
+            <CalendlyButton 
+              text="Resuelve todas tus dudas"
+              icon="uil uil-calendar-alt"
+              className="btn btn-lg btn-grape rounded"
+              calendlyUrl="https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba"
+            />
           </div>
         </div>
       </div>

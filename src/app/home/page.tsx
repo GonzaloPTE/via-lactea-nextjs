@@ -12,12 +12,14 @@ import ViaLacteaPortfolio from "components/blocks/portfolio/ViaLacteaPortfolio";
 import ViaLacteaFAQ from "components/blocks/faq/ViaLacteaFAQ";
 import ViaLacteaContact from "components/blocks/contact/ViaLacteaContact";
 import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
+import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
+
 export default function HomePage() {
   return (
     <Fragment>
       {/* ========== header ========== */}
       <header className="wrapper bg-soft-primary">
-        <ViaLacteaNavbar button={<NextLink href="/contacto" title={<><i className="uil uil-whatsapp fs-25 me-1"></i> Valoracion GRATUITA</>} className="btn btn-sm btn-primary rounded mt-1" />} />
+        <ViaLacteaNavbar button={<CalendlyButton />} />
       </header>
 
       {/* ========== main content ========== */}
