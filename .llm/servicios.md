@@ -4,13 +4,16 @@ ES UN PROGRAMA CON MENTORÍA Y ACOMPAÑAMIENTO PERSONALIZADO
 
 ## Servicios de 0-6 meses
 
-### Primeros meses "0-6 meses"
-Durante esta fase no se tratan problemas de sueño de tu recién nacido (ver por qué).
-Consulta online de 1 hora para resolver dudas de lactancia (artificial o materna), inicio de alimentación complementaria y BLW (Baby Let Weanning), ventanas de sueño, horarios y rutinas, llegada de nuevo hermano,... cualquier duda que os surja.
-Incluye un mail de seguimiento dentro de las 3 semanas posteriores a la consultoría.
+### Asesoría "Big Bang"
+Consulta online de 1 hora para resolver dudas de lactancia (materna o artificial), inicio de alimentación complementaria y BLW (Baby Let Weanning), ventanas de sueño, horarios y rutinas, llegada de nuevo hermano,... cualquier duda que os surja de los primeros 6 meses.
+Incluye la posibilidad de resolver dudas por email durante las 2 semanas posteriores a la asesoría.
 Regalo de guía "Big Bang - Sus primeros momentos"
 
 Precio: 90€
+
+### Asesoría de lactancia "Vía láctea"
+Consulta online de 1 hora para resolver dudas de lactancia (materna o artificial), inicio de alimentación complementaria, BLW (Baby Let Weanning), destete, lactancia diferida, lactancia mixta, mejores posiciones, arículos necesarios, etc.
+Precio: 60€
 
 ## Servicios de 6 meses a 4años
 
@@ -19,10 +22,10 @@ Precio: 90€
 
 Precio: GRATIS
 
-### Consulta (videollamada SOS)
-30min para resolución de dudas
+### Consulta "videollamada SOS"
+30min para resolución de dudas. Se priorizará tu consulta lo máximo posible.
 
-Precio: 60€
+Precio: 50€
 
 ### Plan de sueño Luna (sin seguimiento)
 
