@@ -63,6 +63,6 @@ export default async function handler(
     return res.status(result.success ? 200 : 500).json(result);
   } catch (error) {
     console.error('Error in subscribe handler:', error);
-    return res.status(500).json({ success: false, message: 'Error en el servidor' });
+    return res.status(500).json({ success: false, message: 'Por favor, inténtalo de nuevo.' });
   }
 } 

@@ -99,6 +99,6 @@ export async function subscribeToNewsletter(email: string): Promise<{ success: b
     return { success: true };
   } catch (error) {
     console.error('Error subscribing to newsletter:', error);
-    return { success: false, message: 'Error en el servidor' };
+    return { success: false, message: 'Por favor, inténtalo de nuevo.' };
   }
 } 

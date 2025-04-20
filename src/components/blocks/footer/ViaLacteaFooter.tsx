@@ -5,7 +5,7 @@ import Link from "types/link";
 // GLOBAL CUSTOM COMPONENTS
 import NextLink from "components/reuseable/links/NextLink";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
-import Turnstile from "components/turnstile/Turnstile";
+import TurnstileProtection, { validateTurnstileToken } from "components/common/TurnstileProtection";
 // CUSTOM DATA
 import { helps, learnMore } from "data/via-lactea-footer";
 
@@ -14,8 +14,8 @@ type Footer3Props = { hiddenNewsletter?: boolean };
 // =================================================
 
 export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // common links section
   const widget = (list: Link[], title: string) => {
@@ -35,11 +35,9 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Para formularios con Turnstile invisible, aseguramos que el token se ha generado
-    // Si no hay token, lo mostramos como error solo si intentamos enviar
-    if (!turnstileToken) {
-      // Mostrar mensaje de error si no se ha verificado el captcha
+    
+    // Validar token de Turnstile antes de enviar
+    if (!validateTurnstileToken(turnstileToken)) {
       const errorElement = document.getElementById('newsletter-error');
       if (errorElement) {
         errorElement.style.display = 'block';
@@ -77,7 +75,7 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
         }
         // Clear the form
         (document.getElementById('newsletter-email') as HTMLInputElement).value = '';
-        // Reset turnstile
+        // Reset turnstile token
         setTurnstileToken(null);
       } else {
         // Show error message
@@ -118,44 +116,42 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
 
                 <div className="col-lg-5 col-xl-4 offset-xl-1">
                   <div className="newsletter-wrapper">
-                    <form
-                      id="newsletter-form"
-                      className="validate dark-fields"
-                      onSubmit={handleNewsletterSubmit}
+                    <TurnstileProtection 
+                      onTokenChange={setTurnstileToken}
+                      errorElementId="newsletter-error"
+                      theme="dark"
+                      appearance="execute"
                     >
-                      <div className="input-group form-floating">
-                        <input
-                          type="email"
-                          id="newsletter-email"
-                          placeholder="Email Address"
-                          className="required email form-control"
-                          required
-                        />
-                        <label htmlFor="newsletter-email" className="position-absolute">
-                          Correo Electrónico
-                        </label>
-                        <input
-                          type="submit"
-                          className="btn btn-primary"
-                          value="Suscribirse"
-                          disabled={submitting}
-                        />
-                      </div>
+                      <form
+                        id="newsletter-form"
+                        className="validate dark-fields"
+                        onSubmit={handleNewsletterSubmit}
+                      >
+                        <div className="input-group form-floating">
+                          <input
+                            type="email"
+                            id="newsletter-email"
+                            placeholder="Email Address"
+                            className="required email form-control"
+                            required
+                          />
+                          <label htmlFor="newsletter-email" className="position-absolute">
+                            Correo Electrónico
+                          </label>
+                          <input
+                            type="submit"
+                            className="btn btn-primary"
+                            value="Suscribirse"
+                            disabled={submitting}
+                          />
+                        </div>
 
-                      {/* Widget invisible de Turnstile */}
-                      <div style={{ height: 0, overflow: 'hidden', visibility: 'hidden' }}>
-                        <Turnstile 
-                          onVerify={(token) => setTurnstileToken(token)} 
-                          theme="dark"
-                          appearance="execute"
-                        />
-                      </div>
-
-                      <div className="response-messages">
-                        <div className="response" id="newsletter-error" style={{ display: "none", color: "#ff8b8b", marginTop: "10px" }} />
-                        <div className="response" id="newsletter-success" style={{ display: "none", color: "#90ee90", marginTop: "10px" }} />
-                      </div>
-                    </form>
+                        <div className="response-messages">
+                          <div className="response" id="newsletter-error" style={{ display: "none", color: "#ff8b8b", marginTop: "10px" }} />
+                          <div className="response" id="newsletter-success" style={{ display: "none", color: "#90ee90", marginTop: "10px" }} />
+                        </div>
+                      </form>
+                    </TurnstileProtection>
                   </div>
                 </div>
               </div>
