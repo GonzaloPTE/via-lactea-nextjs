@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "types/link";
 // GLOBAL CUSTOM COMPONENTS
 import NextLink from "components/reuseable/links/NextLink";
@@ -45,47 +47,75 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
 
                 <div className="col-lg-5 col-xl-4 offset-xl-1">
                   <div className="newsletter-wrapper">
-                    <div id="mc_embed_signup2">
-                      <form
-                        action="https://elemisfreebies.us20.list-manage.com/subscribe/post?u=aa4947f70a475ce162057838d&amp;id=b49ef47a9a"
-                        method="post"
-                        id="mc-embedded-subscribe-form2"
-                        name="mc-embedded-subscribe-form"
-                        className="validate dark-fields"
-                        target="_blank">
-                        <div id="mc_embed_signup_scroll2">
-                          <div className="mc-field-group input-group form-floating">
-                            <input
-                              type="email"
-                              name="EMAIL"
-                              id="mce-EMAIL2"
-                              placeholder="Email Address"
-                              className="required email form-control"
-                            />
-                            <label htmlFor="mce-EMAIL2" className="position-absolute">
-                              Correo Electrónico
-                            </label>
-                            <input
-                              type="submit"
-                              name="subscribe"
-                              id="mc-embedded-subscribe2"
-                              className="btn btn-primary"
-                            />
-                          </div>
+                    <form
+                      id="newsletter-form"
+                      className="validate dark-fields"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const email = (document.getElementById('newsletter-email') as HTMLInputElement).value;
+                        if (!email) return;
+                        
+                        // Call HubSpot API to subscribe the email to the list
+                        fetch('/api/subscribe', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({ email }),
+                        })
+                          .then((response) => response.json())
+                          .then((data) => {
+                            if (data.success) {
+                              // Show success message
+                              const successElement = document.getElementById('newsletter-success');
+                              if (successElement) {
+                                successElement.style.display = 'block';
+                                successElement.textContent = 'Gracias por suscribirte a nuestro boletín';
+                              }
+                              // Clear the form
+                              (document.getElementById('newsletter-email') as HTMLInputElement).value = '';
+                            } else {
+                              // Show error message
+                              const errorElement = document.getElementById('newsletter-error');
+                              if (errorElement) {
+                                errorElement.style.display = 'block';
+                                errorElement.textContent = data.message || 'Ha ocurrido un error. Inténtalo de nuevo.';
+                              }
+                            }
+                          })
+                          .catch((error) => {
+                            console.error('Error:', error);
+                            const errorElement = document.getElementById('newsletter-error');
+                            if (errorElement) {
+                              errorElement.style.display = 'block';
+                              errorElement.textContent = 'Ha ocurrido un error. Inténtalo de nuevo.';
+                            }
+                          });
+                      }}
+                    >
+                      <div className="input-group form-floating">
+                        <input
+                          type="email"
+                          id="newsletter-email"
+                          placeholder="Email Address"
+                          className="required email form-control"
+                          required
+                        />
+                        <label htmlFor="newsletter-email" className="position-absolute">
+                          Correo Electrónico
+                        </label>
+                        <input
+                          type="submit"
+                          className="btn btn-primary"
+                          value="Suscribirse"
+                        />
+                      </div>
 
-                          <div id="mce-responses2" className="clear">
-                            <div className="response" id="mce-error-response2" style={{ display: "none" }} />
-                            <div className="response" id="mce-success-response2" style={{ display: "none" }} />
-                          </div>
-
-                          <div style={{ position: "absolute", left: -5000 }} aria-hidden="true">
-                            <input type="text" name="b_ddc180777a163e0f9f66ee014_4b1bcfa0bc" tabIndex={-1} />
-                          </div>
-
-                          <div className="clear" />
-                        </div>
-                      </form>
-                    </div>
+                      <div className="response-messages">
+                        <div className="response" id="newsletter-error" style={{ display: "none", color: "#ff8b8b", marginTop: "10px" }} />
+                        <div className="response" id="newsletter-success" style={{ display: "none", color: "#90ee90", marginTop: "10px" }} />
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
