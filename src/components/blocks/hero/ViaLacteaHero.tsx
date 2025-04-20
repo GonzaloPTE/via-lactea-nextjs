@@ -25,12 +25,12 @@ export default function ViaLacteaHero() {
             </div>
           </div>
 
-          <div className="col-10 col-md-7 mx-auto col-lg-6 col-xl-5 ms-xl-5 mt-13 mt-lg-n8 position-relative">
-            <div className="img-mask mask-3" style={{ transform: 'scale(1.2)', transformOrigin: 'center center' }}>
+          <div className="col-10 col-md-7 mx-auto col-lg-6 col-xl-5 ms-xl-5 mt-13 mt-lg-n2 position-relative">
+            <div className="img-mask mask-3" style={{ transform: 'scale(1.3)', transformOrigin: 'center center' }}>
                 <img
                 className="img-fluid"
-                srcSet="/img/photos/about36@2x.jpg 2x"
-                src="/img/photos/about36.jpg"
+                srcSet="/img/via-lactea/photos/perfil-hero.png"
+                src="/img/via-lactea/photos/perfil-hero.png"
                 data-cue="fadeIn"
                 data-delay="300"
                 alt="3d"
