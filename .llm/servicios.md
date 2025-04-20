@@ -1,15 +1,8 @@
 # Catálogo de servicios
-
-## Servicios de 0-6 meses
 ❌ NO ES UN CURSO ONLINE ❌
 ES UN PROGRAMA CON MENTORÍA Y ACOMPAÑAMIENTO PERSONALIZADO
 
-### Guía "Big Bang - Sus primeros momentos"
-Cuando nace un bebé, nos surgen muchas dudas sobre su sueño, ¿Cuántas horas tiene que dormir un bebé recién nacido? y a medida que pasan los meses, su sueño va cambiando, por lo tantos, sus necesidades también.
-
-Con esta guía tendrás por escrito lo que va a ir ocurriendo en su sueño los 6 primeros meses y pautas para ir instaurando una buena higiene de sueño.
-
-Precio: 40€
+## Servicios de 0-6 meses
 
 ### Primeros meses "0-6 meses"
 Durante esta fase no se tratan problemas de sueño de tu recién nacido (ver por qué).
@@ -20,8 +13,6 @@ Regalo de guía "Big Bang - Sus primeros momentos"
 Precio: 90€
 
 ## Servicios de 6 meses a 4años
-❌ NO ES UN CURSO ONLINE ❌
-ES UN PROGRAMA CON MENTORÍA Y ACOMPAÑAMIENTO PERSONALIZADO
 
 ### Valoración gratuita
 30min para valoración personalizada.
