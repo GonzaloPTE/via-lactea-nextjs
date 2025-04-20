@@ -1,77 +1,104 @@
-# Servicios Vía Láctea
+# Catálogo de servicios
 
-## Valoración gratuita
-¿No sabes por dónde empezar? Agenda una valoración gratuita y descubre cómo puedo ayudarte a ti y a tu bebé.
+## Servicios de 0-6 meses
+❌ NO ES UN CURSO ONLINE ❌
+ES UN PROGRAMA CON MENTORÍA Y ACOMPAÑAMIENTO PERSONALIZADO
 
-- Formato videollamada
-- **Gratis**
+### Guía "Big Bang - Sus primeros momentos"
+Cuando nace un bebé, nos surgen muchas dudas sobre su sueño, ¿Cuántas horas tiene que dormir un bebé recién nacido? y a medida que pasan los meses, su sueño va cambiando, por lo tantos, sus necesidades también.
 
-[Agendar](#)
+Con esta guía tendrás por escrito lo que va a ir ocurriendo en su sueño los 6 primeros meses y pautas para ir instaurando una buena higiene de sueño.
 
-## Para "0-6 meses": Asesoría de Lactancia, Padres Primerizos y Alimentación
-Te acompaño en el camino de la lactancia y acompañamiento a la madre o cuidador principal. Ideal para padres primerizos que buscan un apoyo integral.
+Precio: 40€
 
-- Formato videollamada
-- ~~129€~~ **99€**
+### Primeros meses "0-6 meses"
+Durante esta fase no se tratan problemas de sueño de tu recién nacido (ver por qué).
+Consulta online de 1 hora para resolver dudas de lactancia (artificial o materna), inicio de alimentación complementaria y BLW (Baby Let Weanning), ventanas de sueño, horarios y rutinas, llegada de nuevo hermano,... cualquier duda que os surja.
+Incluye un mail de seguimiento dentro de las 3 semanas posteriores a la consultoría.
+Regalo de guía "Big Bang - Sus primeros momentos"
 
-[Reservar](#)
+Precio: 90€
 
-## Para "6 meses a 4 años" (Plan Enana Blanca) ⭐
-*Más Popular*
+## Servicios de 6 meses a 4años
+❌ NO ES UN CURSO ONLINE ❌
+ES UN PROGRAMA CON MENTORÍA Y ACOMPAÑAMIENTO PERSONALIZADO
 
-Un plan de sueño adaptado a tu familia para un descanso reparador. Ideal para quienes buscan un cambio efectivo.
+### Valoración gratuita
+30min para valoración personalizada.
 
-- Valoración + Asesoría del Sueño Infantil Respetuoso con Plan de Sueño
-- Duración: 6 semanas de seguimiento
-- Formato videollamada
-- ~~249€~~ **199€**
+Precio: GRATIS
 
-[Reservar](#)
+### Consulta (videollamada SOS)
+30min para resolución de dudas
 
-## Para "6 meses a 4 años" (Plan Gigante Roja)
-Un plan de sueño adaptado a tu familia, con pautas iniciales y seguimiento. Ideal para quienes buscan un cambio efectivo.
+Precio: 60€
 
-- Valoración + Pautas iniciales + Asesoría del Sueño Infantil Respetuoso con Plan de sueño
-- Duración: 8 semanas de seguimiento
-- Formato videollamada
-- ~~299€~~ **249€**
+### Plan de sueño Luna (sin seguimiento)
 
-[Reservar](#)
+Valoración
+Formulario inicial de 40 preguntas
+Diario de sueño de 2 días.
 
-## Semana extra de seguimiento
-¿Necesitas un poco más de tiempo? Añade una semana extra de soporte a tu asesoría y asegúrate de que todo va bien.
+NO Se envían pautas iniciales.
 
-- Exclusivo para clientes anteriores
-- Formato videollamada
-- ~~69€~~ **49€**
+1ª Videollamada para hacer el plan de sueño. Acordado por la familia. Facilitado por escrito.
 
-[Añadir](#)
+Precio: 200€
 
-## Llamada SOS
-¿Eres nuevo en esto? Reserva una llamada SOS de 30 minutos y aclara tus dudas sobre el sueño y la lactancia.
+### Plan de sueño Enana Blanca (2 semanas)
 
-- Duración hasta 60min
-- Para cualquier duda o consulta urgente
-- Formato videollamada
-- ~~89€~~ **69€**
+Valoración
+Formulario inicial de 40 preguntas
+Diario de sueño de 2 días.
 
-[Reservar](#)
+NO Se envían pautas iniciales.
 
-## Consulta de Asesoría puntual
-Consulta puntual de hasta 60min para resolver dudas urgentes. Ideal para quienes buscan respuestas rápidas y efectivas.
+1ª Videollamada para hacer el plan de sueño. Acordado por la familia. Facilitado por escrito.
+(14 días)
+2ª Videollamada de seguimiento
 
-- Formato videollamada
-- Pautas por escrito
-- ~~109€~~ **89€**
+Precio: 300€
 
-[Reservar](#)
+### Plan de sueño Sol (4 semanas)
 
-## "Suscripción Vía Láctea"
-Únete a nuestros webinars y talleres grupales, donde aprenderás estrategias efectivas para mejorar el sueño de tu bebé y resolver dudas comunes.
+Valoración
+Formulario inicial de 40 preguntas
+Diario de sueño de 2 días
 
-- Acceso a todos los contenidos grabados
-- Recursos adicionales: guías, infografías y más
-- Modelo subscription mensual o pago por evento
-- ~~39€/mes~~ **29€/mes**
+NO hay pautas iniciales.
 
-[Suscribirse](#)
+1ª Videollamada para hacer el plan de sueño. Acordado por la familia. Facilitado por escrito.
+(14 días)
+2ª Videollamada de seguimiento.
+(14 días)
+3ª Videollamada de seguimiento. Cierra el plan de sueño. Se envían pautas de seguimiento por escrito.
+
+Precio: 400€
+
+### Plan de sueño Gigante Roja (Pautas iniciales y plan de sueño) (6 semanas)
+
+Valoración
+Formulario inicial de 40 preguntas
+Diario de sueño de 2 días.
+
+Se envían pautas iniciales.
+(10 días)
+
+1ª Videollamada para hacer el plan de sueño. Acordado por la familia. Facilitado por escrito.
+(14 días)
+2ª Videollamada de seguimiento
+(14 días)
+3ª Videollamada de seguimiento. Cierra el plan de sueño. Se envían pautas de seguimiento por escrito.
+
+Precio: 500€
+
+### Semana de seguimiento
+
+Para antiguos pacientes que necesiten una semana extra a uno de nuestros planes.
+Plan de sueño con diarios de sueño
+Seguimiento diario por Whatsapp o email.
+
+Precio: 150€
+
+### Asesorías grupales (máximo 4 personas) 
+`Plan de sueño Sol` en grupo. Descuento del 30% a cada persona (280€/pax).
