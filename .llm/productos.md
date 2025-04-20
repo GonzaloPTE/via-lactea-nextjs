@@ -2,7 +2,7 @@
 
 Los productos se organizarán en varios niveles:
 1. Publicación: Publicación de Instagram o Facebook o Blog o Newsletter (10 consejos para..., nunca hagas esto..., infografía, etc.).
-2. Módulo o guía: Agrupación de publicaciones de nivel 0 con un objetivo común.
+2. Módulo o guía: Agrupación de publicaciones de nivel 1 con un objetivo común.
 3. Curso o libro: Colección de módulos o guías con un objetivo común.
 
 Cada producto deberá tener TODOS los siguientes formatos:
@@ -21,7 +21,7 @@ Al final de cada módulo o guía, se debe animar a la familia a que se suscriban
 
 ## Modelo de negocio
 - TODAS las publicaciones serán gratuitas.
-- Los módulos y guías serán de pago, pero gratuitos para los suscriptores de la newsletter.
+- Los módulos y guías serán de pago, pero algunos serán gratuitos para los suscriptores de la newsletter.
 - El curso y libro serán pago, pero incluidos en la suscripción mensual.
 
 ## Ejemplo de diseño de producto:
@@ -52,10 +52,10 @@ Precio: Según producto
 Los primeros 6 meses son cruciales para el desarrollo del sueño de tu bebé. Esta guía esencial te ofrece un mapa detallado mes a mes de sus patrones de sueño y necesidades cambiantes, eliminando la incertidumbre y el estrés de las noches sin descanso.
 
 Lo que obtendrás:
-• Información precisa sobre las horas de sueño necesarias en cada etapa
-• Estrategias prácticas para establecer rutinas saludables desde el primer día
-• Técnicas probadas para fomentar un sueño reparador para toda la familia
-• Soluciones a los desafíos más comunes del sueño infantil
+- Información precisa sobre las horas de sueño necesarias en cada etapa
+- Estrategias prácticas para establecer rutinas saludables desde el primer día
+- Técnicas probadas para fomentar un sueño reparador para toda la familia
+- Soluciones a los desafíos más comunes del sueño infantil
 
 No pierdas más noches de sueño buscando respuestas. Con esta guía, transformarás la experiencia de sueño de tu bebé y recuperarás la calma en tu hogar.
 
