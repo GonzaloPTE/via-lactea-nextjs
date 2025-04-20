@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from 'react';
 import Link from "types/link";
 // GLOBAL CUSTOM COMPONENTS
 import NextLink from "components/reuseable/links/NextLink";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
+import Turnstile from "components/turnstile/Turnstile";
 // CUSTOM DATA
 import { helps, learnMore } from "data/via-lactea-footer";
 
@@ -12,6 +14,9 @@ type Footer3Props = { hiddenNewsletter?: boolean };
 // =================================================
 
 export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
   // common links section
   const widget = (list: Link[], title: string) => {
     return (
@@ -26,6 +31,72 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
         </ul>
       </div>
     );
+  };
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Para formularios con Turnstile invisible, aseguramos que el token se ha generado
+    // Si no hay token, lo mostramos como error solo si intentamos enviar
+    if (!turnstileToken) {
+      // Mostrar mensaje de error si no se ha verificado el captcha
+      const errorElement = document.getElementById('newsletter-error');
+      if (errorElement) {
+        errorElement.style.display = 'block';
+        errorElement.textContent = 'Error en la verificación de seguridad. Por favor, intenta nuevamente.';
+      }
+      return;
+    }
+
+    setSubmitting(true);
+    
+    const email = (document.getElementById('newsletter-email') as HTMLInputElement).value;
+    if (!email) {
+      setSubmitting(false);
+      return;
+    }
+    
+    try {
+      // Call HubSpot API to subscribe the email to the list
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, turnstileToken }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Show success message
+        const successElement = document.getElementById('newsletter-success');
+        if (successElement) {
+          successElement.style.display = 'block';
+          successElement.textContent = 'Gracias por suscribirte a nuestro boletín';
+        }
+        // Clear the form
+        (document.getElementById('newsletter-email') as HTMLInputElement).value = '';
+        // Reset turnstile
+        setTurnstileToken(null);
+      } else {
+        // Show error message
+        const errorElement = document.getElementById('newsletter-error');
+        if (errorElement) {
+          errorElement.style.display = 'block';
+          errorElement.textContent = data.message || 'Ha ocurrido un error. Inténtalo de nuevo.';
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      const errorElement = document.getElementById('newsletter-error');
+      if (errorElement) {
+        errorElement.style.display = 'block';
+        errorElement.textContent = 'Ha ocurrido un error. Inténtalo de nuevo.';
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -50,48 +121,7 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
                     <form
                       id="newsletter-form"
                       className="validate dark-fields"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const email = (document.getElementById('newsletter-email') as HTMLInputElement).value;
-                        if (!email) return;
-                        
-                        // Call HubSpot API to subscribe the email to the list
-                        fetch('/api/subscribe', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({ email }),
-                        })
-                          .then((response) => response.json())
-                          .then((data) => {
-                            if (data.success) {
-                              // Show success message
-                              const successElement = document.getElementById('newsletter-success');
-                              if (successElement) {
-                                successElement.style.display = 'block';
-                                successElement.textContent = 'Gracias por suscribirte a nuestro boletín';
-                              }
-                              // Clear the form
-                              (document.getElementById('newsletter-email') as HTMLInputElement).value = '';
-                            } else {
-                              // Show error message
-                              const errorElement = document.getElementById('newsletter-error');
-                              if (errorElement) {
-                                errorElement.style.display = 'block';
-                                errorElement.textContent = data.message || 'Ha ocurrido un error. Inténtalo de nuevo.';
-                              }
-                            }
-                          })
-                          .catch((error) => {
-                            console.error('Error:', error);
-                            const errorElement = document.getElementById('newsletter-error');
-                            if (errorElement) {
-                              errorElement.style.display = 'block';
-                              errorElement.textContent = 'Ha ocurrido un error. Inténtalo de nuevo.';
-                            }
-                          });
-                      }}
+                      onSubmit={handleNewsletterSubmit}
                     >
                       <div className="input-group form-floating">
                         <input
@@ -108,6 +138,16 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
                           type="submit"
                           className="btn btn-primary"
                           value="Suscribirse"
+                          disabled={submitting}
+                        />
+                      </div>
+
+                      {/* Widget invisible de Turnstile */}
+                      <div style={{ height: 0, overflow: 'hidden', visibility: 'hidden' }}>
+                        <Turnstile 
+                          onVerify={(token) => setTurnstileToken(token)} 
+                          theme="dark"
+                          appearance="execute"
                         />
                       </div>
 
