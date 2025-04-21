@@ -81,29 +81,11 @@ export default function ViaLacteaNavbar({
           <h2 className="text-white fs-20 mb-0 mt-n12">Sueño y Lactancia</h2>
         </div>
 
-        <div className="offcanvas-body ms-lg-auto d-flex flex-column h-100">
+        <div className="offcanvas-body mx-lg-auto d-flex flex-column h-100">
           <ul className="navbar-nav">
             {/* ===================== via-lactea navigation ===================== */}
             <ViaLacteaNavItem />
           </ul>
-
-          {/* ============= show contact info in the small device sidebar ============= */}
-          <div className="offcanvas-footer d-lg-none">
-            <div>
-              <NextLink 
-                title={contactInfo.email} 
-                className="link-inverse" 
-                href={`mailto:${contactInfo.email}`} 
-              />
-              <br />
-              <NextLink 
-                href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`} 
-                title={contactInfo.phone} 
-              />
-              <br />
-              <SocialLinks />
-            </div>
-          </div>
         </div>
       </div>
 
