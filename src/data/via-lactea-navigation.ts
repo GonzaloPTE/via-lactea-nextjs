@@ -10,8 +10,15 @@ export const mainNavigation = [
     title: "Servicios",
     url: "/servicios",
     children: [
-      { id: 31, title: "Asesoría de sueño infantil", url: "/servicios/sueno-infantil" },
-      { id: 32, title: "Asesoría de lactancia", url: "/servicios/lactancia" }
+      // Servicios para bebés 0-6 meses
+      { id: 31, title: "Asesoría \"Big Bang\"", url: "/servicios/asesoria-big-bang" },
+      { id: 32, title: "Asesoría de lactancia", url: "/servicios/asesoria-lactancia" },
+      // Servicios para niños 6 meses a 4 años
+      { id: 33, title: "Valoración gratuita", url: "/servicios/valoracion-gratuita" },
+      { id: 34, title: "Plan de sueño Sol", url: "/servicios/plan-sol" },
+      { id: 35, title: "Plan de sueño Gigante Roja", url: "/servicios/plan-gigante-roja" },
+      // Link a todos los servicios
+      { id: 39, title: "Ver todos los servicios", url: "/servicios" }
     ]
   },
   { id: 4, title: "Blog", url: "/blog" },
@@ -33,8 +40,10 @@ export const contactInfo = {
 // Enlaces para el footer
 export const footerNavigation = {
   services: [
-    { id: 1, title: "Asesoría de sueño infantil", url: "/servicios/sueno-infantil" },
-    { id: 2, title: "Asesoría de lactancia", url: "/servicios/lactancia" }
+    { id: 1, title: "Asesoría de sueño infantil", url: "/servicios/plan-sol" },
+    { id: 2, title: "Asesoría de lactancia", url: "/servicios/asesoria-lactancia" },
+    { id: 3, title: "Valoración gratuita", url: "/servicios/valoracion-gratuita" },
+    { id: 4, title: "Ver todos los servicios", url: "/servicios" }
   ],
   company: [
     { id: 1, title: "Sobre mí", url: "/sobre-mi" },
