@@ -27,6 +27,7 @@ interface ViaLacteaNavbarProps {
   navClassName?: string;
   button?: ReactElement;
   navOtherClass?: string;
+  whiteBackground?: boolean;
 }
 // ===================================================================
 
@@ -38,6 +39,7 @@ export default function ViaLacteaNavbar({
   social = false,
   search = false,
   stickyBox = true,
+  whiteBackground = false,
   navOtherClass = "navbar-other d-flex",
   navClassName = "navbar navbar-expand-lg center-nav transparent navbar-light"
 }: ViaLacteaNavbarProps) {
@@ -47,6 +49,11 @@ export default function ViaLacteaNavbar({
 
   // dynamically render the logo
   const logo = sticky ? "via-lactea-logo" : logoAlt ?? "via-lactea-logo";
+
+  // generate navbar class based on white background prop
+  const finalNavClassName = whiteBackground 
+    ? "navbar navbar-expand-lg center-nav navbar-light bg-white" 
+    : navClassName;
 
   // all main header contents
   const headerContent = (
@@ -107,10 +114,10 @@ export default function ViaLacteaNavbar({
       <nav 
         ref={navbarRef} 
         className={clsx(
-          navClassName, 
+          finalNavClassName, 
           sticky ? "navbar-clone fixed navbar-stick d-sm-none" : ""
         )}
-        style={sticky ? { backgroundColor: 'rgba(255, 255, 255, 0.2)' } : {}}
+        style={sticky ? { backgroundColor: whiteBackground ? 'white' : 'rgba(255, 255, 255, 0.2)' } : {}}
       >
         <div className="container flex-lg-row flex-nowrap align-items-start mt-8">{headerContent}</div>
       </nav>
