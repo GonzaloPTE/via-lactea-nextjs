@@ -148,7 +148,6 @@
 **Objetivos:**
 - Seleccionar y adaptar el componente Hero adecuado 
 - Crear sección de testimonios y prueba social
-- Implementar sección de servicios principales (sueño infantil y lactancia)
 - Añadir sección de pricing con todos los servicios disponibles
 - Implementar llamadas a la acción estratégicas
 - Asegurar que el contenido sea relevante para el público objetivo
@@ -159,6 +158,7 @@
 - Integrar con Stripe los eventos como la Llamada SOS.
 - Integrar con Hubspot API para incluir suscriptores en las listas de newsletter. Añadir captcha de Cloudflare.
 - Configurar Hubspot y Calendly para que los leads de las valoraciones se creen como tales, mientras que se marquen como clientes los de la Llamada SOS. Ver `.llm/servicios.md`.
+- Implementar sección de servicios y productos `.llm/servicios.md` y `.llm/productos.md`. Ver planificación más detalladaen `.llm/llm-todos-007.md`.
 
 **Dependencias:** TASK-006
 **Version:** 0

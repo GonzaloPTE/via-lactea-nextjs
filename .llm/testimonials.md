@@ -36,3 +36,64 @@ Para crear testimonios creíbles que parezcan escritos por personas reales:
 - Estructura caótica o incoherente
 - Lenguaje ofensivo o inapropiado
 - Exageraciones que resten credibilidad
+
+# Estrategia de testimonios dinámicos
+
+## Testimonios específicos por servicio
+
+### Para servicios de lactancia
+- Enfatizar la rapidez de resultados ("desde la primera asesoría")
+- Mencionar problemas concretos: dolor, agarre incorrecto, mastitis
+- Incluir referencias a la angustia emocional previa
+- Destacar la conexión emocional mejorada con el bebé
+- Mencionar el aumento de peso del bebé cuando sea relevante
+
+### Para servicios de sueño 0-6 meses
+- Enfatizar la mejora en el descanso de toda la familia
+- Mencionar el número de despertares antes vs. después
+- Destacar la naturalidad del método (sin lloros)
+- Referirse a bebés específicamente difíciles ("no dormía más de 40 minutos seguidos")
+- Incluir detalles sobre cómo mejoró el humor/desarrollo del bebé
+
+### Para servicios de sueño 6 meses - 4 años
+- Mencionar el tiempo que llevaban con el problema ("después de 8 meses sin dormir")
+- Destacar cómo otros métodos fallaron
+- Enfatizar la autonomía ganada por el niño
+- Incluir referencias a mejoras en el comportamiento diurno
+- Mencionar la recuperación de la vida de pareja
+
+### Para el plan de sueño Gigante Roja
+- Testimonios más extensos y detallados
+- Mencionar el seguimiento y ajustes personalizados
+- Destacar el valor de las pautas iniciales
+- Incluir menciones a casos particularmente difíciles que se resolvieron
+- Enfatizar la tranquilidad de tener acompañamiento extendido
+
+## Implementación técnica
+
+### Sistema de rotación de testimonios
+- Base de datos de 5-7 testimonios por cada servicio
+- Rotación aleatoria en cada carga de página
+- Mayor peso a testimonios más relevantes para el perfil del visitante
+- Testimonios destacados fijos para los servicios premium
+
+### Presentación visual
+- Incluir fotos de perfil genéricas pero creíbles (evitar stock photos obvias)
+- Mostrar nombre de pila y primera letra del apellido (ej. "María G.")
+- Para algunos testimonios, añadir ubicación ("Madrid")
+- Destacar visualmente frases clave de cada testimonio
+- Implementar sistema de estrellas (predominantemente 5 estrellas, ocasionalmente 4)
+
+### Distribución estratégica
+- Testimonios cortos en la home
+- Testimonios específicos en páginas de servicios individuales
+- Testimonios detallados en página general de testimonios
+- Testimonios emergentes en momentos clave del proceso de decisión
+- Testimonios en formato video para servicios premium (simulados con fotos si no hay reales)
+
+## Calendario de actualización
+- Renovar 1-2 testimonios mensualmente
+- Mantener actualizadas las referencias a precios y características del servicio
+- Añadir testimonios estacionales cuando sea relevante (ej. "durante las vacaciones...")
+- Ajustar testimonios según feedback de conversión
+- Incorporar testimonios reales a medida que estén disponibles
