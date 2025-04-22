@@ -1,6 +1,5 @@
 import { Fragment } from "react";
-// GLOBAL CUSTOM COMPONENTS
-import NextLink from "components/reuseable/links/NextLink";
+
 // VIA LACTEA CUSTOM COMPONENTS
 import ViaLacteaHero from "components/blocks/hero/ViaLacteaHero";
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
