@@ -6,6 +6,7 @@ import clsx from "clsx";
 import useNestedDropdown from "hooks/useNestedDropdown";
 // -------- CUSTOM COMPONENTS -------- //
 import NextLink from "components/reuseable/links/NextLink";
+import { ServiceItem } from "data/service-data";
 // LOCAL CUSTOM COMPONENTS
 import Info from "../components/Info";
 import Search from "../components/search";
@@ -25,6 +26,7 @@ interface ViaLacteaNavbarProps {
   button?: ReactElement;
   navOtherClass?: string;
   whiteBackground?: boolean;
+  service?: ServiceItem;
 }
 // ===================================================================
 
@@ -38,7 +40,8 @@ export default function ViaLacteaNavbar({
   stickyBox = true,
   whiteBackground = false,
   navOtherClass = "navbar-other d-flex",
-  navClassName = "navbar navbar-expand-lg center-nav transparent navbar-light"
+  navClassName = "navbar navbar-expand-lg center-nav transparent navbar-light",
+  service,
 }: ViaLacteaNavbarProps) {
   useNestedDropdown();
   // sticky behavior removed
@@ -47,6 +50,10 @@ export default function ViaLacteaNavbar({
 
   // dynamically render the logo (no sticky)
   const logo = logoAlt ?? "via-lactea-logo";
+
+  // compute tailwind color from service
+  const colorMap: Record<string,string> = { purple:'grape', aqua:'aqua', green:'green', red:'red', blue:'blue', teal:'sky', yellow:'yellow', orange:'orange', violet:'violet', pink:'pink' };
+  const tailwindColor = service && service.color ? (colorMap[service.color] || 'grape') : 'grape';
 
   // generate navbar class based on white background prop
   const finalNavClassName = whiteBackground 

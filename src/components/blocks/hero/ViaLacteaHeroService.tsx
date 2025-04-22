@@ -68,7 +68,7 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
                   </p>
 
                   <div style={slideInDownAnimate("1800ms")}>
-                    <h4 className="fs-16 text-uppercase text-muted mb-3 mt-7">¿Para quién es?</h4>
+                    <h4 className="fs-16 text-uppercase mb-3 mt-7">¿Para quién es?</h4>
                     <ul className="list-unstyled ps-0 mt-3">
                       {service.forWho.map((target, idx) => (
                         <li key={idx} className="d-flex align-items-start mb-2">

@@ -55,7 +55,7 @@ export default function ServiceDetail({ params }: ServiceDetailParams) {
     <Fragment>
       {/* ========== header ========== */}
       <header className="wrapper bg-soft-transparent">
-        <ViaLacteaNavbar button={<CalendlyButton />} whiteBackground={true} />
+        <ViaLacteaNavbar button={<CalendlyButton />} whiteBackground={true} service={service} />
       </header>
 
       {/* ========== main content ========== */}
@@ -67,11 +67,11 @@ export default function ServiceDetail({ params }: ServiceDetailParams) {
         <ViaLacteaServiceFeatures service={service} />
         
         {/* ========== process section ========== */}
-        {service.process && <ViaLacteaProcess processData={service.process} />}
+        <ViaLacteaProcess service={service} />
       </main>
 
       {/* ========== footer ========== */}
-      <ViaLacteaFooter />
+      <ViaLacteaFooter service={service} />
     </Fragment>
   );
 } 

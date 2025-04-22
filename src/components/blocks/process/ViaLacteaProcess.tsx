@@ -1,4 +1,4 @@
-import { getHighlightedServices } from "data/service-data";
+import { getHighlightedServices, ServiceItem } from "data/service-data";
 
 interface ProcessStep {
   id: number;
@@ -12,25 +12,29 @@ interface Process {
 }
 
 interface ViaLacteaProcessProps {
-  processData?: Process;
+  service: ServiceItem;
 }
 
-export default function ViaLacteaProcess({ processData }: ViaLacteaProcessProps = {}) {
-  // Si no se pasa un proceso específico, usamos el primer servicio destacado que tenga un proceso definido
-  let process = processData;
+export default function ViaLacteaProcess({ service }: ViaLacteaProcessProps) {
+  // Extraer proceso y color del servicio
+  let process = service.process;
+  let serviceColor = service.color;
   
+  // Si no existe proceso en el servicio, intentar obtener uno destacado
   if (!process) {
     const highlightedServices = getHighlightedServices();
-    const serviceWithProcess = highlightedServices.find(service => service.process);
-    
-    // Si no hay servicios destacados con proceso, no renderizamos la sección
-    if (!serviceWithProcess || !serviceWithProcess.process) return null;
-    
+    const serviceWithProcess = highlightedServices.find(s => s.process);
+    if (!serviceWithProcess?.process) return null;
     process = serviceWithProcess.process;
+    serviceColor = serviceWithProcess.color;
   }
 
+  // Map color key to Tailwind
+  const colorMap: Record<string,string> = { purple:'grape', aqua:'aqua', green:'green', red:'red', blue:'blue', teal:'sky', yellow:'yellow', orange:'orange', violet:'violet', pink:'pink' };
+  const tailwindColor = serviceColor ? (colorMap[serviceColor] || 'grape') : 'grape';
+
   return (
-    <section className="wrapper bg-soft-primary">
+    <section className={`wrapper bg-soft-${tailwindColor}`}>
       
       <figure>
         <img src="/img/photos/clouds.png" alt="Clouds" style={{ transform: 'scaleY(-1)' }} />
@@ -48,14 +52,14 @@ export default function ViaLacteaProcess({ processData }: ViaLacteaProcessProps 
           </div>
 
           <div className="col-lg-5">
-            <h3 className="fs-16 text-uppercase text-primary mb-3">¿Cómo Funciona?</h3>
+            <h3 className={`fs-16 text-uppercase text-${tailwindColor} mb-3`}>¿Cómo Funciona?</h3>
             <h3 className="display-4 mb-6">{process.title}</h3>
 
             <div className="row gy-4">
               {process.steps.map((step) => (
                 <div className="col-md-6" key={step.id}>
                   <h4>
-                    <span className="text-grape">{step.id}.</span> {step.title}
+                    <span className={`text-${tailwindColor}`}>{step.id}.</span> {step.title}
                   </h4>
                   <p className="mb-0">{step.description}</p>
                 </div>
