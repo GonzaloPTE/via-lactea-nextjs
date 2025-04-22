@@ -7,7 +7,7 @@ interface ViaLacteaServiceFeaturesProps {
 export default function ViaLacteaServiceFeatures({ service }: ViaLacteaServiceFeaturesProps) {
   return (
     <section className="wrapper bg-light">
-      <div className="container py-15 py-md-17">
+      <div className="container pt-17 pb-12">
         {/* Service features detailed */}
         <div className="row text-center">
           <div className="col-md-10 col-lg-9 col-xxl-8 mx-auto">

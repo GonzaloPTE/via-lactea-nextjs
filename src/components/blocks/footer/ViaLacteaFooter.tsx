@@ -8,6 +8,7 @@ import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import TurnstileProtection, { validateTurnstileToken } from "components/common/TurnstileProtection";
 // CUSTOM DATA
 import { helps, learnMore } from "data/via-lactea-footer";
+import { serviceList } from "data/service-data";
 
 // =================================================
 type Footer3Props = { hiddenNewsletter?: boolean };
@@ -179,11 +180,15 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
             <div className="widget">
               <h3 className="h2 mb-3">Nuestros Servicios</h3>
               <ul className="list-unstyled mb-0">
-                <li><NextLink title="Asesoría de Sueño" href="/sueno-infantil" className="hover" /></li>
-                <li><NextLink title="Asesoría de Lactancia" href="/lactancia" className="hover" /></li>
-                <li><NextLink title="Consulta Puntual" href="/consulta-puntual" className="hover" /></li>
-                <li><NextLink title="Llamada SOS" href="/llamada-sos" className="hover" /></li>
-                <li><NextLink title="Taller Grupal" href="/taller-grupal" className="hover" /></li>
+                {serviceList.map(s => (
+                  <li key={s.id} className="mb-1">
+                    <NextLink
+                      title={s.title}
+                      href={`/servicios/${s.slug}`}
+                      className="hover"
+                    />
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -207,7 +212,7 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
 
       <div className="container pt-7">
         <div className="d-md-flex align-items-center justify-content-between">
-          <p className="mb-2 mb-lg-0">© 2023 Vía Láctea. Todos los derechos reservados.</p>
+          <p className="mb-2 mb-lg-0">© 2025 Vía Láctea. Todos los derechos reservados.</p>
           <NextLink title="Política de privacidad" href="/politica-privacidad" className="hover" />
         </div>
       </div>

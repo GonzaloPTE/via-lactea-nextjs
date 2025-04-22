@@ -26,9 +26,6 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
 
   // Obtener el color de Tailwind correspondiente, o usar 'grape' como valor predeterminado
   const tailwindColor = service.color ? colorMap[service.color] || 'grape' : 'grape';
-  
-  // Decidir el gradiente basado en el color
-  const gradientClass = `gradient-${tailwindColor}`;
 
   // Mapeo de slug a imagen de hero
   const getHeroImage = (slug: string): string => {
@@ -93,11 +90,10 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
                 <div className="col-lg-6">
                   <img
                     alt={service.title}
-                    className="img-fluid mb-n14"
-                    width={500}
+                    className="img-fluid mb-n15 transform scale-200 md:scale-[1.5]"
                     src={heroImagePath}
                     srcSet={heroImagePath}
-                    style={{ ...fadeInAnimate("300ms"), transform: 'scale(1.4)' }}
+                    style={fadeInAnimate("300ms")}
                   />
                 </div>
               </div>

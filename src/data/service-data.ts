@@ -472,7 +472,7 @@ export const serviceList: ServiceItem[] = [
     ],
     requiresCalendly: true,
     calendlyUrl: '/plan-luna',
-    color: 'blue',
+    color: 'white',
     process: {
       title: 'Plan Luna paso a paso',
       steps: [
