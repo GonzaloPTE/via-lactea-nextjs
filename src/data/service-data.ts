@@ -98,7 +98,7 @@ export const serviceList: ServiceItem[] = [
   // Servicios de 0-6 meses
   {
     id: 1,
-    title: 'Asesoría Big Bang',
+    title: 'Asesoría integral Big Bang',
     slug: 'asesoria-big-bang',
     category: 'baby',
     categoryLabel: '0-6 meses',
