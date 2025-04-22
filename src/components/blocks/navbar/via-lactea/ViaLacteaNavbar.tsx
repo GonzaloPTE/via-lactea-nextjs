@@ -7,14 +7,12 @@ import useSticky from "hooks/useSticky";
 import useNestedDropdown from "hooks/useNestedDropdown";
 // -------- CUSTOM COMPONENTS -------- //
 import NextLink from "components/reuseable/links/NextLink";
-import SocialLinks from "components/reuseable/SocialLinks";
 // LOCAL CUSTOM COMPONENTS
 import Info from "../components/Info";
 import Search from "../components/search";
 // VIA LACTEA CUSTOM COMPONENTS
 import ViaLacteaNavItem from "../components/via-lactea-nav-item";
 import ViaLacteaHeaderRight from "../components/via-lactea-header-right";
-import { contactInfo } from "../../../../data/via-lactea-navigation";
 
 // ===================================================================
 interface ViaLacteaNavbarProps {
