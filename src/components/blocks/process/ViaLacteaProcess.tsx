@@ -30,7 +30,11 @@ export default function ViaLacteaProcess({ processData }: ViaLacteaProcessProps 
   }
 
   return (
-    <section className="wrapper bg-light">
+    <section className="wrapper bg-soft-primary">
+      
+      <figure>
+        <img src="/img/photos/clouds.png" alt="Clouds" style={{ transform: 'scaleY(-1)' }} />
+      </figure>
       <div className="container py-14 py-md-16">
         <div className="row gx-lg-8 gx-xl-12 gy-10 mb-15 mb-md-17 align-items-center">
           <div className="col-lg-7">
@@ -38,7 +42,7 @@ export default function ViaLacteaProcess({ processData }: ViaLacteaProcessProps 
               <img
                 alt="proceso"
                 className="w-auto"
-                src="/img/photos/bg38.jpg"
+                src="/img/via-lactea/illustrations/pasos-proceso.png"
               />
             </figure>
           </div>
@@ -60,6 +64,9 @@ export default function ViaLacteaProcess({ processData }: ViaLacteaProcessProps 
           </div>
         </div>
       </div>
+      <figure>
+        <img src="/img/photos/clouds.png" alt="Clouds" />
+      </figure>
     </section>
   );
 }
