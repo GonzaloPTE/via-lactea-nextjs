@@ -14,5 +14,10 @@
         // The service should match the "name" of your worker
         "service": "vialacteasuenoylactancia",
       },
-    ]
+    ],
+    // Variables de entorno públicas
+    "vars": {
+      "CLOUDFLARE_TURNSTILE_SITE_KEY": "0x4AAAAAABQIFzguJJ5SKDpJ",
+      "NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY": "0x4AAAAAABQIFzguJJ5SKDpJ"
+    }
   }
