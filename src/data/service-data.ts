@@ -472,7 +472,7 @@ export const serviceList: ServiceItem[] = [
     ],
     requiresCalendly: true,
     calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
-    color: 'white',
+    color: 'violet',
     process: {
       title: 'Plan Luna paso a paso',
       steps: [
