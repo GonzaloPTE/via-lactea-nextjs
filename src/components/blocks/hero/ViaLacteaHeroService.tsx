@@ -1,4 +1,5 @@
 import NextLink from "components/reuseable/links/NextLink";
+import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 // CUSTOM UTILS
 import { fadeInAnimate, slideInDownAnimate } from "utils/animation";
 import { ServiceItem } from "data/service-data";
@@ -79,10 +80,10 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
                   </div>
 
                   <div style={slideInDownAnimate("1500ms")}>
-                    <NextLink 
-                      title={service.price === 0 ? "Reservar gratis" : `Reservar por ${service.price}€`} 
-                      href={`/reservar/${service.slug}`} 
-                      className={`btn btn-lg btn-${tailwindColor} rounded mt-6`} 
+                    <CalendlyButton
+                      text={service.price === 0 ? "Reservar gratis" : `Reservar por ${service.price}€`}
+                      className={`btn btn-lg btn-${tailwindColor} rounded mt-6`}
+                      calendlyUrl={service.calendlyUrl}
                     />
                   </div>
                 </div>
