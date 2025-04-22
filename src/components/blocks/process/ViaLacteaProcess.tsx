@@ -35,7 +35,7 @@ export default function ViaLacteaProcess({ processData }: ViaLacteaProcessProps 
       <figure>
         <img src="/img/photos/clouds.png" alt="Clouds" style={{ transform: 'scaleY(-1)' }} />
       </figure>
-      <div className="container py-14 py-md-16">
+      <div className="container py-12">
         <div className="row gx-lg-8 gx-xl-12 gy-10 mb-15 mb-md-17 align-items-center">
           <div className="col-lg-7">
             <figure>
@@ -48,7 +48,7 @@ export default function ViaLacteaProcess({ processData }: ViaLacteaProcessProps 
           </div>
 
           <div className="col-lg-5">
-            <h3 className="fs-16 text-uppercase text-muted mb-3">¿Cómo Funciona?</h3>
+            <h3 className="fs-16 text-uppercase text-primary mb-3">¿Cómo Funciona?</h3>
             <h3 className="display-4 mb-6">{process.title}</h3>
 
             <div className="row gy-4">

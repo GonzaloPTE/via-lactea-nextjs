@@ -57,7 +57,7 @@ export interface ServiceItem {
   }[];
   highlighted?: boolean;
   requiresCalendly?: boolean;
-  calendlyUrl?: string;
+  calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
   includes?: string[];
   color?: string; // Color representativo del servicio
   process?: {
@@ -152,7 +152,7 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: '/asesoria-big-bang',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'purple',
     includes: [
       'Guía "Big Bang - Sus primeros momentos"',
@@ -249,7 +249,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: '/asesoria-lactancia',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'aqua',
     process: {
       title: 'Asesoría de lactancia paso a paso',
@@ -323,7 +323,7 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: '/valoracion-gratuita',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'green',
     process: {
       title: 'Valoración gratuita paso a paso',
@@ -394,7 +394,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: '/videollamada-sos',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'red',
     process: {
       title: 'Videollamada SOS paso a paso',
@@ -471,7 +471,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: '/plan-luna',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'white',
     process: {
       title: 'Plan Luna paso a paso',
@@ -548,7 +548,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: '/plan-enana-blanca',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'teal',
     process: {
       title: 'Plan Enana Blanca paso a paso',
@@ -644,7 +644,7 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: '/plan-sol',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'yellow',
     process: {
       title: 'Plan Sol paso a paso',
@@ -756,7 +756,7 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: '/plan-gigante-roja',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'orange',
     process: {
       title: 'Plan Gigante Roja paso a paso',
@@ -853,7 +853,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: '/semana-seguimiento',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'violet'
   },
   {
@@ -905,7 +905,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: '/asesoria-grupal',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'pink',
     process: {
       title: 'Asesorías grupales paso a paso',

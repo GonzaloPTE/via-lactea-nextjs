@@ -3,7 +3,6 @@
 import { Fragment, ReactElement, useRef } from "react";
 import clsx from "clsx";
 // -------- CUSTOM HOOKS -------- //
-import useSticky from "hooks/useSticky";
 import useNestedDropdown from "hooks/useNestedDropdown";
 // -------- CUSTOM COMPONENTS -------- //
 import NextLink from "components/reuseable/links/NextLink";
@@ -42,11 +41,12 @@ export default function ViaLacteaNavbar({
   navClassName = "navbar navbar-expand-lg center-nav transparent navbar-light"
 }: ViaLacteaNavbarProps) {
   useNestedDropdown();
-  const sticky = useSticky(350);
+  // sticky behavior removed
+  const sticky = false;
   const navbarRef = useRef<HTMLElement | null>(null);
 
-  // dynamically render the logo
-  const logo = sticky ? "via-lactea-logo" : logoAlt ?? "via-lactea-logo";
+  // dynamically render the logo (no sticky)
+  const logo = logoAlt ?? "via-lactea-logo";
 
   // generate navbar class based on white background prop
   const finalNavClassName = whiteBackground 
@@ -108,16 +108,14 @@ export default function ViaLacteaNavbar({
 
   return (
     <Fragment>
-      {stickyBox ? <div className="d-sm-none" style={{ paddingTop: sticky ? navbarRef.current?.clientHeight : 0 }} /> : null}
+      {/* sticky offset removed */}
 
       <nav 
         ref={navbarRef} 
         className={clsx(
           finalNavClassName, 
-          sticky ? "navbar-clone fixed navbar-stick d-sm-none" : "",
           "my-lg-8 mx-auto"
         )}
-        style={sticky ? { backgroundColor: whiteBackground ? 'white' : 'rgba(255, 255, 255, 0.2)' } : {}}
       >
         <div className="container flex-lg-row flex-nowrap align-items-start mt-8">{headerContent}</div>
       </nav>
