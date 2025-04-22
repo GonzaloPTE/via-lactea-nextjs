@@ -8,32 +8,16 @@ import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import TurnstileProtection, { validateTurnstileToken } from "components/common/TurnstileProtection";
 // CUSTOM DATA
 import { helps, learnMore } from "data/via-lactea-footer";
+import { ServiceItem } from "data/service-data";
 import { serviceList } from "data/service-data";
 
 // =================================================
-type Footer3Props = { hiddenNewsletter?: boolean };
+type Footer3Props = { hiddenNewsletter?: boolean; service?: ServiceItem };
 // =================================================
 
-export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
+export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Props) {
   const [submitting, setSubmitting] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-
-  // common links section
-  const widget = (list: Link[], title: string) => {
-    return (
-      <div className="widget">
-        <h4 className="widget-title  mb-3">{title}</h4>
-        <ul className="list-unstyled text-reset mb-0">
-          {list.map(({ url, title, id }) => (
-            <li key={id}>
-              <NextLink href={url} title={title} />
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -98,13 +82,17 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
     }
   };
 
+  // Mapeo de color Tailwind
+  const colorMap: Record<string,string> = { purple:'grape', aqua:'aqua', green:'green', red:'red', blue:'blue', teal:'sky', yellow:'yellow', orange:'orange', violet:'violet', pink:'pink' };
+  const tailwindColor = service?.color ? (colorMap[service.color] || 'grape') : 'grape';
+
   return (
-    <footer className="bg-navbar pt-14 pb-8">
+    <footer className={`bg-white pt-14 pb-8`}>
       <div className="container pb-7">
         {!hiddenNewsletter && (
           <div
-            className="card image-wrapper bg-full bg-image bg-overlay bg-overlay-400 mb-13"
-            style={{ backgroundImage: "url(/img/photos/bg2.jpg)" }}>
+            className={`card image-wrapper mb-13 bg-${tailwindColor}`}
+          >
             <div className="card-body p-9 p-xl-11">
               <div className="row align-items-center gy-6">
                 <div className="col-lg-7">
@@ -133,15 +121,15 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
                             type="email"
                             id="newsletter-email"
                             placeholder="Email Address"
-                            className="required email form-control"
+                            className="required email form-control text-white placeholder-white"
                             required
                           />
-                          <label htmlFor="newsletter-email" className="position-absolute">
+                          <label htmlFor="newsletter-email" className="position-absolute text-white">
                             Correo Electrónico
                           </label>
                           <input
                             type="submit"
-                            className="btn btn-primary"
+                            className={`btn btn-soft-${tailwindColor}`}
                             value="Suscribirse"
                             disabled={submitting}
                           />
@@ -171,7 +159,8 @@ export default function ViaLacteaFooter({ hiddenNewsletter }: Footer3Props) {
               <CalendlyButton 
                 text="Te llamo"
                 icon="uil uil-whatsapp"
-                className="btn btn-primary rounded-pill"
+                className={`btn btn-${tailwindColor} rounded-pill`}
+                calendlyUrl={service?.calendlyUrl}
               />
             </div>
           </div>
