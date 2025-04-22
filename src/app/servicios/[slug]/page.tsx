@@ -54,7 +54,7 @@ export default function ServiceDetail({ params }: ServiceDetailParams) {
   return (
     <Fragment>
       {/* ========== header ========== */}
-      <header className="wrapper bg-soft-primary">
+      <header className="wrapper bg-soft-transparent">
         <ViaLacteaNavbar button={<CalendlyButton />} whiteBackground={true} />
       </header>
 

@@ -3,7 +3,7 @@
 import NextLink from "components/reuseable/links/NextLink";
 import ListItemLink from "components/reuseable/links/ListItemLink";
 import DropdownToggleLink from "components/reuseable/links/DropdownToggleLink";
-import renderLinks from "./render-links";
+import ViaLacteaNavServicesItem from "./via-lactea-nav-services-item";
 import { mainNavigation } from "../../../../data/via-lactea-navigation";
 
 // Definir interfaces para los tipos
@@ -24,7 +24,11 @@ export default function ViaLacteaNavItem() {
   return (
     <>
       {mainNavigation.map((item: NavItem) => {
-        // Si el ítem tiene hijos, crear un dropdown
+        // Usar mega menú de Servicios para el ítem con id=3
+        if (item.id === 3) {
+          return <ViaLacteaNavServicesItem key={item.id} />;
+        }
+        // Si el ítem tiene hijos (dropdown normal)
         if (item.children) {
           return (
             <li className="nav-item dropdown" key={item.id}>
@@ -43,8 +47,7 @@ export default function ViaLacteaNavItem() {
             </li>
           );
         }
-        
-        // Si es un enlace simple, retornar directamente el ListItemLink
+        // Enlace simple
         return (
           <ListItemLink 
             key={item.id} 
