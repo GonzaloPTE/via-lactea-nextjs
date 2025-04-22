@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { getServiceBySlug, ServiceItem } from "data/service-data";
 
@@ -10,10 +10,17 @@ import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import ViaLacteaProcess from "components/blocks/process/ViaLacteaProcess";
 import ViaLacteaHeroService from "components/blocks/hero/ViaLacteaHeroService";
+import ViaLacteaServiceFeatures from "components/blocks/services/ViaLacteaServiceFeatures";
 
-export default function ServiceDetail({ params }: { params: { slug: string } }) {
+// Tipado para params como Promise
+interface ServiceDetailParams {
+  params: Promise<{ slug: string }>;
+}
+
+export default function ServiceDetail({ params }: ServiceDetailParams) {
   const router = useRouter();
-  const { slug } = params;
+  const resolvedParams = use(params);
+  const { slug } = resolvedParams;
   const [service, setService] = useState<ServiceItem | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -57,44 +64,7 @@ export default function ServiceDetail({ params }: { params: { slug: string } }) 
         <ViaLacteaHeroService service={service} />
 
         {/* ========== service features section ========== */}
-        <section className="wrapper bg-light">
-          <div className="container py-14 py-md-16">
-            <div className="row">
-              <div className="col-lg-10 mx-auto">
-                <div className="card shadow-lg">
-                  <div className="row gx-0">
-                    <div className="col-lg-6 image-wrapper bg-image bg-cover rounded-top rounded-lg-start" 
-                         style={{ backgroundImage: "url(/img/photos/bg38.jpg)" }} />
-                    
-                    <div className="col-lg-6">
-                      <div className="p-10 p-md-11 p-lg-13">
-                        <h2 className="display-4 mb-3">{service.title}</h2>
-                        <p className="lead fs-lg">{service.shortDescription}</p>
-                        <ul className="icon-list bullet-bg bullet-soft-primary mt-7">
-                          {service.features.map((feature, index) => (
-                            <li key={index}><i className="uil uil-check"></i><span>{feature}</span></li>
-                          ))}
-                        </ul>
-                        <div className="d-flex align-items-center mt-8">
-                          <div>
-                            <h3 className="mb-0">
-                              {service.price === 0 ? (
-                                <span className="price display-6 text-green">Gratis</span>
-                              ) : (
-                                <span className={`price display-6 text-${service.color ? service.color : 'grape'}`}>{service.price}€</span>
-                              )}
-                            </h3>
-                            <span className="fs-15 text-muted">{service.duration}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <ViaLacteaServiceFeatures service={service} />
         
         {/* ========== process section ========== */}
         {service.process && <ViaLacteaProcess processData={service.process} />}
