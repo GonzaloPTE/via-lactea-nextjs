@@ -5,7 +5,7 @@ import Link from "types/link";
 // GLOBAL CUSTOM COMPONENTS
 import NextLink from "components/reuseable/links/NextLink";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
-import TurnstileProtection, { validateTurnstileToken } from "components/common/TurnstileProtection";
+//import TurnstileProtection, { validateTurnstileToken } from "components/common/TurnstileProtection";
 // CUSTOM DATA
 import { helps, learnMore } from "data/via-lactea-footer";
 import { ServiceItem } from "data/service-data";
@@ -22,14 +22,14 @@ export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Pr
     e.preventDefault();
     
     // Validar token de Turnstile antes de enviar
-    if (!validateTurnstileToken(turnstileToken)) {
+    /*if (!validateTurnstileToken(turnstileToken)) {
       const errorElement = document.getElementById('newsletter-error');
       if (errorElement) {
         errorElement.style.display = 'block';
         errorElement.textContent = 'Error en la verificación de seguridad. Por favor, intenta nuevamente.';
       }
       return;
-    }
+    }*/
 
     setSubmitting(true);
     
@@ -105,12 +105,12 @@ export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Pr
 
                 <div className="col-lg-5 col-xl-4 offset-xl-1">
                   <div className="newsletter-wrapper">
-                    <TurnstileProtection 
+                    {/*<TurnstileProtection 
                       onTokenChange={setTurnstileToken}
                       errorElementId="newsletter-error"
                       theme="dark"
                       appearance="execute"
-                    >
+                    >*/}
                       <form
                         id="newsletter-form"
                         className="validate dark-fields"
@@ -140,7 +140,7 @@ export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Pr
                           <div className="response" id="newsletter-success" style={{ display: "none", color: "#90ee90", marginTop: "10px" }} />
                         </div>
                       </form>
-                    </TurnstileProtection>
+                    {/*</TurnstileProtection>*/}
                   </div>
                 </div>
               </div>
