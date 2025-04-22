@@ -46,6 +46,7 @@ export interface ServiceItem {
   iconUrl: string; // Ruta al SVG del icono
   description: string;
   shortDescription: string;
+  forWho: string[]; // Texto para '¿Para quién es?' múltiple
   price: number;
   duration: string;
   features: {
@@ -104,6 +105,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.baby,
     description: 'Consulta online de 1 hora para resolver dudas de lactancia (materna o artificial), inicio de alimentación complementaria y BLW (Baby Let Weanning), ventanas de sueño, horarios y rutinas, llegada de nuevo hermano,... cualquier duda que os surja de los primeros 6 meses.',
     shortDescription: 'Resuelve todas tus dudas sobre los primeros 6 meses de tu bebé en una consulta personalizada.',
+    forWho: [
+      'Padres primerizos',
+      'Familias con bebés de 0 a 6 meses',
+      'Quienes buscan orientación en lactancia, alimentación y sueño'
+    ],
     price: 90,
     duration: '1 hora + 2 semanas de seguimiento por email',
     features: [
@@ -197,6 +203,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.bottle,
     description: 'Consulta online de 1 hora para resolver dudas de lactancia (materna o artificial), inicio de alimentación complementaria, BLW (Baby Let Weanning), destete, lactancia diferida, lactancia mixta, mejores posiciones, arículos necesarios, etc.',
     shortDescription: 'Asesoramiento especializado en lactancia materna o artificial para superar cualquier dificultad.',
+    forWho: [
+      'Madres con dificultades de lactancia',
+      'Padres que requieren asesoría de posiciones y destete',
+      'Familias iniciando alimentación complementaria'
+    ],
     price: 60,
     duration: '1 hora',
     features: [
@@ -277,6 +288,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.calendar,
     description: '30 minutos para valoración personalizada de la situación de sueño de tu hijo.',
     shortDescription: 'Descubre cómo podemos ayudarte con una valoración inicial sin compromiso.',
+    forWho: [
+      'Padres de niños de 6 meses a 4 años',
+      'Familias con dudas sobre patrones de sueño',
+      'Quienes buscan recomendaciones iniciales sin compromiso'
+    ],
     price: 0,
     duration: '30 minutos',
     features: [
@@ -344,6 +360,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.videoChat,
     description: '30 minutos para resolución de dudas. Se priorizará tu consulta lo máximo posible.',
     shortDescription: 'Atención prioritaria para resolver dudas urgentes sobre el sueño de tu hijo.',
+    forWho: [
+      'Familias con problemas urgentes de sueño',
+      'Padres que necesitan asistencia rápida',
+      'Quienes requieren atención prioritaria'
+    ],
     price: 50,
     duration: '30 minutos',
     features: [
@@ -410,6 +431,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.plan,
     description: 'Plan básico sin seguimiento que incluye formulario inicial, diario de sueño de 2 días y una videollamada para crear el plan de sueño personalizado.',
     shortDescription: 'Plan básico para familias que necesitan orientación pero pueden implementar el plan por su cuenta.',
+    forWho: [
+      'Familias que prefieren implementar por su cuenta',
+      'Quienes buscan orientación básica y plan por escrito',
+      'Padres con disponibilidad limitada de seguimiento'
+    ],
     price: 200,
     duration: '1 videollamada',
     features: [
@@ -434,7 +460,7 @@ export const serviceList: ServiceItem[] = [
       {
         id: 4,
         title: 'Plan de sueño por escrito',
-        featureIcon: BriefcaseTwo,
+        featureIcon: List,
         description: 'Plan de sueño por escrito para que puedas implementarlo por tu cuenta.'
       },
       {
@@ -482,6 +508,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.plan,
     description: 'Plan de 2 semanas que incluye formulario inicial, diario de sueño, videollamada para crear el plan y una videollamada de seguimiento a los 14 días.',
     shortDescription: 'Plan con seguimiento de 2 semanas para asegurar la correcta implementación de las técnicas.',
+    forWho: [
+      'Familias que desean acompañamiento de 2 semanas',
+      'Padres que necesitan soporte continuo a medio plazo',
+      'Quienes buscan seguimiento personalizado'
+    ],
     price: 300,
     duration: '2 semanas',
     features: [
@@ -506,7 +537,7 @@ export const serviceList: ServiceItem[] = [
       {
         id: 4,
         title: 'Plan de sueño por escrito',
-        featureIcon: BriefcaseTwo,
+        featureIcon: List,
         description: 'Plan de sueño por escrito para que puedas implementarlo por tu cuenta.'
       },
       {
@@ -554,6 +585,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.star,
     description: 'Plan de 4 semanas que incluye formulario inicial, diario de sueño, videollamada inicial, dos videollamadas de seguimiento y pautas finales por escrito.',
     shortDescription: 'Plan completo de 4 semanas con seguimiento continuo para transformar los hábitos de sueño.',
+    forWho: [
+      'Familias que buscan transformación completa de hábitos de sueño',
+      'Quienes desean soporte intensivo durante 4 semanas',
+      'Padres que quieren múltiples videollamadas de seguimiento'
+    ],
     price: 400,
     duration: '4 semanas',
     features: [
@@ -655,6 +691,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.star,
     description: 'Plan premium de 6 semanas que incluye pautas iniciales, formulario detallado, diario de sueño, tres videollamadas y pautas finales por escrito.',
     shortDescription: 'Nuestro plan más completo con pautas iniciales y 6 semanas de acompañamiento para casos complejos.',
+    forWho: [
+      'Familias con casos complejos de sueño',
+      'Quienes requieren acompañamiento extendido de 6 semanas',
+      'Padres que necesitan varias videollamadas y seguimiento detallado'
+    ],
     price: 500,
     duration: '6 semanas',
     features: [
@@ -685,7 +726,7 @@ export const serviceList: ServiceItem[] = [
       {
         id: 5,
         title: 'Plan de sueño por escrito',
-        featureIcon: BriefcaseTwo,
+        featureIcon: List,
         description: 'Plan de sueño por escrito para que puedas implementarlo por tu cuenta.'
       },
       {
@@ -772,6 +813,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.calendar,
     description: 'Para antiguos pacientes que necesiten una semana extra a uno de nuestros planes. Incluye plan de sueño con diarios y seguimiento diario por Whatsapp o email.',
     shortDescription: 'Semana adicional de seguimiento para antiguos clientes que necesitan apoyo extra.',
+    forWho: [
+      'Antiguos clientes que requieren apoyo extra',
+      'Familias que finalizaron un plan y quieren más seguimiento',
+      'Quienes necesitan ajustes adicionales a su plan'
+    ],
     price: 150,
     duration: '1 semana',
     features: [
@@ -819,6 +865,11 @@ export const serviceList: ServiceItem[] = [
     iconUrl: iconUrls.users,
     description: 'Plan de sueño Sol en formato grupal (máximo 4 personas) con un descuento del 30% para cada participante.',
     shortDescription: 'Asesoría en grupo reducido con todas las ventajas del Plan Sol a un precio más accesible.',
+    forWho: [
+      'Grupos de hasta 4 familias con situaciones similares',
+      'Quienes prefieren aprendizaje compartido y apoyo grupal',
+      'Padres que buscan descuento y dinámica colaborativa'
+    ],
     price: 280,
     duration: '4 semanas',
     features: [

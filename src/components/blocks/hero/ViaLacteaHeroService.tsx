@@ -60,18 +60,30 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
               <div className="row gx-md-8 gx-xl-12 gy-10 align-items-center text-center text-lg-start">
                 <div className="col-lg-6">
                   <h1 className="display-2 mb-4 me-xl-5 me-xxl-0" style={slideInDownAnimate("900ms")}>
-                    {service.title} <span className={`text-gradient ${gradientClass}`}>{service.categoryLabel}</span>
+                    {service.title} <span className={`text-${tailwindColor}`}>{service.categoryLabel}</span>
                   </h1>
 
                   <p className="lead fs-23 lh-sm mb-7 pe-xxl-15" style={slideInDownAnimate("1200ms")}>
                     {service.shortDescription}
                   </p>
 
+                  <div style={slideInDownAnimate("1800ms")}>
+                    <h4 className="fs-16 text-uppercase text-muted mb-3 mt-7">¿Para quién es?</h4>
+                    <ul className="list-unstyled ps-0 mt-3">
+                      {service.forWho.map((target, idx) => (
+                        <li key={idx} className="d-flex align-items-start mb-2">
+                          <i className={`uil uil-check text-${tailwindColor} me-2 mt-1`}></i>
+                          <span className="leading-snug">{target}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
                   <div style={slideInDownAnimate("1500ms")}>
                     <NextLink 
                       title={service.price === 0 ? "Reservar gratis" : `Reservar por ${service.price}€`} 
                       href={`/reservar/${service.slug}`} 
-                      className={`btn btn-lg btn-${tailwindColor} rounded`} 
+                      className={`btn btn-lg btn-${tailwindColor} rounded mt-6`} 
                     />
                   </div>
                 </div>
@@ -80,9 +92,10 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
                   <img
                     alt={service.title}
                     className="img-fluid mb-n14"
+                    width={500}
                     src={heroImagePath}
                     srcSet={heroImagePath}
-                    style={fadeInAnimate("300ms")}
+                    style={{ ...fadeInAnimate("300ms"), transform: 'scale(1.4)' }}
                   />
                 </div>
               </div>
