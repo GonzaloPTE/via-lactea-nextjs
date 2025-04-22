@@ -14,10 +14,11 @@ export default function ThemeProvider({ children }: PropsWithChildren) {
   };
 
   useEffect(() => {
-    if (typeof window === undefined) return;
-
+    if (typeof window === 'undefined') return;
     // Change the color and font based on route
-    changeTheme(pathname);
+    if (pathname) {
+      changeTheme(pathname);
+    }
 
     // Hide loader
     // If you don't want loader remove <div className="page-loader" /> element form _app.tsx
