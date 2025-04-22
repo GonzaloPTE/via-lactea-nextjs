@@ -81,7 +81,7 @@ export default function Turnstile({
         window.turnstile.reset(widgetId);
       }
     };
-  }, [siteKey, onVerify, theme, size, appearance]);
+  }, [siteKey, onVerify, theme, size, appearance, widgetId]);
 
   return <div ref={containerRef} className={className} />;
 } 
