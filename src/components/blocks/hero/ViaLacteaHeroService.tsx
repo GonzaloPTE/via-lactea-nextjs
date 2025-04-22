@@ -15,11 +15,13 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
     'green': 'green',
     'red': 'red',
     'blue': 'blue',
-    'teal': 'teal',
+    'teal': 'sky',
     'yellow': 'yellow',
     'orange': 'orange',
     'violet': 'violet',
-    'pink': 'pink'
+    'pink': 'pink',
+    'white': 'white',
+    'transparent': 'white'
   };
 
   // Obtener el color de Tailwind correspondiente, o usar 'grape' como valor predeterminado

@@ -64,9 +64,10 @@ export default function ViaLacteaNavbar({
                 alt="logo Vía Láctea" 
                 src={`/img/via-lactea/svg/${logo}.svg`}
                 srcSet={`/img/via-lactea/svg/${logo}.svg 2x`}
-                width={sticky ? 100 : 200}
-                height={sticky ? 100 : 200}
+                width={sticky ? 100 : 60}
+                height={sticky ? 100 : 60}
                 className={sticky ? "d-none d-lg-block" : ""}
+                style={{ transform: 'scale(2.5)' }}
             />
           }
         />
@@ -113,7 +114,8 @@ export default function ViaLacteaNavbar({
         ref={navbarRef} 
         className={clsx(
           finalNavClassName, 
-          sticky ? "navbar-clone fixed navbar-stick d-sm-none" : ""
+          sticky ? "navbar-clone fixed navbar-stick d-sm-none" : "",
+          "my-lg-8 mx-auto"
         )}
         style={sticky ? { backgroundColor: whiteBackground ? 'white' : 'rgba(255, 255, 255, 0.2)' } : {}}
       >

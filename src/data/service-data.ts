@@ -98,7 +98,7 @@ export const serviceList: ServiceItem[] = [
   // Servicios de 0-6 meses
   {
     id: 1,
-    title: 'Asesoría "Big Bang"',
+    title: 'Asesoría Big Bang',
     slug: 'asesoria-big-bang',
     category: 'baby',
     categoryLabel: '0-6 meses',
@@ -196,7 +196,7 @@ export const serviceList: ServiceItem[] = [
   },
   {
     id: 2,
-    title: 'Asesoría de lactancia "Vía láctea"',
+    title: 'Asesoría de lactancia Vía láctea',
     slug: 'asesoria-lactancia',
     category: 'baby',
     categoryLabel: '0-6 meses',
@@ -353,7 +353,7 @@ export const serviceList: ServiceItem[] = [
   },
   {
     id: 4,
-    title: 'Consulta "videollamada SOS"',
+    title: 'Videollamada SOS',
     slug: 'videollamada-sos',
     category: 'child',
     categoryLabel: '6 meses a 4 años',
