@@ -50,6 +50,6 @@
     "eslint-config-next": "15.0.4",
     "sass": "^1.69.5",
     "typescript": "^5",
-    "wrangler": "^4.11.1"
+    "wrangler": "^4.12.1"
   }
 }
