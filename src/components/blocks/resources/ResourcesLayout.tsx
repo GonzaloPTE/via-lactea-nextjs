@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import Image from "next/image";
-import Pagination from "components/reuseable/Pagination";
 import ResourcesSidebar, { SortOption } from "./ResourcesSidebar";
 import ResourceCard from "components/reuseable/product-cards/ResourceCard";
 import { ResourceCardFeatured } from "./ResourceCardFeatured";
@@ -93,11 +92,6 @@ export default function ResourcesLayout({
             ))}
           </div>
         </div>
-
-        {/* Pagination */}
-        {resources.length > 0 && (
-          <Pagination className="justify-content-start" altStyle />
-        )}
       </div>
     </div>
   );
