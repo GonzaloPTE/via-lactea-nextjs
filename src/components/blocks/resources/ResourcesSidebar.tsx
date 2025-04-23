@@ -1,5 +1,8 @@
 import { Fragment, useId } from "react";
 import NextLink from "components/reuseable/links/NextLink";
+import Image from "next/image";
+import { IResource } from "./ResourcesLayout";
+import SocialLinks from "components/reuseable/SocialLinks";
 
 export type SortOption = "relevance" | "newest" | "price-asc" | "price-desc";
 
@@ -17,7 +20,61 @@ export interface ResourcesSidebarProps {
   onCategoryChange?: (categoryId: string) => void;
   onFreeToggleChange?: (checked: boolean) => void;
   onSortChange?: (option: SortOption) => void;
+  onTagChange?: (tag: string) => void;
+  popularResources?: IResource[];
 }
+
+// Tags de ejemplo para los recursos
+const resourceTags = [
+  { id: "sueno-infantil", title: "Sueño infantil", url: "/recursos?tag=sueno-infantil" },
+  { id: "lactancia", title: "Lactancia", url: "/recursos?tag=lactancia" },
+  { id: "desarrollo", title: "Desarrollo", url: "/recursos?tag=desarrollo" },
+  { id: "rutinas", title: "Rutinas", url: "/recursos?tag=rutinas" },
+  { id: "recien-nacido", title: "Recién nacido", url: "/recursos?tag=recien-nacido" },
+  { id: "alimentacion", title: "Alimentación", url: "/recursos?tag=alimentacion" },
+  { id: "musica", title: "Música", url: "/recursos?tag=musica" },
+  { id: "primer-ano", title: "Primer año", url: "/recursos?tag=primer-ano" }
+];
+
+// Recursos populares de ejemplo
+const popularResourcesExample: IResource[] = [
+  {
+    id: "pop1",
+    title: "Cómo manejar las tomas nocturnas",
+    url: "/recursos/tomas-nocturnas",
+    image: "/img/via-lactea/photos/recurso-mockup.jpg",
+    downloads: 256,
+    date: "2024-11-20",
+    category: "Lactancia",
+    isFree: true,
+    price: 0,
+    type: "Infografía"
+  },
+  {
+    id: "pop2",
+    title: "Señales tempranas de hambre",
+    url: "/recursos/senales-hambre",
+    image: "/img/via-lactea/photos/recurso-mockup.jpg",
+    downloads: 320,
+    date: "2025-01-18",
+    category: "Lactancia",
+    isFree: true,
+    price: 0,
+    type: "Infografía"
+  },
+  {
+    id: "pop3",
+    title: "Guía de Sueño - 0 a 6 meses",
+    url: "/recursos/guia-sueno-0-6-meses",
+    image: "/img/via-lactea/photos/recurso-mockup.jpg",
+    downloads: 128,
+    date: "2024-10-15",
+    category: "Sueño",
+    isFree: false,
+    price: 19.99,
+    type: "Guía PDF"
+  }
+];
 
 export default function ResourcesSidebar({ 
   categories, 
@@ -26,7 +83,9 @@ export default function ResourcesSidebar({
   sortOption = "relevance",
   onCategoryChange,
   onFreeToggleChange,
-  onSortChange
+  onSortChange,
+  onTagChange,
+  popularResources = popularResourcesExample
 }: ResourcesSidebarProps) {
   // Función para normalizar strings (eliminar acentos y convertir a minúsculas)
   const normalizeString = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -53,11 +112,68 @@ export default function ResourcesSidebar({
     }
   };
 
+  // Añadir función handleTagClick
+  const handleTagClick = (e: React.MouseEvent<HTMLAnchorElement>, tag: string) => {
+    e.preventDefault();
+    if (onTagChange) {
+      onTagChange(tag);
+    }
+  };
+
   // Generar IDs únicos para evitar conflictos en caso de múltiples instancias
   const checkboxId = useId();
   
   return (
     <Fragment>
+      {/* About Us & Social Media */}
+      <div className="widget">
+        <h4 className="widget-title mb-3">Síguenos</h4>
+        <p className="mb-3">
+          Sigue nuestras redes sociales para acceder a la información más actualizada sobre lactancia y sueño infantil.
+          Compartimos consejos, novedades y respondemos tus consultas.
+        </p>
+        
+        <SocialLinks className="nav social" />
+      </div>
+
+      {/* Popular Resources section */}
+      <div className="widget">
+        <h4 className="widget-title mb-3">Descargas Populares</h4>
+
+        <ul className="image-list">
+          {popularResources.map(({ id, title, image, url, downloads, date }) => (
+            <li key={id} className="mb-3">
+              <NextLink 
+                title={
+                  <figure className="rounded">
+                    <Image width={100} height={100} src={image} alt={title} className="img-fluid" />
+                  </figure>
+                } 
+                href={url} 
+              />
+
+              <div className="post-content">
+                <h6 className="mb-2">
+                  <NextLink className="link-dark" title={title} href={url} />
+                </h6>
+
+                <ul className="post-meta">
+                  <li className="post-date">
+                    <i className="uil uil-calendar-alt" />
+                    <span>{new Date(date || '').toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                  </li>
+
+                  <li className="post-comments">
+                    <i className="uil uil-download-alt" /> 
+                    <span>{downloads?.toLocaleString()}</span>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {/* Categories Widget */}
       <div className="widget">
         <h4 className="widget-title mb-3">Categorías</h4>
@@ -109,6 +225,23 @@ export default function ResourcesSidebar({
             <option value="price-desc">Precio: Mayor a menor</option>
           </select>
         </div>
+      </div>
+
+      {/* Tags section */}
+      <div className="widget">
+        <h4 className="widget-title mb-3">Etiquetas</h4>
+        <ul className="list-unstyled tag-list">
+          {resourceTags.map(({ id, title, url }) => (
+            <li key={id} className="d-inline-block me-1 mb-2">
+              <NextLink 
+                title={title} 
+                href={url} 
+                className="btn btn-soft-ash btn-sm rounded-pill" 
+                onClick={(e: any) => handleTagClick(e, title)}
+              />
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Subscribe Banner */}

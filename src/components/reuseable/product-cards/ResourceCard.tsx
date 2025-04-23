@@ -1,5 +1,6 @@
 import Image from "next/image";
 import NextLink from "../links/NextLink";
+import { UrgencyProgressBar } from "../../reuseable/UrgencyProgressBar";
 
 // =======================================================================================
 interface ResourceCardProps {
@@ -12,6 +13,11 @@ interface ResourceCardProps {
   isFree?: boolean;
   url: string;
   downloads?: number;
+  category?: string;
+  includeInSubscription?: boolean;
+  limitDate?: string;
+  downloadLimit?: number;
+  currentDownloads?: number;
 }
 // =======================================================================================
 
@@ -24,8 +30,18 @@ export default function ResourceCard({
   price,
   isFree = false,
   url,
-  downloads = 0
+  downloads = 0,
+  category = "",
+  includeInSubscription = false,
+  limitDate,
+  downloadLimit,
+  currentDownloads
 }: ResourceCardProps) {
+  // Para depuración - verificar si los recursos gratuitos tienen datos de urgencia
+  if (isFree) {
+    console.log(`ResourceCard [${title}] - urgency data:`, { limitDate, downloadLimit, currentDownloads });
+  }
+
   return (
     <div className="card shadow-sm h-100">
       <figure className="card-img-top overflow-hidden">
@@ -42,13 +58,12 @@ export default function ResourceCard({
       </figure>
 
       <div className="card-body p-5">
-        <div className="d-flex justify-content-between mb-2">
-          <div className="badge bg-pale-blue text-blue rounded-pill fs-sm">{type}</div>
-          {isFree ? (
-            <div className="badge bg-pale-green text-green rounded-pill fs-sm d-flex align-items-center">Gratuito</div>
-          ) : (
-            <div className="text-primary fw-bold">{price}€</div>
+        {/* Sección de badges y categoría */}
+        <div className="d-flex flex-wrap gap-2 mb-3">
+          {category && (
+            <span className="badge bg-pale-purple text-purple rounded">{category}</span>
           )}
+          <span className="badge bg-pale-blue text-blue rounded">{type}</span>
         </div>
 
         <h4 className="card-title mb-3">
@@ -57,15 +72,41 @@ export default function ResourceCard({
 
         {description && <p className="card-text mb-4 text-truncate">{description}</p>}
 
-        <div className="d-flex justify-content-between align-items-center">
-          <NextLink 
-            href={url} 
-            className="btn btn-sm btn-primary rounded-pill"
-            title={isFree ? "Obtener" : "Ver"}
-          />
-          <div className="text-muted fs-sm">
-            <i className="uil uil-download-alt me-1"></i>
-            {downloads.toLocaleString()}
+        {/* Barra de urgencia para recursos gratuitos con fecha límite */}
+        {isFree && limitDate && downloadLimit && (
+          <div className="mb-4">
+            <UrgencyProgressBar
+              currentDownloads={currentDownloads}
+              downloadLimit={downloadLimit}
+              limitDate={limitDate}
+            />
+          </div>
+        )}
+
+        <div className="d-flex flex-column gap-2 mt-auto">
+          {/* Precio o badge gratuito */}
+          {isFree ? (
+            <span className="badge bg-pale-green text-green rounded-pill py-2 px-3 fs-15 align-self-start mb-2">GRATUITO</span>
+          ) : (
+            <div className="d-flex align-items-baseline mb-2">
+              <span className="fs-18 fw-bold text-primary me-2">{price.toFixed(2)}€</span>
+              {includeInSubscription && (
+                <span className="badge bg-pale-yellow text-yellow rounded-pill py-1 px-2 fs-sm">Incluido en suscripción</span>
+              )}
+            </div>
+          )}
+
+          {/* Botones y contador de descargas */}
+          <div className="d-flex justify-content-between align-items-center">
+            <NextLink 
+              href={url} 
+              className={`btn ${isFree ? 'btn-success text-white' : 'btn-primary'} rounded-pill fw-bold px-3 py-2`}
+              title={isFree ? "Obtener ahora" : "Ver detalles"}
+            />
+            <div className="text-muted">
+              <i className="uil uil-download-alt me-1"></i>
+              {downloads.toLocaleString()}
+            </div>
           </div>
         </div>
       </div>
