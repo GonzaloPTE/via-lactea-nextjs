@@ -1,6 +1,7 @@
 import Image from "next/image";
 import NextLink from "../links/NextLink";
 import { UrgencyProgressBar } from "../../reuseable/UrgencyProgressBar";
+import { useRouter } from "next/navigation";
 
 // =======================================================================================
 interface ResourceCardProps {
@@ -18,6 +19,8 @@ interface ResourceCardProps {
   limitDate?: string;
   downloadLimit?: number;
   currentDownloads?: number;
+  tags?: string[];
+  publishDate?: string;
 }
 // =======================================================================================
 
@@ -35,12 +38,34 @@ export default function ResourceCard({
   includeInSubscription = false,
   limitDate,
   downloadLimit,
-  currentDownloads
+  currentDownloads,
+  tags = [],
+  publishDate
 }: ResourceCardProps) {
+  const router = useRouter();
+  
   // Para depuración - verificar si los recursos gratuitos tienen datos de urgencia
   if (isFree) {
     console.log(`ResourceCard [${title}] - urgency data:`, { limitDate, downloadLimit, currentDownloads });
   }
+
+  // Limitar las etiquetas mostradas para evitar desbordamiento (mostrar máximo 3)
+  const displayTags = tags.slice(0, 3);
+  const hasMoreTags = tags.length > 3;
+  
+  // Manejar clic en una etiqueta
+  const handleTagClick = (tag: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    // Redirigir a la página de recursos con el filtro de tag aplicado
+    router.push(`/recursos?tag=${encodeURIComponent(tag)}`);
+  };
+
+  // Formatear fecha de publicación
+  const formattedDate = publishDate ? new Date(publishDate).toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  }) : null;
 
   return (
     <div className="card shadow-sm h-100">
@@ -58,17 +83,42 @@ export default function ResourceCard({
       </figure>
 
       <div className="card-body p-5">
-        {/* Sección de badges y categoría */}
-        <div className="d-flex flex-wrap gap-2 mb-3">
-          {category && (
-            <span className="badge bg-pale-purple text-purple rounded">{category}</span>
+        {/* Sección de título y precio */}
+        <div className="d-flex justify-content-between align-items-start mb-2">
+          <h4 className="card-title mb-0 pe-3" style={{ 
+            maxWidth: '75%',
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            textOverflow: 'ellipsis'
+          }}>
+            <NextLink href={url} title={title} className="link-dark" />
+          </h4>
+          
+          {/* Precio */}
+          {isFree ? (
+            <div className="d-flex align-items-baseline">
+              <span className="text-decoration-line-through text-muted me-2 fs-15">19.99€</span>
+              <span className="fs-22 fw-bold text-primary">0€</span>
+            </div>
+          ) : (
+            <div className="d-flex align-items-baseline">
+              <span className="fs-22 fw-bold text-primary">{price.toFixed(2)}€</span>
+            </div>
           )}
-          <span className="badge bg-pale-blue text-blue rounded">{type}</span>
         </div>
 
-        <h4 className="card-title mb-3">
-          <NextLink href={url} title={title} className="link-dark" />
-        </h4>
+        {/* Tipo de producto y categoría */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          {type && (
+            <h6 className="mb-0 text-muted">{type.toUpperCase()}</h6>
+          )}
+          
+          {category && (
+            <span className="text-muted fs-sm">{category}</span>
+          )}
+        </div>
 
         {description && <p className="card-text mb-4 text-truncate">{description}</p>}
 
@@ -84,23 +134,8 @@ export default function ResourceCard({
         )}
 
         <div className="d-flex flex-column gap-2 mt-auto">
-          {/* Precio o badge gratuito */}
-          {isFree ? (
-            <div className="d-flex align-items-baseline mb-2">
-              <span className="text-decoration-line-through text-muted me-2 fs-15">19.99€</span>
-              <span className="fs-18 fw-bold text-primary">0€</span>
-            </div>
-          ) : (
-            <div className="d-flex align-items-baseline mb-2">
-              <span className="fs-18 fw-bold text-primary me-2">{price.toFixed(2)}€</span>
-              {includeInSubscription && (
-                <span className="badge bg-pale-yellow text-yellow rounded-pill py-1 px-2 fs-sm">Incluido en suscripción</span>
-              )}
-            </div>
-          )}
-
-          {/* Botones y contador de descargas */}
-          <div className="d-flex justify-content-between align-items-center">
+          {/* Solo botón de descarga */}
+          <div className="d-flex justify-content-center mb-3">
             <NextLink 
               href={url} 
               className={`btn ${isFree ? 'bg-primary text-white' : 'btn-primary'} rounded-pill fw-bold px-3 py-2 d-flex align-items-center`}
@@ -109,11 +144,39 @@ export default function ResourceCard({
                 "Ver detalles"
               }
             />
-            <div className="text-muted">
+          </div>
+
+          {/* Descargas y fecha juntas */}
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <div className="text-muted fs-sm">
               <i className="uil uil-download-alt me-1"></i>
               {downloads.toLocaleString()}
             </div>
+            
+            {formattedDate && (
+              <div className="text-muted fs-sm">
+                <i className="uil uil-calendar-alt me-1"></i>
+                {formattedDate}
+              </div>
+            )}
           </div>
+
+          {/* Etiquetas */}
+          {displayTags.length > 0 && (
+            <div className="d-flex flex-nowrap overflow-hidden" style={{ maxWidth: '100%' }}>
+              {displayTags.map((tag, index) => (
+                <a 
+                  key={index}
+                  href="#" 
+                  onClick={(e) => handleTagClick(tag, e)}
+                  className="text-muted fs-sm me-2 text-nowrap"
+                >
+                  <span className="text-primary fw-medium">#{tag}</span>
+                </a>
+              ))}
+              {hasMoreTags && <span className="text-muted fs-sm">...</span>}
+            </div>
+          )}
         </div>
       </div>
     </div>

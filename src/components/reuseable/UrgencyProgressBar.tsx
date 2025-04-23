@@ -37,10 +37,14 @@ export function UrgencyProgressBar({
     return null;
   }
   
-  // Formatear la fecha para mostrarla en formato simple
-  const formatSimpleDate = (dateString: string): string => {
+  // Formatear la fecha para mostrarla en un formato más amigable
+  const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    return date.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
   };
   
   return (
@@ -52,7 +56,7 @@ export function UrgencyProgressBar({
         </small>
         
         <small className="text-muted">
-          Gratis hasta el {formatSimpleDate(limitDate)}
+          Gratis hasta el <i className="uil uil-calendar-alt"></i> {formatDate(limitDate)}
         </small>
       </div>
       

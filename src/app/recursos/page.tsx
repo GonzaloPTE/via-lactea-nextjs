@@ -236,7 +236,8 @@ const resourcesData: IResource[] = [
 // Calcular descargas para cada recurso
 const resourcesWithDownloads = resourcesData.map(resource => ({
   ...resource,
-  downloads: calculateDownloads(resource.date || '2023-01-01')
+  downloads: calculateDownloads(resource.date || '2023-01-01'),
+  publishDate: resource.date // Añadir el campo publishDate usando el date existente
 }));
 
 // Categories for the filter selector
@@ -271,6 +272,14 @@ export default function ResourcesPage() {
   const [filteredResources, setFilteredResources] = useState<IResource[]>(resourcesWithDownloads);
   const [featuredResources, setFeaturedResources] = useState<IResource[]>([]);
   const [mainResources, setMainResources] = useState<IResource[]>([]);
+  
+  // Cargar datos iniciales basados en los parámetros de URL
+  useEffect(() => {
+    setSelectedCategory(categoryParam);
+    setOnlyFree(onlyFreeParam);
+    setSortOption(sortOptionParam);
+    setSelectedTag(tagParam);
+  }, [categoryParam, onlyFreeParam, sortOptionParam, tagParam]);
 
   // Actualizar URL cuando cambien los filtros
   useEffect(() => {
@@ -353,7 +362,7 @@ export default function ResourcesPage() {
     
     setFeaturedResources(featured);
     setMainResources(main);
-  }, [selectedCategory, onlyFree, sortOption]);
+  }, [selectedCategory, onlyFree, sortOption, selectedTag]);
 
   // Manejadores de eventos para filtros y ordenación
   const handleCategoryChange = (category: string) => {

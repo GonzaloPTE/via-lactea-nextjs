@@ -2,12 +2,15 @@ import Image from "next/image";
 import NextLink from "components/reuseable/links/NextLink";
 import { IResource } from "./ResourcesLayout";
 import { UrgencyProgressBar } from "../../reuseable/UrgencyProgressBar";
+import { useRouter } from "next/navigation";
 
 interface ResourceCardFeaturedProps {
   resource: IResource;
 }
 
 export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
+  const router = useRouter();
+  
   const { 
     id, 
     image, 
@@ -22,13 +25,33 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
     includeInSubscription = false,
     limitDate,
     downloadLimit,
-    currentDownloads
+    currentDownloads,
+    tags = [],
+    publishDate
   } = resource;
 
   // Para depuración - verificar si los recursos gratuitos tienen datos de urgencia
   if (isFree) {
     console.log(`ResourceCardFeatured [${title}] - urgency data:`, { limitDate, downloadLimit, currentDownloads });
   }
+  
+  // Limitar las etiquetas mostradas para evitar desbordamiento (mostrar máximo 4)
+  const displayTags = tags.slice(0, 4);
+  const hasMoreTags = tags.length > 4;
+  
+  // Manejar clic en una etiqueta
+  const handleTagClick = (tag: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    // Redirigir a la página de recursos con el filtro de tag aplicado
+    router.push(`/recursos?tag=${encodeURIComponent(tag)}`);
+  };
+
+  // Formatear fecha de publicación
+  const formattedDate = publishDate ? new Date(publishDate).toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  }) : null;
 
   return (
     <article className="post mb-12">
@@ -51,28 +74,39 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
 
         <div className="card-body">
           <div className="post-header">
-            <div className="d-flex flex-wrap align-items-center mb-3 justify-content-between">
-              <span className="badge bg-pale-purple text-purple rounded mb-2">{category}</span>
-              <span className="badge bg-pale-blue text-blue rounded mb-2">{type}</span>
-            </div>
-            
-            <h2 className="post-title h3 mt-1 mb-3">
-              <NextLink title={title} href={url} className="link-dark" />
-            </h2>
-
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="d-flex justify-content-between align-items-start mb-2">
+              <h2 className="post-title h3 mb-0 pe-3" style={{ 
+                maxWidth: '75%',
+                overflow: 'hidden',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                textOverflow: 'ellipsis'
+              }}>
+                <NextLink title={title} href={url} className="link-dark" />
+              </h2>
+              
+              {/* Precio */}
               {isFree ? (
                 <div className="d-flex align-items-baseline">
                   <span className="text-decoration-line-through text-muted me-2 fs-15">19.99€</span>
-                  <span className="fs-20 fw-bold text-primary">0€</span>
+                  <span className="fs-24 fw-bold text-primary">0€</span>
                 </div>
               ) : (
                 <div className="d-flex align-items-baseline">
-                  <span className="fs-20 fw-bold text-primary me-2">{price.toFixed(2)}€</span>
-                  {includeInSubscription && (
-                    <span className="badge bg-pale-yellow text-yellow rounded-pill py-1 px-2 fs-sm">Incluido en suscripción</span>
-                  )}
+                  <span className="fs-24 fw-bold text-primary">{price.toFixed(2)}€</span>
                 </div>
+              )}
+            </div>
+            
+            {/* Tipo de producto y categoría */}
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              {type && (
+                <h6 className="mb-0 text-muted">{type.toUpperCase()}</h6>
+              )}
+              
+              {category && (
+                <span className="text-muted fs-sm">Categoría: {category}</span>
               )}
             </div>
             
@@ -94,10 +128,19 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
         </div>
 
         <div className="card-footer">
-          <ul className="post-meta d-flex mb-0 align-items-center">
-            <li className="post-date">
-              <i className="uil uil-download-alt me-1"></i>
-              <span>{downloads.toLocaleString()}</span>
+          <ul className="post-meta d-flex mb-3 align-items-center">
+            <li className="post-date d-flex gap-3">
+              <span>
+                <i className="uil uil-download-alt me-1"></i>
+                {downloads.toLocaleString()}
+              </span>
+              
+              {formattedDate && (
+                <span>
+                  <i className="uil uil-calendar-alt me-1"></i>
+                  {formattedDate}
+                </span>
+              )}
             </li>
             
             <li className="post-comments ms-auto">
@@ -112,6 +155,23 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
               />
             </li>
           </ul>
+          
+          {/* Etiquetas del producto */}
+          {displayTags.length > 0 && (
+            <div className="d-flex flex-nowrap overflow-hidden" style={{ maxWidth: '100%' }}>
+              {displayTags.map((tag, index) => (
+                <a 
+                  key={index}
+                  href="#" 
+                  onClick={(e) => handleTagClick(tag, e)}
+                  className="text-muted fs-sm me-2 text-nowrap"
+                >
+                  <span className="text-primary fw-medium">#{tag}</span>
+                </a>
+              ))}
+              {hasMoreTags && <span className="text-muted fs-sm">...</span>}
+            </div>
+          )}
         </div>
       </div>
     </article>
