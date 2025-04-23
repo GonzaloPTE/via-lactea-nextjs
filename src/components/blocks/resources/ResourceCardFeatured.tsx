@@ -62,7 +62,10 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
 
             <div className="d-flex justify-content-between align-items-center mb-3">
               {isFree ? (
-                <span className="badge bg-pale-green text-green rounded-pill py-2 px-3 fs-15">GRATUITO</span>
+                <div className="d-flex align-items-baseline">
+                  <span className="text-decoration-line-through text-muted me-2 fs-15">19.99€</span>
+                  <span className="fs-20 fw-bold text-primary">0€</span>
+                </div>
               ) : (
                 <div className="d-flex align-items-baseline">
                   <span className="fs-20 fw-bold text-primary me-2">{price.toFixed(2)}€</span>

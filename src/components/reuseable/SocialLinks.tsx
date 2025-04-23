@@ -3,7 +3,7 @@ type SocialLinksProps = { className?: string };
 // ========================================================
 
 const links = [
-  { id: 1, icon: "uil uil-instagram", url: "https://www.instagram.com/vialactea_suenoylactancia/" },
+  { id: 1, icon: "uil uil-instagram", url: "https://www.instagram.com/vialacteasuenoylactancia/" },
   { id: 2, icon: "uil uil-facebook-f", url: "https://facebook.com/vialactea.suenoylactancia/" }
 ];
 
