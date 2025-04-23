@@ -207,6 +207,20 @@ export default function ResourcesSidebar({
             Solo recursos gratuitos
           </label>
         </div>
+        
+        {/* Botón para borrar filtros */}
+        <button 
+          className="btn btn-sm btn-outline-primary rounded-pill mt-3 w-100"
+          onClick={() => {
+            // Reiniciar todos los filtros
+            if (onCategoryChange) onCategoryChange('todos');
+            if (onFreeToggleChange) onFreeToggleChange(false);
+            if (onSortChange) onSortChange('relevance');
+            if (onTagChange) onTagChange('');
+          }}
+        >
+          <i className="uil uil-filter-slash me-1"></i> Borrar filtros
+        </button>
       </div>
 
       {/* Sorting Options */}
