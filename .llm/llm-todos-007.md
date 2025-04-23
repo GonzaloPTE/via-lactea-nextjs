@@ -5,7 +5,7 @@
 
 ## Sección de Servicios y Productos
 
-### TASK-007-01: Estructura de datos para servicios
+### TASK-007-01: Estructura de datos para servicios [COMPLETADO]
 - Crear un archivo de datos estructurados para los servicios en `src/data/service-data.ts`
 - Migrar la información de `.llm/servicios.md` al formato adecuado para la aplicación
 - Organizar servicios por categorías (0-6 meses, 6 meses a 4 años)
@@ -13,7 +13,7 @@
 - Agregar flag para servicios que requieren integración con Calendly
 - Adaptar la estructura de datos para que sea compatible con los componentes del tema premium
 
-### TASK-007-02: Estructura de datos para productos
+### TASK-007-02: Estructura de datos para productos [EN PROGRESO]
 - Crear un archivo de datos estructurados para los productos en `src/data/product-data.ts`
 - Migrar la información de `.llm/productos.md` al formato adecuado
 - Organizar productos por niveles y tipos según especificaciones

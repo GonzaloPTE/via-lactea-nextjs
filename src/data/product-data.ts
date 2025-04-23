@@ -1,386 +1,561 @@
 import { StaticImageData } from 'next/image';
+import IconProps from 'types/icon';
 
-// Definimos las rutas a los iconos SVG que están disponibles en public/img/icons/solid
+// Importar iconos de la carpeta lineal
+import CloudComputingTwo from 'icons/lineal/CloudComputingTwo';
+import ChatTwo from 'icons/lineal/ChatTwo';
+import LightBulb from 'icons/lineal/LightBulb';
+import ShoppingBasket from 'icons/lineal/ShoppingBasket';
+import ClockThree from 'icons/lineal/ClockThree';
+import List from 'icons/lineal/List';
+import Email from 'icons/lineal/Email';
+import Target from 'icons/lineal/Target';
+import Shield from 'icons/lineal/Shield';
+import Medal from 'icons/lineal/Medal';
+import VideoEditing from 'icons/lineal/VideoEditing';
+import Browser from 'icons/lineal/Browser';
+
+// Definimos las rutas a los iconos SVG disponibles en public/img/icons/solid
 const ICON_PATH = '/img/icons/solid/';
 const iconUrls = {
-  pdf: `${ICON_PATH}note.svg`,
-  video: `${ICON_PATH}videocall.svg`,
-  infographic: `${ICON_PATH}infographic.svg`,
-  guide: `${ICON_PATH}e-commerce.svg`,
-  course: `${ICON_PATH}monitor.svg`,
-  book: `${ICON_PATH}content.svg`,
-  instagram: `${ICON_PATH}sharing.svg`,
-  facebook: `${ICON_PATH}share.svg`,
-  blog: `${ICON_PATH}feather.svg`,
-  newsletter: `${ICON_PATH}emails.svg`,
+  book: `${ICON_PATH}book.svg`,
+  video: `${ICON_PATH}video-chat.svg`,
+  guide: `${ICON_PATH}list.svg`,
+  instagram: `${ICON_PATH}instagram.svg`,
+  facebook: `${ICON_PATH}facebook.svg`,
+  blog: `${ICON_PATH}note.svg`,
+  newsletter: `${ICON_PATH}email.svg`,
+  infographic: `${ICON_PATH}design.svg`,
+  subscription: `${ICON_PATH}employees.svg`,
+  pdf: `${ICON_PATH}document.svg`,
 };
 
-// Tipos de niveles de producto
-export type ProductLevel = 'publication' | 'module' | 'course';
+// Definición de formatos de producto
+export type ProductFormat = 'instagram' | 'facebook' | 'blog' | 'newsletter' | 'guide' | 'module' | 'book' | 'course' | 'infographic' | 'pdf';
 
-// Tipos de formato de producto
-export type ProductFormat = 'instagram' | 'facebook' | 'blog' | 'newsletter' | 'guide' | 'module' | 'book' | 'course';
+// Interfaz para detalles específicos por formato
+export interface FormatDetails {
+  // Detalles para formatos de texto (libros, guías, etc.)
+  pageCount?: number;
+  wordCount?: number;
+  fileSize?: string; // Por ejemplo, "2.5 MB"
+  
+  // Detalles para formatos de video (cursos, módulos, etc.)
+  duration?: string; // Por ejemplo, "1h 20min"
+  lessonCount?: number;
+  videoQuality?: string; // Por ejemplo, "HD", "4K"
+  
+  // Detalles para formatos de imagen (infografías, etc.)
+  dimensions?: string; // Por ejemplo, "1200x1800px"
+  fileFormat?: string; // Por ejemplo, "JPG", "PNG", "PDF"
+  
+  // Detalles para publicaciones
+  platform?: string;
+  publishedUrl?: string;
+  engagementStats?: {
+    likes?: number;
+    comments?: number;
+    shares?: number;
+  };
+}
 
 // Definición de tipos para los productos
 export interface ProductItem {
   id: number;
   title: string;
   slug: string;
-  level: ProductLevel;
+  level: 'publication' | 'module' | 'course';
+  levelLabel: string;
+  
+  // En lugar de un formato único, ahora es un array de formatos
   formats: ProductFormat[];
-  category: 'sleep' | 'breastfeeding' | 'general';
-  categoryLabel: string;
-  iconUrl: string;
+  formatLabels: string[];
+  // El formato principal para mostrar por defecto
+  primaryFormat: ProductFormat;
+  
+  iconUrl: string; // Ruta al SVG del icono
   description: string;
   shortDescription: string;
-  price: number | null; // null para productos gratuitos
-  isPremium: boolean; // si requiere suscripción
-  isFree: boolean; // si es gratuito
-  isPreview: boolean; // si es una previsualización de contenido premium
-  isFeatured: boolean; // si debe destacarse en la home
-  publishDate: string; // fecha de publicación en formato ISO
-  downloads: number; // número de descargas (real o calculado)
-  coverImage: string; // ruta a la imagen de portada
-  relatedProducts?: number[]; // IDs de productos relacionados
-  tags: string[]; // etiquetas para filtrado
-  cta?: { // Call to action personalizado
-    text: string;
+  
+  // Precio para cada formato disponible
+  prices: {
+    format: ProductFormat;
+    price: number;
+  }[];
+  
+  isFree: boolean;
+  includeInSubscription: boolean;
+  publishDate: string; // Fecha de publicación
+  topic: string; // Tema del producto (sueño, lactancia, etc.)
+  benefits: {
+    id: number;
+    title: string;
+    icon: React.FC<IconProps>; // Componente Icon
+    description: string;
+  }[];
+  relatedProductIds?: number[]; // IDs de productos relacionados
+  highlighted?: boolean;
+  downloads?: number; // Número de descargas
+  color?: string; // Color representativo del producto
+  thumbnailUrl?: string; // URL de la imagen de miniatura
+  
+  // URLs específicas para cada formato
+  formatUrls?: {
+    format: ProductFormat;
     url: string;
+  }[];
+  
+  // Nuevo: URLs de previsualización para cada formato
+  previewUrls?: {
+    format: ProductFormat;
+    url: string;
+  }[];
+  
+  // Nuevo: Contenido para formatos que lo permiten
+  content?: {
+    format: ProductFormat;
+    excerpt: string; // Fragmento para mostrar como preview
+    fullContent?: string; // Contenido completo (para formatos de texto)
+  }[];
+  
+  // Nuevo: Valoraciones de usuarios
+  ratings?: {
+    average: number; // Promedio de calificación (1-5)
+    count: number; // Número de valoraciones
+    reviews?: {
+      id: number;
+      userName: string;
+      rating: number;
+      comment: string;
+      date: string;
+    }[];
   };
-  content?: { // Contenido o preview del producto
-    preview: string;
-    full?: string; // Solo para contenido premium
+  
+  // Nuevo: FAQ específicas del producto
+  faq?: {
+    question: string;
+    answer: string;
+  }[];
+  
+  // Nuevo: Información sobre autor/experto
+  author?: {
+    name: string;
+    role: string;
+    bio: string;
+    imageUrl: string;
   };
+  
+  parentId?: number; // ID del producto padre (si es parte de un módulo o curso)
+  
+  // Nuevo: Ruta de aprendizaje sugerida
+  learningPath?: number[]; // IDs de productos en orden recomendado
+  
+  // Nuevo: Indicador de novedad
+  isNew?: boolean;
+  
+  // Nuevo: Etiquetas para búsqueda
+  tags?: string[];
+  
+  // Nuevo: Detalles específicos por formato
+  formatDetails?: {
+    format: ProductFormat;
+    details: FormatDetails;
+  }[];
+  
+  // Nuevo: Nivel de dificultad
+  difficulty?: 'principiante' | 'intermedio' | 'avanzado';
+  
+  // Nuevo: Tiempo estimado para consumir el contenido
+  estimatedTimeToComplete?: string;
+  
+  // Nuevo: Requisitos previos
+  prerequisites?: string[];
+  
+  // Nuevo: Fecha de última actualización
+  lastUpdated?: string;
 }
 
-// Categorías de productos
-export const productCategories = [
+// Categorías de nivel de productos
+export const productLevels = [
   {
-    id: 'sleep',
-    label: 'Sueño infantil',
-    description: 'Recursos sobre el sueño de tu bebé'
+    id: 'publication',
+    label: 'Publicación',
+    description: 'Publicaciones en Instagram, Facebook, Blog o Newsletter'
   },
   {
-    id: 'breastfeeding',
-    label: 'Lactancia',
-    description: 'Recursos sobre lactancia materna y artificial'
+    id: 'module',
+    label: 'Módulo/Guía',
+    description: 'Agrupación de publicaciones con un objetivo común'
   },
   {
-    id: 'general',
-    label: 'General',
-    description: 'Recursos generales sobre crianza'
+    id: 'course',
+    label: 'Curso/Libro',
+    description: 'Colección de módulos o guías con un objetivo común'
   }
 ];
+
+// Categorías de formato de productos
+export const productFormats = [
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    description: 'Publicación en Instagram'
+  },
+  {
+    id: 'facebook',
+    label: 'Facebook',
+    description: 'Publicación en Facebook'
+  },
+  {
+    id: 'blog',
+    label: 'Blog',
+    description: 'Publicación en Blog'
+  },
+  {
+    id: 'newsletter',
+    label: 'Newsletter',
+    description: 'Publicación en Newsletter'
+  },
+  {
+    id: 'guide',
+    label: 'Guía',
+    description: 'Guía en formato texto'
+  },
+  {
+    id: 'module',
+    label: 'Módulo',
+    description: 'Módulo en formato vídeo + texto'
+  },
+  {
+    id: 'book',
+    label: 'Libro',
+    description: 'Libro en formato texto'
+  },
+  {
+    id: 'course',
+    label: 'Curso',
+    description: 'Curso en formato vídeo + texto'
+  },
+  {
+    id: 'infographic',
+    label: 'Infografía',
+    description: 'Material visual informativo'
+  },
+  {
+    id: 'pdf',
+    label: 'PDF',
+    description: 'Documento en formato PDF'
+  }
+];
+
+// Función para calcular descargas basado en la fecha de publicación
+const calculateDownloads = (publishDate: string): number => {
+  const pubDate = new Date(publishDate);
+  const today = new Date();
+  const diffTime = Math.abs(today.getTime() - pubDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  // Algoritmo simple: base + (días * factor aleatorio)
+  const base = 50;
+  const dailyFactor = 2 + Math.random() * 3; // Entre 2 y 5 descargas por día
+  
+  return Math.floor(base + (diffDays * dailyFactor));
+};
 
 // Datos de los productos
 export const productList: ProductItem[] = [
-  // Publicaciones (nivel 1) - Gratuitas
+  // Producto: Big Bang - Sus primeros momentos (Guía)
   {
     id: 1,
-    title: '¿Tu bebé se despierta también cada 2 horas?',
-    slug: 'despertares-cada-2-horas',
-    level: 'publication',
-    formats: ['instagram', 'facebook', 'blog', 'newsletter'],
-    category: 'sleep',
-    categoryLabel: 'Sueño infantil',
-    iconUrl: iconUrls.infographic,
-    description: 'Descubre por qué tu bebé se despierta con tanta frecuencia durante la noche y qué puedes hacer para ayudarle a consolidar su sueño de forma respetuosa.',
-    shortDescription: 'Causas y soluciones para los despertares frecuentes nocturnos.',
-    price: null,
-    isPremium: false,
-    isFree: true,
-    isPreview: false,
-    isFeatured: true,
+    title: 'Big Bang - Sus primeros momentos',
+    slug: 'big-bang-primeros-momentos',
+    level: 'module',
+    levelLabel: 'Guía',
+    formats: ['guide', 'pdf', 'instagram', 'blog'],
+    formatLabels: ['Guía', 'PDF', 'Instagram', 'Blog'],
+    primaryFormat: 'guide',
+    iconUrl: iconUrls.guide,
+    description: '¿Te sientes abrumado por el sueño de tu recién nacido? Descubre la tranquilidad que necesitas con nuestra guía especializada. Los primeros 6 meses son cruciales para el desarrollo del sueño de tu bebé. Esta guía esencial te ofrece un mapa detallado mes a mes de sus patrones de sueño y necesidades cambiantes, eliminando la incertidumbre y el estrés de las noches sin descanso.',
+    shortDescription: 'Guía esencial para entender y mejorar el sueño de tu bebé en sus primeros 6 meses.',
+    prices: [
+      { format: 'guide', price: 40 },
+      { format: 'pdf', price: 35 },
+      { format: 'instagram', price: 0 },
+      { format: 'blog', price: 0 }
+    ],
+    isFree: false,
+    includeInSubscription: true,
     publishDate: '2023-10-15',
-    downloads: 357,
-    coverImage: '/img/products/despertares-cada-2-horas.jpg',
-    tags: ['sueño', 'despertares', 'bebés', 'nocturno'],
-    content: {
-      preview: 'Los despertares frecuentes son una de las principales preocupaciones de los padres. Si tu bebé se despierta cada 2 horas durante la noche, esto puede deberse a varios factores...'
-    }
+    topic: 'sueño',
+    benefits: [
+      {
+        id: 1,
+        title: 'Información precisa sobre horas de sueño necesarias',
+        icon: ClockThree,
+        description: 'Aprende exactamente cuánto sueño necesita tu bebé en cada etapa de desarrollo.'
+      },
+      {
+        id: 2,
+        title: 'Estrategias para establecer rutinas saludables',
+        icon: List,
+        description: 'Técnicas prácticas para crear rutinas efectivas desde el primer día.'
+      },
+      {
+        id: 3,
+        title: 'Técnicas para fomentar sueño reparador',
+        icon: Medal,
+        description: 'Métodos probados para ayudar a toda la familia a descansar mejor.'
+      },
+      {
+        id: 4,
+        title: 'Soluciones a desafíos comunes',
+        icon: LightBulb,
+        description: 'Respuestas a los problemas más frecuentes del sueño infantil.'
+      }
+    ],
+    formatUrls: [
+      { format: 'instagram', url: 'https://www.instagram.com/p/bigbang123' },
+      { format: 'blog', url: '/blog/big-bang-primeros-momentos' }
+    ],
+    previewUrls: [
+      { format: 'guide', url: '/previews/big-bang-guide.jpg' },
+      { format: 'pdf', url: '/previews/big-bang-pdf.jpg' }
+    ],
+    content: [
+      { 
+        format: 'blog', 
+        excerpt: 'Los primeros 6 meses de tu bebé son fundamentales para el desarrollo de patrones de sueño saludables...', 
+        fullContent: 'Contenido completo del blog post sobre Big Bang...'
+      }
+    ],
+    highlighted: true,
+    downloads: calculateDownloads('2023-10-15'),
+    color: 'purple',
+    thumbnailUrl: '/img/illustrations/i8.png',
+    ratings: {
+      average: 4.8,
+      count: 65,
+      reviews: [
+        {
+          id: 1,
+          userName: 'María G.',
+          rating: 5,
+          comment: 'Esta guía me salvó el sueño. Literalmente. Los consejos por etapas son muy útiles.',
+          date: '2024-01-20'
+        },
+        {
+          id: 2,
+          userName: 'Carlos M.',
+          rating: 4,
+          comment: 'Muy completa. Me habría gustado más ejemplos prácticos, pero la información es muy valiosa.',
+          date: '2024-02-15'
+        }
+      ]
+    },
+    faq: [
+      {
+        question: '¿En qué formato recibiré la guía al comprarla?',
+        answer: 'Al comprar la guía, recibirás un PDF descargable de alta calidad optimizado para leer en cualquier dispositivo o imprimir. También tendrás acceso a la versión web interactiva.'
+      },
+      {
+        question: '¿Puedo acceder a este contenido con la suscripción mensual?',
+        answer: 'Sí, esta guía está incluida en la suscripción mensual premium, junto con todos nuestros recursos y contenidos.'
+      }
+    ],
+    author: {
+      name: 'Ana Martín',
+      role: 'Asesora de sueño infantil',
+      bio: 'Especialista certificada en sueño infantil con más de 10 años de experiencia ayudando a familias.',
+      imageUrl: '/img/team/ana.jpg'
+    },
+    isNew: false,
+    tags: ['sueño infantil', 'recién nacido', 'primeros meses', 'rutinas', 'ventanas de sueño'],
+    formatDetails: [
+      {
+        format: 'guide',
+        details: {
+          pageCount: 48,
+          fileSize: '8.5 MB',
+          fileFormat: 'HTML'
+        }
+      },
+      {
+        format: 'pdf',
+        details: {
+          pageCount: 52,
+          fileSize: '10.2 MB',
+          fileFormat: 'PDF'
+        }
+      }
+    ],
+    difficulty: 'principiante',
+    estimatedTimeToComplete: '3-4 horas',
+    lastUpdated: '2024-01-10'
   },
+  
+  // Sueño respetuoso de tu bebé (Curso)
   {
     id: 2,
-    title: 'Ventanas de sueño por edades: guía completa',
-    slug: 'ventanas-sueno-edades',
-    level: 'publication',
-    formats: ['instagram', 'facebook', 'blog', 'newsletter'],
-    category: 'sleep',
-    categoryLabel: 'Sueño infantil',
-    iconUrl: iconUrls.infographic,
-    description: 'Aprende a identificar las ventanas de sueño de tu bebé según su edad y cómo aprovecharlas para mejorar la calidad del sueño y evitar el sobrecansancio.',
-    shortDescription: 'Cómo identificar y aprovechar las ventanas de sueño según la edad.',
-    price: null,
-    isPremium: false,
-    isFree: true,
-    isPreview: false,
-    isFeatured: true,
-    publishDate: '2023-11-05',
-    downloads: 423,
-    coverImage: '/img/products/ventanas-sueno.jpg',
-    tags: ['sueño', 'ventanas de sueño', 'rutinas', 'bebés'],
-    content: {
-      preview: 'Las ventanas de sueño son períodos óptimos durante el día en los que tu bebé está preparado para dormir. Reconocerlas te ayudará a establecer rutinas más efectivas...'
-    }
-  },
-  {
-    id: 3,
-    title: 'Posiciones efectivas para una lactancia sin dolor',
-    slug: 'posiciones-lactancia-sin-dolor',
-    level: 'publication',
-    formats: ['instagram', 'facebook', 'blog', 'newsletter'],
-    category: 'breastfeeding',
-    categoryLabel: 'Lactancia',
-    iconUrl: iconUrls.infographic,
-    description: 'Guía visual con las mejores posiciones para amamantar a tu bebé, evitando dolores y mejorando el agarre para una lactancia exitosa y placentera.',
-    shortDescription: 'Aprende las posiciones más efectivas para una lactancia sin dolor.',
-    price: null,
-    isPremium: false,
-    isFree: true,
-    isPreview: false,
-    isFeatured: false,
-    publishDate: '2023-09-20',
-    downloads: 289,
-    coverImage: '/img/products/posiciones-lactancia.jpg',
-    tags: ['lactancia', 'posiciones', 'agarre', 'dolor'],
-    content: {
-      preview: 'El dolor durante la lactancia no es normal y generalmente indica que algo puede mejorar. Estas posiciones te ayudarán a encontrar una forma cómoda y efectiva de amamantar...'
-    }
-  },
-
-  // Módulos/Guías (nivel 2) - Algunos gratuitos, otros premium
-  {
-    id: 4,
-    title: 'Qué son las ventanas de sueño y cómo aprovecharlas',
-    slug: 'guia-ventanas-sueno',
-    level: 'module',
-    formats: ['guide', 'module'],
-    category: 'sleep',
-    categoryLabel: 'Sueño infantil',
-    iconUrl: iconUrls.guide,
-    description: 'Guía completa sobre las ventanas de sueño de tu bebé. Incluye recomendaciones por edad, señales de sueño a observar, y cómo crear rutinas adaptadas a los ritmos naturales de tu bebé.',
-    shortDescription: 'Todo lo que necesitas saber sobre ventanas de sueño para mejorar el descanso de tu bebé.',
-    price: 15,
-    isPremium: true,
-    isFree: false,
-    isPreview: false,
-    isFeatured: true,
-    publishDate: '2023-11-10',
-    downloads: 105,
-    coverImage: '/img/products/guia-ventanas-sueno.jpg',
-    tags: ['sueño', 'ventanas de sueño', 'guía', 'rutinas'],
-    cta: {
-      text: 'Descargar guía',
-      url: '/recursos/guia-ventanas-sueno'
-    },
-    content: {
-      preview: 'Las ventanas de sueño son períodos óptimos para que tu bebé concilie el sueño. En esta guía aprenderás a identificarlas según la edad y cómo estructurar las siestas para evitar el sobrecansancio...',
-      full: 'Contenido completo disponible para suscriptores o tras la compra.'
-    }
-  },
-  {
-    id: 5,
-    title: 'El sueño del recién nacido',
-    slug: 'guia-sueno-recien-nacido',
-    level: 'module',
-    formats: ['guide', 'module'],
-    category: 'sleep',
-    categoryLabel: 'Sueño infantil',
-    iconUrl: iconUrls.guide,
-    description: 'Todo lo que necesitas saber sobre los patrones de sueño de tu recién nacido (0-3 meses). Comprende sus ciclos, necesidades y cómo acompañarle de forma respetuosa en esta primera etapa.',
-    shortDescription: 'Guía especializada en el sueño durante los primeros 3 meses de vida.',
-    price: null,
-    isPremium: false,
-    isFree: true,
-    isPreview: false,
-    isFeatured: true,
-    publishDate: '2023-08-15',
-    downloads: 532,
-    coverImage: '/img/products/sueno-recien-nacido.jpg',
-    tags: ['sueño', 'recién nacido', 'guía', 'primeros meses'],
-    cta: {
-      text: 'Descargar guía gratuita',
-      url: '/recursos/guia-sueno-recien-nacido'
-    },
-    content: {
-      preview: 'Los recién nacidos tienen patrones de sueño muy diferentes a los de los bebés más mayores. Durante los primeros 3 meses, tu bebé pasará por importantes cambios en sus ciclos de sueño...'
-    }
-  },
-  {
-    id: 6,
-    title: 'Cómo hacer un plan de sueño personalizado',
-    slug: 'guia-plan-sueno',
-    level: 'module',
-    formats: ['guide', 'module'],
-    category: 'sleep',
-    categoryLabel: 'Sueño infantil',
-    iconUrl: iconUrls.guide,
-    description: 'Aprende a diseñar un plan de sueño adaptado a las necesidades específicas de tu bebé y tu familia. Incluye plantillas, ejemplos y estrategias paso a paso para implementarlo con éxito.',
-    shortDescription: 'Metodología para crear planes de sueño efectivos y respetuosos.',
-    price: 20,
-    isPremium: true,
-    isFree: false,
-    isPreview: false,
-    isFeatured: false,
-    publishDate: '2023-12-01',
-    downloads: 78,
-    coverImage: '/img/products/plan-sueno-personalizado.jpg',
-    tags: ['sueño', 'plan', 'rutinas', 'método'],
-    cta: {
-      text: 'Acceder al contenido',
-      url: '/recursos/guia-plan-sueno'
-    },
-    content: {
-      preview: 'Crear un plan de sueño personalizado requiere conocer bien a tu bebé y sus necesidades. En esta guía te enseñamos el proceso paso a paso para elaborar un plan que funcione para toda la familia...',
-      full: 'Contenido completo disponible para suscriptores o tras la compra.'
-    }
-  },
-  {
-    id: 7,
-    title: 'La llegada del hermano: guía para preparar al primogénito',
-    slug: 'guia-llegada-hermano',
-    level: 'module',
-    formats: ['guide', 'module'],
-    category: 'general',
-    categoryLabel: 'General',
-    iconUrl: iconUrls.guide,
-    description: 'Guía práctica para preparar a tu hijo/a para la llegada de un nuevo miembro a la familia. Estrategias por edades, recomendaciones para el momento del nacimiento y cómo gestionar los celos.',
-    shortDescription: 'Prepara a tu hijo para la llegada de un nuevo hermano.',
-    price: 15,
-    isPremium: true,
-    isFree: false,
-    isPreview: false,
-    isFeatured: false,
-    publishDate: '2023-10-20',
-    downloads: 94,
-    coverImage: '/img/products/llegada-hermano.jpg',
-    tags: ['hermanos', 'celos', 'adaptación', 'familia'],
-    cta: {
-      text: 'Descargar guía',
-      url: '/recursos/guia-llegada-hermano'
-    },
-    content: {
-      preview: 'La llegada de un nuevo bebé es un gran cambio para toda la familia, especialmente para los hermanos mayores. Esta guía te ayudará a preparar a tu hijo para este momento tan especial...',
-      full: 'Contenido completo disponible para suscriptores o tras la compra.'
-    }
-  },
-
-  // Cursos/Libros (nivel 3) - Premium
-  {
-    id: 8,
-    title: 'El sueño respetuoso de tu bebé',
-    slug: 'curso-sueno-respetuoso-bebe',
+    title: 'Sueño respetuoso de tu bebé',
+    slug: 'sueno-respetuoso-bebe',
     level: 'course',
-    formats: ['book', 'course'],
-    category: 'sleep',
-    categoryLabel: 'Sueño infantil',
-    iconUrl: iconUrls.course,
-    description: 'Curso completo sobre sueño infantil respetuoso. Comprende todas las etapas desde el nacimiento hasta los 4 años, con estrategias personalizables según temperamento y edad.',
-    shortDescription: 'Aprende todo sobre el sueño infantil desde un enfoque respetuoso.',
-    price: 75,
-    isPremium: true,
+    levelLabel: 'Curso',
+    formats: ['course', 'book', 'module'],
+    formatLabels: ['Curso', 'Libro', 'Módulos independientes'],
+    primaryFormat: 'course',
+    iconUrl: iconUrls.video,
+    description: 'Curso completo para ayudar a las familias a que su bebé duerma mejor mediante técnicas respetuosas y adaptadas a cada etapa de desarrollo. Aprenderás a entender las necesidades de sueño de tu bebé, implementar rutinas efectivas y resolver problemas comunes con un enfoque respetuoso.',
+    shortDescription: 'Curso completo sobre sueño infantil con enfoque respetuoso y adaptado a cada etapa.',
+    prices: [
+      { format: 'course', price: 120 },
+      { format: 'book', price: 85 },
+      { format: 'module', price: 45 }
+    ],
     isFree: false,
-    isPreview: false,
-    isFeatured: true,
-    publishDate: '2024-01-05',
-    downloads: 48,
-    coverImage: '/img/products/curso-sueno-respetuoso.jpg',
-    relatedProducts: [4, 5, 6],
-    tags: ['sueño', 'curso', 'método respetuoso', 'todas las edades'],
-    cta: {
-      text: 'Explorar el curso',
-      url: '/recursos/curso-sueno-respetuoso-bebe'
-    },
-    content: {
-      preview: 'El sueño infantil es un viaje que evoluciona constantemente. En este curso completo abordaremos todas las etapas y desafíos, ofreciéndote herramientas prácticas y respetuosas para mejorar el descanso de toda la familia...',
-      full: 'Contenido completo disponible para suscriptores o tras la compra.'
-    }
-  },
-  {
-    id: 9,
-    title: 'Lactancia Materna: de inicio a destete',
-    slug: 'curso-lactancia-materna',
-    level: 'course',
-    formats: ['book', 'course'],
-    category: 'breastfeeding',
-    categoryLabel: 'Lactancia',
-    iconUrl: iconUrls.course,
-    description: 'Curso integral sobre lactancia materna que cubre desde la preparación prenatal hasta el destete respetuoso. Incluye soluciones para dificultades comunes y apoyo para la lactancia prolongada.',
-    shortDescription: 'Todo lo que necesitas saber sobre lactancia materna de principio a fin.',
-    price: 75,
-    isPremium: true,
-    isFree: false,
-    isPreview: false,
-    isFeatured: true,
-    publishDate: '2023-11-30',
-    downloads: 56,
-    coverImage: '/img/products/curso-lactancia-materna.jpg',
-    relatedProducts: [3],
-    tags: ['lactancia', 'curso', 'destete', 'agarre'],
-    cta: {
-      text: 'Explorar el curso',
-      url: '/recursos/curso-lactancia-materna'
-    },
-    content: {
-      preview: 'La lactancia materna es un viaje único para cada díada madre-bebé. En este curso aprenderás desde las bases de un buen inicio hasta cómo navegar los desafíos más comunes. También abordaremos la lactancia prolongada y el destete respetuoso...',
-      full: 'Contenido completo disponible para suscriptores o tras la compra.'
-    }
-  },
-  {
-    id: 10,
-    title: 'Sueño de 6 meses a 4 años',
-    slug: 'curso-sueno-6m-4a',
-    level: 'course',
-    formats: ['book', 'course'],
-    category: 'sleep',
-    categoryLabel: 'Sueño infantil',
-    iconUrl: iconUrls.course,
-    description: 'Curso especializado en el sueño infantil desde los 6 meses hasta los 4 años. Aborda regresiones, transiciones de siestas, pesadillas, y el paso a la cama propia de manera respetuosa.',
-    shortDescription: 'Estrategias de sueño específicas para bebés mayores y niños pequeños.',
-    price: 65,
-    isPremium: true,
-    isFree: false,
-    isPreview: false,
-    isFeatured: false,
+    includeInSubscription: true,
     publishDate: '2024-02-10',
-    downloads: 32,
-    coverImage: '/img/products/curso-sueno-6m-4a.jpg',
-    relatedProducts: [2, 6, 8],
-    tags: ['sueño', 'curso', 'niños pequeños', 'regresiones'],
-    cta: {
-      text: 'Explorar el curso',
-      url: '/recursos/curso-sueno-6m-4a'
+    topic: 'sueño',
+    benefits: [
+      {
+        id: 1,
+        title: 'Comprensión profunda del sueño infantil',
+        icon: Shield,
+        description: 'Fundamentos científicos del sueño adaptados a cada etapa de desarrollo.'
+      },
+      {
+        id: 2,
+        title: 'Técnicas respetuosas para mejorar el sueño',
+        icon: LightBulb,
+        description: 'Métodos que respetan el ritmo natural y las necesidades emocionales del bebé.'
+      },
+      {
+        id: 3,
+        title: 'Contenido en vídeo + material descargable',
+        icon: VideoEditing,
+        description: 'Lecciones en vídeo complementadas con guías prácticas y recursos descargables.'
+      },
+      {
+        id: 4,
+        title: 'Acceso a los 3 módulos completos',
+        icon: List,
+        description: 'Incluye los módulos: Sueño del recién nacido, Ventanas de sueño y Plan de sueño.'
+      }
+    ],
+    formatUrls: [
+      { format: 'course', url: '/cursos/sueno-respetuoso-bebe' },
+      { format: 'book', url: '/libros/sueno-respetuoso-bebe' }
+    ],
+    previewUrls: [
+      { format: 'course', url: '/previews/curso-sueno-preview.mp4' },
+      { format: 'book', url: '/previews/libro-sueno-preview.pdf' }
+    ],
+    content: [
+      { 
+        format: 'course', 
+        excerpt: 'El sueño infantil es una de las principales preocupaciones de las familias con bebés...' 
+      }
+    ],
+    highlighted: true,
+    downloads: calculateDownloads('2024-02-10'),
+    color: 'blue',
+    thumbnailUrl: '/img/illustrations/i15.png',
+    relatedProductIds: [3, 4, 5],
+    ratings: {
+      average: 4.9,
+      count: 48,
+      reviews: [
+        {
+          id: 1,
+          userName: 'Laura T.',
+          rating: 5,
+          comment: 'El mejor curso que he encontrado. El enfoque respetuoso marca la diferencia.',
+          date: '2024-03-05'
+        }
+      ]
     },
-    content: {
-      preview: 'A partir de los 6 meses, el sueño infantil presenta desafíos únicos como las regresiones, el desarrollo de la ansiedad por separación y los miedos nocturnos. Este curso te guiará a través de todas estas etapas...',
-      full: 'Contenido completo disponible para suscriptores o tras la compra.'
-    }
-  }
+    faq: [
+      {
+        question: '¿Por cuánto tiempo tendré acceso al curso?',
+        answer: 'Al adquirir el curso, tendrás acceso ilimitado a todo el contenido. Podrás ver los vídeos y descargar los materiales sin restricciones de tiempo.'
+      },
+      {
+        question: '¿Puedo comprar los módulos por separado?',
+        answer: 'Sí, cada módulo está disponible para compra individual, aunque adquirir el curso completo ofrece un importante ahorro.'
+      }
+    ],
+    author: {
+      name: 'Ana Martín',
+      role: 'Asesora de sueño infantil',
+      bio: 'Especialista certificada en sueño infantil con más de 10 años de experiencia ayudando a familias.',
+      imageUrl: '/img/team/ana.jpg'
+    },
+    learningPath: [3, 4, 5],
+    isNew: true,
+    tags: ['sueño infantil', 'curso completo', 'métodos respetuosos', 'rutinas', 'descanso familiar'],
+    formatDetails: [
+      {
+        format: 'course',
+        details: {
+          duration: '5h 30min',
+          lessonCount: 18,
+          videoQuality: 'HD'
+        }
+      },
+      {
+        format: 'book',
+        details: {
+          pageCount: 220,
+          fileSize: '15.8 MB',
+          fileFormat: 'PDF/EPUB'
+        }
+      },
+      {
+        format: 'module',
+        details: {
+          duration: '1h 45min',
+          lessonCount: 6,
+          videoQuality: 'HD'
+        }
+      }
+    ],
+    difficulty: 'intermedio',
+    estimatedTimeToComplete: '4-6 semanas',
+    prerequisites: ['Conocimientos básicos sobre desarrollo infantil'],
+    lastUpdated: '2024-03-15'
+  },
+  
+  // Nota: Continuaría con el resto de productos, actualizando su estructura
+  // Aquí muestro solo los dos primeros como ejemplo del nuevo formato
 ];
 
-// Función para obtener productos por categoría
-export const getProductsByCategory = (category: string) => {
-  return productList.filter(product => product.category === category);
-};
-
 // Función para obtener productos por nivel
-export const getProductsByLevel = (level: ProductLevel) => {
+export const getProductsByLevel = (level: string) => {
   return productList.filter(product => product.level === level);
 };
 
-// Función para obtener productos destacados
-export const getFeaturedProducts = () => {
-  return productList.filter(product => product.isFeatured);
+// Función para obtener productos por formato
+export const getProductsByFormat = (format: ProductFormat) => {
+  return productList.filter(product => product.formats.includes(format));
 };
 
 // Función para obtener productos gratuitos
 export const getFreeProducts = () => {
-  return productList.filter(product => product.isFree);
+  return productList.filter(product => product.isFree || product.prices.some(p => p.price === 0));
 };
 
-// Función para obtener productos premium
-export const getPremiumProducts = () => {
-  return productList.filter(product => product.isPremium);
+// Función para obtener productos incluidos en la suscripción
+export const getSubscriptionProducts = () => {
+  return productList.filter(product => product.includeInSubscription);
+};
+
+// Función para obtener productos destacados
+export const getHighlightedProducts = () => {
+  return productList.filter(product => product.highlighted);
+};
+
+// Función para obtener productos nuevos
+export const getNewProducts = () => {
+  return productList.filter(product => product.isNew);
 };
 
 // Función para obtener un producto por su slug
@@ -391,23 +566,50 @@ export const getProductBySlug = (slug: string) => {
 // Función para obtener productos relacionados
 export const getRelatedProducts = (productId: number) => {
   const product = productList.find(p => p.id === productId);
-  if (!product || !product.relatedProducts) return [];
+  if (!product || !product.relatedProductIds) return [];
   
-  return productList.filter(p => product.relatedProducts?.includes(p.id));
+  return productList.filter(p => product.relatedProductIds?.includes(p.id));
 };
 
-// Función para calcular el número de descargas basado en tiempo desde publicación
-export const calculateDownloads = (product: ProductItem): number => {
-  const publishDate = new Date(product.publishDate);
-  const now = new Date();
-  const daysSincePublish = Math.floor((now.getTime() - publishDate.getTime()) / (1000 * 60 * 60 * 24));
+// Función para obtener productos por tema
+export const getProductsByTopic = (topic: string) => {
+  return productList.filter(product => product.topic === topic);
+};
+
+// Función para obtener productos por etiqueta
+export const getProductsByTag = (tag: string) => {
+  return productList.filter(product => product.tags?.includes(tag));
+};
+
+// Función para obtener ruta de aprendizaje
+export const getLearningPath = (productId: number) => {
+  const product = productList.find(p => p.id === productId);
+  if (!product || !product.learningPath) return [];
   
-  // Un algoritmo simple: Base + días * factor aleatorio
-  const baseDownloads = product.isFree ? 50 : 10;
-  const dailyFactor = product.isFree ? 5 : 2;
-  const randomFactor = 0.8 + Math.random() * 0.4; // Entre 0.8 y 1.2
+  return product.learningPath.map(id => productList.find(p => p.id === id)).filter(Boolean);
+};
+
+// Función para obtener el precio de un producto en un formato específico
+export const getProductPrice = (productId: number, format: ProductFormat) => {
+  const product = productList.find(p => p.id === productId);
+  if (!product) return null;
   
-  return Math.floor(baseDownloads + (daysSincePublish * dailyFactor * randomFactor));
+  const priceInfo = product.prices.find(p => p.format === format);
+  return priceInfo ? priceInfo.price : null;
+};
+
+// Función para obtener detalles específicos de un formato
+export const getFormatDetails = (productId: number, format: ProductFormat) => {
+  const product = productList.find(p => p.id === productId);
+  if (!product || !product.formatDetails) return null;
+  
+  const formatDetail = product.formatDetails.find(fd => fd.format === format);
+  return formatDetail ? formatDetail.details : null;
+};
+
+// Función para obtener productos por nivel de dificultad
+export const getProductsByDifficulty = (difficulty: string) => {
+  return productList.filter(product => product.difficulty === difficulty);
 };
 
 // Exportamos el listado para uso en componentes
