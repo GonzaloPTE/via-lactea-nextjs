@@ -68,7 +68,7 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
           } />
           <span className="bg" />
           <figcaption>
-            <h5 className="from-top mb-0">Ver detalles</h5>
+            <h5 className="from-top mb-0 ">Ver detalles</h5>
           </figcaption>
         </figure>
 
@@ -149,9 +149,9 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
                 title={
                   isFree ? 
                   <><i className="uil uil-download-alt me-1"></i>Descargar</> : 
-                  "Ver detalles"
+                  <><i className="uil uil-eye me-1"></i>Ver detalles</>
                 }
-                className={`btn ${isFree ? 'bg-primary text-white' : 'btn-primary'} rounded-pill fw-bold px-3 py-2 d-flex align-items-center`}
+                className={`btn ${isFree ? 'bg-primary text-white' : 'btn-primary text-white'} rounded-pill fw-bold px-3 py-2 d-flex align-items-center`}
               />
             </li>
           </ul>

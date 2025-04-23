@@ -82,70 +82,86 @@ export default function ResourceCard({
         } />
       </figure>
 
-      <div className="card-body p-5">
-        {/* Sección de título y precio */}
-        <div className="d-flex justify-content-between align-items-start mb-2">
-          <h4 className="card-title mb-0 pe-3" style={{ 
-            maxWidth: '75%',
-            overflow: 'hidden',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            textOverflow: 'ellipsis'
-          }}>
-            <NextLink href={url} title={title} className="link-dark" />
-          </h4>
-          
-          {/* Precio */}
-          {isFree ? (
-            <div className="d-flex align-items-baseline">
-              <span className="text-decoration-line-through text-muted me-2 fs-15">19.99€</span>
-              <span className="fs-22 fw-bold text-primary">0€</span>
-            </div>
-          ) : (
-            <div className="d-flex align-items-baseline">
-              <span className="fs-22 fw-bold text-primary">{price.toFixed(2)}€</span>
-            </div>
-          )}
-        </div>
-
-        {/* Tipo de producto y categoría */}
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          {type && (
-            <h6 className="mb-0 text-muted">{type.toUpperCase()}</h6>
-          )}
-          
-          {category && (
-            <span className="text-muted fs-sm">{category}</span>
-          )}
-        </div>
-
-        {description && <p className="card-text mb-4 text-truncate">{description}</p>}
-
-        {/* Barra de urgencia para recursos gratuitos con fecha límite */}
-        {isFree && limitDate && downloadLimit && (
-          <div className="mb-4">
-            <UrgencyProgressBar
-              currentDownloads={currentDownloads}
-              downloadLimit={downloadLimit}
-              limitDate={limitDate}
-            />
+      <div className="card-body p-5 d-flex flex-column" style={{ height: "calc(100% - 200px)" }}>
+        {/* Sección superior con contenido variable */}
+        <div className="mb-auto">
+          {/* Sección de título y precio */}
+          <div className="d-flex justify-content-between align-items-start mb-2">
+            <h4 className="card-title mb-0 pe-3" style={{ 
+              maxWidth: '75%',
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              textOverflow: 'ellipsis'
+            }}>
+              <NextLink href={url} title={title} className="link-dark" />
+            </h4>
+            
+            {/* Precio */}
+            {isFree ? (
+              <div className="d-flex align-items-baseline">
+                <span className="text-decoration-line-through text-muted me-2 fs-15">19.99€</span>
+                <span className="fs-22 fw-bold text-primary">0€</span>
+              </div>
+            ) : (
+              <div className="d-flex align-items-baseline">
+                <span className="fs-22 fw-bold text-primary">{price.toFixed(2)}€</span>
+              </div>
+            )}
           </div>
-        )}
 
-        <div className="d-flex flex-column gap-2 mt-auto">
-          {/* Solo botón de descarga */}
-          <div className="d-flex justify-content-center mb-3">
+          {/* Tipo de producto y categoría */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            {type && (
+              <h6 className="mb-0 text-muted">{type.toUpperCase()}</h6>
+            )}
+            
+            {category && (
+              <span className="text-muted fs-sm">{category}</span>
+            )}
+          </div>
+
+          {description && (
+            <p className="card-text mb-4" style={{ 
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              textOverflow: 'ellipsis'
+            }}>
+              {description}
+            </p>
+          )}
+        </div>
+        
+        {/* Sección intermedia con barra de urgencia y botón */}
+        <div className="mb-4">
+          {/* Barra de urgencia para recursos gratuitos con fecha límite */}
+          {isFree && limitDate && downloadLimit && (
+            <div className="mb-3">
+              <UrgencyProgressBar
+                currentDownloads={currentDownloads}
+                downloadLimit={downloadLimit}
+                limitDate={limitDate}
+              />
+            </div>
+          )}
+          
+          {/* Botón de descarga o ver detalles */}
+          <div className="d-flex justify-content-center">
             <NextLink 
               href={url} 
-              className={`btn ${isFree ? 'bg-primary text-white' : 'btn-primary'} rounded-pill fw-bold px-3 py-2 d-flex align-items-center`}
+              className={`btn ${isFree ? 'bg-primary text-white' : 'btn-primary text-white'} rounded-pill fw-bold px-3 py-2 d-flex align-items-center`}
               title={isFree ? 
                 <><i className="uil uil-download-alt me-1"></i> Descargar</> : 
-                "Ver detalles"
+                <><i className="uil uil-eye me-1"></i> Ver detalles</>
               }
             />
           </div>
-
+        </div>
+        
+        {/* Sección inferior siempre al final */}
+        <div className="mt-3">
           {/* Descargas y fecha juntas */}
           <div className="d-flex justify-content-between align-items-center mb-2">
             <div className="text-muted fs-sm">
