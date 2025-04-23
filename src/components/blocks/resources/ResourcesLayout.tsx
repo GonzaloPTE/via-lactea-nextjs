@@ -19,6 +19,11 @@ export interface IResource {
   date?: string;
   featured?: boolean;
   downloads?: number; // Número de descargas del recurso
+  includeInSubscription?: boolean; // Indicador de si está incluido en la suscripción
+  tags?: string[]; // Etiquetas relacionadas con el recurso
+  limitDate?: string; // Fecha límite para descarga gratuita
+  downloadLimit?: number; // Límite de descargas antes de dejar de ser gratuito
+  currentDownloads?: number; // Número actual de descargas (para el sistema de urgencia)
 }
 
 interface ResourcesLayoutProps {
@@ -32,6 +37,7 @@ interface ResourcesLayoutProps {
   onCategoryChange?: (category: string) => void;
   onFreeToggleChange?: (checked: boolean) => void;
   onSortChange?: (option: SortOption) => void;
+  onTagChange?: (tag: string) => void;
 }
 
 export default function ResourcesLayout({
@@ -44,11 +50,29 @@ export default function ResourcesLayout({
   sidebar,
   onCategoryChange,
   onFreeToggleChange,
-  onSortChange
+  onSortChange,
+  onTagChange
 }: ResourcesLayoutProps) {
   return (
     <div className="row gx-lg-8 gx-xl-12 mt-10">
-      <div className="col-lg-8">
+      {/* Sidebar - Ahora a la izquierda */}
+      <aside className="col-lg-4 sidebar mt-8 mt-lg-0 order-lg-1">
+        {sidebar || (
+          <ResourcesSidebar 
+            categories={categories} 
+            selectedCategory={selectedCategory} 
+            onlyFree={onlyFree} 
+            sortOption={sortOption}
+            onCategoryChange={onCategoryChange}
+            onFreeToggleChange={onFreeToggleChange}
+            onSortChange={onSortChange}
+            onTagChange={onTagChange}
+          />
+        )}
+      </aside>
+
+      {/* Contenido principal - Ahora a la derecha */}
+      <div className="col-lg-8 order-lg-2">
         {/* Featured Resources Section */}
         {featuredResources && featuredResources.length > 0 && (
           <div className="blog classic-view mb-10">
@@ -74,21 +98,6 @@ export default function ResourcesLayout({
           <Pagination className="justify-content-start" altStyle />
         )}
       </div>
-
-      {/* Sidebar */}
-      <aside className="col-lg-4 sidebar mt-8 mt-lg-0">
-        {sidebar || (
-          <ResourcesSidebar 
-            categories={categories} 
-            selectedCategory={selectedCategory} 
-            onlyFree={onlyFree} 
-            sortOption={sortOption}
-            onCategoryChange={onCategoryChange}
-            onFreeToggleChange={onFreeToggleChange}
-            onSortChange={onSortChange}
-          />
-        )}
-      </aside>
     </div>
   );
 } 

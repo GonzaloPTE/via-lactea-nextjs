@@ -25,7 +25,9 @@ const resourcesData: IResource[] = [
     category: "Sueño",
     featured: true,
     date: "2024-10-15",
-    downloads: 0 // Se calculará dinámicamente
+    downloads: 0, // Se calculará dinámicamente
+    includeInSubscription: true,
+    tags: ["Sueño infantil", "Rutinas", "Recién nacido"]
   },
   {
     id: "2",
@@ -39,7 +41,12 @@ const resourcesData: IResource[] = [
     category: "Lactancia",
     featured: true,
     date: "2024-11-20",
-    downloads: 0 // Se calculará dinámicamente
+    downloads: 0, // Se calculará dinámicamente
+    includeInSubscription: false,
+    tags: ["Lactancia", "Sueño nocturno", "Alimentación"],
+    limitDate: "2024-12-30", // Fecha cercana para aumentar urgencia
+    downloadLimit: 500,
+    currentDownloads: 395 // 79% de 500 - casi cerca del límite
   },
   {
     id: "3",
@@ -52,7 +59,9 @@ const resourcesData: IResource[] = [
     url: "/recursos/curso-desarrollo-sueno",
     category: "Sueño",
     date: "2024-12-05",
-    downloads: 0 // Se calculará dinámicamente
+    downloads: 0, // Se calculará dinámicamente
+    includeInSubscription: true,
+    tags: ["Desarrollo infantil", "Sueño", "Etapas"]
   },
   {
     id: "4",
@@ -65,7 +74,12 @@ const resourcesData: IResource[] = [
     url: "/recursos/senales-hambre",
     category: "Lactancia",
     date: "2025-01-18",
-    downloads: 0 // Se calculará dinámicamente
+    downloads: 0, // Se calculará dinámicamente
+    includeInSubscription: false,
+    tags: ["Lactancia", "Alimentación", "Lenguaje corporal"],
+    limitDate: "2025-04-20",
+    downloadLimit: 400,
+    currentDownloads: 244 // 61% de 400
   },
   {
     id: "5",
@@ -78,7 +92,9 @@ const resourcesData: IResource[] = [
     url: "/recursos/calendario-desarrollo",
     category: "Desarrollo",
     date: "2025-02-01",
-    downloads: 0 // Se calculará dinámicamente
+    downloads: 0, // Se calculará dinámicamente
+    includeInSubscription: true,
+    tags: ["Desarrollo", "Primer año", "Hitos"]
   },
   {
     id: "6",
@@ -91,7 +107,9 @@ const resourcesData: IResource[] = [
     url: "/recursos/canciones-cuna",
     category: "Sueño",
     date: "2025-02-15",
-    downloads: 0 // Se calculará dinámicamente
+    downloads: 0, // Se calculará dinámicamente
+    includeInSubscription: true,
+    tags: ["Música", "Relajación", "Sueño infantil"]
   }
 ];
 
@@ -121,11 +139,13 @@ export default function ResourcesPage() {
   const categoryParam: string = searchParams?.get('categoria') || 'todos';
   const onlyFreeParam: boolean = searchParams?.get('gratuito') === 'true';
   const sortOptionParam: SortOption = (searchParams?.get('ordenar') as SortOption) || 'relevance';
+  const tagParam: string = searchParams?.get('tag') || '';
 
   // Estado para filtros y ordenación
   const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam);
   const [onlyFree, setOnlyFree] = useState<boolean>(onlyFreeParam);
   const [sortOption, setSortOption] = useState<SortOption>(sortOptionParam);
+  const [selectedTag, setSelectedTag] = useState<string>(tagParam);
   
   // Estado para recursos filtrados
   const [filteredResources, setFilteredResources] = useState<IResource[]>(resourcesWithDownloads);
@@ -150,9 +170,14 @@ export default function ResourcesPage() {
       params.set('ordenar', sortOption);
     }
 
+    // Añadir el parámetro de tag si está seleccionado
+    if (selectedTag) {
+      params.set('tag', selectedTag);
+    }
+
     const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
     router.replace(newUrl, { scroll: false });
-  }, [selectedCategory, onlyFree, sortOption, pathname, router]);
+  }, [selectedCategory, onlyFree, sortOption, selectedTag, pathname, router]);
 
   // Aplicar filtros y ordenación cuando cambien los parámetros
   useEffect(() => {
@@ -165,6 +190,15 @@ export default function ResourcesPage() {
         const normalizeString = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         
         return normalizeString(resource.category) === normalizeString(selectedCategory);
+      });
+    }
+    
+    // Filtrar por tag si hay uno seleccionado
+    if (selectedTag) {
+      filtered = filtered.filter(resource => {
+        return resource.tags?.some(tag => 
+          normalizeString(tag) === normalizeString(selectedTag)
+        );
       });
     }
     
@@ -214,6 +248,10 @@ export default function ResourcesPage() {
     setSortOption(option);
   };
 
+  const handleTagChange = (tag: string) => {
+    setSelectedTag(tag);
+  };
+
   // Comprobar si hay recursos para mostrar
   const hasResources = filteredResources.length > 0;
 
@@ -243,6 +281,7 @@ export default function ResourcesPage() {
                   onFreeToggleChange={handleFreeToggleChange}
                   onSortChange={handleSortChange}
                   sortOption={sortOption}
+                  onTagChange={handleTagChange}
                 />
               </div>
             </section>
