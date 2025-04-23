@@ -25,8 +25,8 @@ export default function ViaLacteaContact() {
               <div>
                 <h5 className="mb-0">Instagram</h5>
                 <p className="mb-3">
-                  <a href="https://www.instagram.com/vialactea_suenoylactancia/" target="_blank" rel="noreferrer" className="link-body">
-                    @vialactea_suenoylactancia
+                  <a href="https://www.instagram.com/vialacteasuenoylactancia/" target="_blank" rel="noreferrer" className="link-body">
+                    @vialacteasuenoylactancia
                   </a>
                 </p>
               </div>

@@ -86,7 +86,10 @@ export default function ResourceCard({
         <div className="d-flex flex-column gap-2 mt-auto">
           {/* Precio o badge gratuito */}
           {isFree ? (
-            <span className="badge bg-pale-green text-green rounded-pill py-2 px-3 fs-15 align-self-start mb-2">GRATUITO</span>
+            <div className="d-flex align-items-baseline mb-2">
+              <span className="text-decoration-line-through text-muted me-2 fs-15">19.99€</span>
+              <span className="fs-18 fw-bold text-primary">0€</span>
+            </div>
           ) : (
             <div className="d-flex align-items-baseline mb-2">
               <span className="fs-18 fw-bold text-primary me-2">{price.toFixed(2)}€</span>

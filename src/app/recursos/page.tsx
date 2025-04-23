@@ -44,7 +44,7 @@ const resourcesData: IResource[] = [
     downloads: 0, // Se calculará dinámicamente
     includeInSubscription: false,
     tags: ["Lactancia", "Sueño nocturno", "Alimentación"],
-    limitDate: "2024-12-30", // Fecha cercana para aumentar urgencia
+    limitDate: new Date().toISOString().split('T')[0], // Fecha actual para que siempre sea "último día"
     downloadLimit: 500,
     currentDownloads: 395 // 79% de 500 - casi cerca del límite
   },
@@ -110,6 +110,126 @@ const resourcesData: IResource[] = [
     downloads: 0, // Se calculará dinámicamente
     includeInSubscription: true,
     tags: ["Música", "Relajación", "Sueño infantil"]
+  },
+  // Nuevo - 1 día restante, pocos cupos
+  {
+    id: "7",
+    image: "/img/via-lactea/photos/recurso-mockup.jpg",
+    title: "10 consejos para amamantar gemelos",
+    type: "Guía PDF",
+    description: "Consejos prácticos para facilitar la lactancia de gemelos o múltiples. Aprende técnicas de posicionamiento y organización.",
+    price: 0,
+    isFree: true,
+    url: "/recursos/amamantar-gemelos",
+    category: "Lactancia",
+    date: "2024-08-25",
+    downloads: 0,
+    includeInSubscription: false,
+    tags: ["Lactancia", "Gemelos", "Múltiples"],
+    // Un día después de hoy
+    limitDate: (() => {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return tomorrow.toISOString().split('T')[0];
+    })(),
+    downloadLimit: 300,
+    currentDownloads: 285 // 95% ocupado - muy pocos cupos
+  },
+  // Nuevo - 3 días restantes, cupos medios
+  {
+    id: "8",
+    image: "/img/via-lactea/photos/recurso-mockup.jpg",
+    title: "Rutinas para bebés de alto contacto",
+    type: "Infografía",
+    description: "Organiza tu día con un bebé de alto contacto. Estrategias para respetar sus necesidades y mantener la calma.",
+    price: 0,
+    isFree: true,
+    url: "/recursos/bebes-alto-contacto",
+    category: "Sueño",
+    date: "2024-09-10",
+    downloads: 0,
+    includeInSubscription: false,
+    tags: ["Colecho", "Porteo", "Alto contacto"],
+    // 3 días después de hoy
+    limitDate: (() => {
+      const date = new Date();
+      date.setDate(date.getDate() + 3);
+      return date.toISOString().split('T')[0];
+    })(),
+    downloadLimit: 350,
+    currentDownloads: 240 // 69% ocupado
+  },
+  // Nuevo - 7 días restantes, bastantes cupos
+  {
+    id: "9",
+    image: "/img/via-lactea/photos/recurso-mockup.jpg",
+    title: "Comunicación temprana con tu bebé",
+    type: "Guía PDF",
+    description: "Aprende a reconocer y responder a las primeras señales comunicativas de tu bebé, fortaleciendo vuestro vínculo.",
+    price: 0,
+    isFree: true,
+    url: "/recursos/comunicacion-temprana",
+    category: "Desarrollo",
+    date: "2024-10-05",
+    downloads: 0,
+    includeInSubscription: false,
+    tags: ["Comunicación", "Desarrollo", "Vínculo"],
+    // 7 días después de hoy
+    limitDate: (() => {
+      const date = new Date();
+      date.setDate(date.getDate() + 7);
+      return date.toISOString().split('T')[0];
+    })(),
+    downloadLimit: 400,
+    currentDownloads: 200 // 50% ocupado
+  },
+  // Nuevo - 14 días restantes, muchos cupos
+  {
+    id: "10",
+    image: "/img/via-lactea/photos/recurso-mockup.jpg",
+    title: "Guía de alimentación complementaria",
+    type: "Guía PDF",
+    description: "Todo lo que necesitas saber para iniciar la alimentación complementaria. Includes recetas adaptadas por etapas.",
+    price: 0,
+    isFree: true,
+    url: "/recursos/alimentacion-complementaria",
+    category: "Lactancia",
+    date: "2024-07-15",
+    downloads: 0,
+    includeInSubscription: false,
+    tags: ["Alimentación", "BLW", "Destete"],
+    // 14 días después de hoy
+    limitDate: (() => {
+      const date = new Date();
+      date.setDate(date.getDate() + 14);
+      return date.toISOString().split('T')[0];
+    })(),
+    downloadLimit: 500,
+    currentDownloads: 150 // 30% ocupado
+  },
+  // Nuevo - 30 días restantes, pocos cupos usados
+  {
+    id: "11",
+    image: "/img/via-lactea/photos/recurso-mockup.jpg",
+    title: "Checklist para viajes con bebés",
+    type: "Checklist",
+    description: "Lista completa de todo lo necesario para viajar con tu bebé. Organizada por categorías y con consejos adicionales.",
+    price: 0,
+    isFree: true,
+    url: "/recursos/viajes-bebes",
+    category: "Desarrollo",
+    date: "2024-06-20",
+    downloads: 0,
+    includeInSubscription: false,
+    tags: ["Viajes", "Organización", "Consejos prácticos"],
+    // 30 días después de hoy
+    limitDate: (() => {
+      const date = new Date();
+      date.setDate(date.getDate() + 30);
+      return date.toISOString().split('T')[0];
+    })(),
+    downloadLimit: 600,
+    currentDownloads: 120 // 20% ocupado
   }
 ];
 
