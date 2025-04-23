@@ -52,7 +52,7 @@ export function UrgencyProgressBar({
         </small>
         
         <small className="text-muted">
-          Hasta el {formatSimpleDate(limitDate)}
+          Gratis hasta el {formatSimpleDate(limitDate)}
         </small>
       </div>
       
