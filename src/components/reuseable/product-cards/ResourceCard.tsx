@@ -162,17 +162,15 @@ export default function ResourceCard({
         
         {/* Sección inferior siempre al final */}
         <div className="mt-3">
-          {/* Descargas y fecha juntas */}
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <div className="text-muted fs-sm">
-              <i className="uil uil-download-alt me-1"></i>
-              {downloads.toLocaleString()}
-            </div>
-            
+          {/* Fecha y descargas juntas */}
+          <div className="d-flex align-items-center mb-2">
             {formattedDate && (
-              <div className="text-muted fs-sm">
+              <div className="text-muted fs-sm d-flex align-items-center">
                 <i className="uil uil-calendar-alt me-1"></i>
                 {formattedDate}
+                <span className="mx-2">•</span>
+                <i className="uil uil-download-alt me-1"></i>
+                {downloads.toLocaleString()}
               </div>
             )}
           </div>

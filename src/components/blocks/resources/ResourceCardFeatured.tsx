@@ -129,16 +129,14 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
 
         <div className="card-footer">
           <ul className="post-meta d-flex mb-3 align-items-center">
-            <li className="post-date d-flex gap-3">
-              <span>
-                <i className="uil uil-download-alt me-1"></i>
-                {downloads.toLocaleString()}
-              </span>
-              
+            <li className="post-date">
               {formattedDate && (
-                <span>
+                <span className="d-flex align-items-center">
                   <i className="uil uil-calendar-alt me-1"></i>
                   {formattedDate}
+                  <span className="mx-2">•</span>
+                  <i className="uil uil-download-alt me-1"></i>
+                  {downloads.toLocaleString()}
                 </span>
               )}
             </li>
