@@ -104,9 +104,11 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
               <NextLink 
                 href={url}
                 title={
-                  isFree ? "Obtener ahora" : "Ver detalles"
+                  isFree ? 
+                  <><i className="uil uil-download-alt me-1"></i>Descargar</> : 
+                  "Ver detalles"
                 }
-                className={`btn ${isFree ? 'btn-success text-white' : 'btn-primary'} rounded-pill fw-bold px-3 py-2`}
+                className={`btn ${isFree ? 'bg-primary text-white' : 'btn-primary'} rounded-pill fw-bold px-3 py-2 d-flex align-items-center`}
               />
             </li>
           </ul>

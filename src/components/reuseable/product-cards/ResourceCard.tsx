@@ -103,8 +103,11 @@ export default function ResourceCard({
           <div className="d-flex justify-content-between align-items-center">
             <NextLink 
               href={url} 
-              className={`btn ${isFree ? 'btn-success text-white' : 'btn-primary'} rounded-pill fw-bold px-3 py-2`}
-              title={isFree ? "Obtener ahora" : "Ver detalles"}
+              className={`btn ${isFree ? 'bg-primary text-white' : 'btn-primary'} rounded-pill fw-bold px-3 py-2 d-flex align-items-center`}
+              title={isFree ? 
+                <><i className="uil uil-download-alt me-1"></i> Descargar</> : 
+                "Ver detalles"
+              }
             />
             <div className="text-muted">
               <i className="uil uil-download-alt me-1"></i>
