@@ -47,7 +47,8 @@ export const footerNavigation = {
   ],
   company: [
     { id: 1, title: "Sobre mí", url: "/sobre-mi" },
-    { id: 2, title: "FAQ", url: "/faq" }
+    { id: 2, title: "FAQ", url: "/faq" },
+    { id: 3, title: "Recursos", url: "/recursos" }
   ],
   legal: [
     { id: 1, title: "Política de privacidad", url: "/politica-privacidad" },

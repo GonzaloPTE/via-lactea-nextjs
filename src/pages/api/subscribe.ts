@@ -19,11 +19,11 @@ export default async function handler(
   try {
     const { email, turnstileToken } = req.body;
 
-    // Verificar el token de Turnstile
-    if (!turnstileToken) {
+    // Validar el email
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Verificación de captcha requerida' 
+        message: 'Email inválido' 
       });
     }
 

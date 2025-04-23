@@ -29,7 +29,7 @@
 - Añadir links a páginas detalladas para cada servicio
 - Hacer ajustes mínimos de estilo para mantener la identidad visual
 
-### TASK-007-04: Crear componente ViaLacteaProducts
+### TASK-007-04: Crear componente ViaLacteaProducts [EN PROGRESO]
 - **Identificar componentes del tema premium** que puedan servir para mostrar productos (grids, galleries, tabs, etc.)
 - Adaptar y utilizar estos componentes existentes en lugar de crear nuevos
 - Desarrollar `ViaLacteaProducts.tsx` como una composición de componentes del tema

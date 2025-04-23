@@ -10,78 +10,13 @@ import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import { helps, learnMore } from "data/via-lactea-footer";
 import { ServiceItem } from "data/service-data";
 import { serviceList } from "data/service-data";
+import SubscriptionForm from "components/reuseable/SubscriptionForm";
 
 // =================================================
 type Footer3Props = { hiddenNewsletter?: boolean; service?: ServiceItem };
 // =================================================
 
 export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Props) {
-  const [submitting, setSubmitting] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validar token de Turnstile antes de enviar
-    /*if (!validateTurnstileToken(turnstileToken)) {
-      const errorElement = document.getElementById('newsletter-error');
-      if (errorElement) {
-        errorElement.style.display = 'block';
-        errorElement.textContent = 'Error en la verificación de seguridad. Por favor, intenta nuevamente.';
-      }
-      return;
-    }*/
-
-    setSubmitting(true);
-    
-    const email = (document.getElementById('newsletter-email') as HTMLInputElement).value;
-    if (!email) {
-      setSubmitting(false);
-      return;
-    }
-    
-    try {
-      // Call HubSpot API to subscribe the email to the list
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, turnstileToken }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        // Show success message
-        const successElement = document.getElementById('newsletter-success');
-        if (successElement) {
-          successElement.style.display = 'block';
-          successElement.textContent = 'Gracias por suscribirte a nuestro boletín';
-        }
-        // Clear the form
-        (document.getElementById('newsletter-email') as HTMLInputElement).value = '';
-        // Reset turnstile token
-        setTurnstileToken(null);
-      } else {
-        // Show error message
-        const errorElement = document.getElementById('newsletter-error');
-        if (errorElement) {
-          errorElement.style.display = 'block';
-          errorElement.textContent = data.message || 'Ha ocurrido un error. Inténtalo de nuevo.';
-        }
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      const errorElement = document.getElementById('newsletter-error');
-      if (errorElement) {
-        errorElement.style.display = 'block';
-        errorElement.textContent = 'Ha ocurrido un error. Inténtalo de nuevo.';
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   // Mapeo de color Tailwind
   const colorMap: Record<string,string> = { purple:'grape', aqua:'aqua', green:'green', red:'red', blue:'blue', teal:'sky', yellow:'yellow', orange:'orange', violet:'violet', pink:'pink' };
   const tailwindColor = service?.color ? (colorMap[service.color] || 'grape') : 'grape';
@@ -111,35 +46,14 @@ export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Pr
                       theme="dark"
                       appearance="execute"
                     >*/}
-                      <form
-                        id="newsletter-form"
-                        className="validate dark-fields"
-                        onSubmit={handleNewsletterSubmit}
-                      >
-                        <div className="input-group form-floating">
-                          <input
-                            type="email"
-                            id="newsletter-email"
-                            placeholder="Email Address"
-                            className="required email form-control text-white placeholder-white"
-                            required
-                          />
-                          <label htmlFor="newsletter-email" className="position-absolute text-white">
-                            Correo Electrónico
-                          </label>
-                          <input
-                            type="submit"
-                            className={`btn btn-soft-${tailwindColor}`}
-                            value="Suscribirse"
-                            disabled={submitting}
-                          />
-                        </div>
+                      <h5 className="mb-3 text-white">Únete a nuestra comunidad</h5>
 
-                        <div className="response-messages">
-                          <div className="response" id="newsletter-error" style={{ display: "none", color: "#ff8b8b", marginTop: "10px" }} />
-                          <div className="response" id="newsletter-success" style={{ display: "none", color: "#90ee90", marginTop: "10px" }} />
-                        </div>
-                      </form>
+                      <SubscriptionForm 
+                        theme="dark"
+                        colorAccent={tailwindColor}
+                        successMessage="¡Gracias por suscribirte a nuestro newsletter!"
+                        errorMessage="Hubo un problema al procesar tu solicitud. Inténtalo de nuevo."
+                      />
                     {/*</TurnstileProtection>*/}
                   </div>
                 </div>
