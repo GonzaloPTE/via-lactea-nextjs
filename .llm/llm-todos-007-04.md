@@ -22,56 +22,41 @@
   - `src/utils/downloads.ts` (nuevo) - Función `calculateDownloads` que utiliza la fecha para calcular descargas
   - `src/app/recursos/page.tsx` - Integración del cálculo dinámico de descargas
 
+### 4. Unificación del modelo de datos y enrutamiento por slug
+- **Problema**: Los datos de recursos estaban dispersos entre `resourcesData` en `page.tsx` y el modelo `ProductItem` en `product-data.ts`, causando inconsistencias y problemas de navegación con las URLs basadas en slug.
+- **Solución**: Migración completa al modelo `ProductItem` y cambio de la estructura de carpetas para usar [slug] en lugar de [id].
+- **Archivos modificados/creados**:
+  - `src/data/product-data.ts` - Ampliación con los datos de recursos adicionales en formato `ProductItem`
+  - `src/app/recursos/page.tsx` - Eliminación de `resourcesData` y uso del modelo unificado `ProductItem`
+  - `src/app/recursos/[slug]/page.tsx` - Nuevo archivo para reemplazar la estructura anterior basada en [id]
+  - Eliminación de `src/app/recursos/[id]/page.tsx`
+
 ## Estructura y archivos clave
 
 ### Componentes de recursos
 - `src/app/recursos/page.tsx` - Página principal de recursos con filtros y datos
+- `src/app/recursos/[slug]/page.tsx` - Página de detalle del recurso basada en slug
 - `src/components/blocks/resources/ResourcesLayout.tsx` - Layout general de la página
 - `src/components/blocks/resources/ResourcesSidebar.tsx` - Barra lateral con filtros
 - `src/components/blocks/resources/ResourceCardFeatured.tsx` - Tarjeta para recursos destacados
 - `src/components/reuseable/product-cards/ResourceCard.tsx` - Tarjeta para recursos regulares
+- `src/components/reuseable/products/ResourceDetailActions.tsx` - Acciones para el detalle del producto
+- `src/components/reuseable/products/ResourceDetailDescription.tsx` - Descripción para el detalle del producto
+- `src/components/reuseable/products/ResourceDetailAuthor.tsx` - Información del autor en el detalle del producto
 
 ### Utilidades
 - `src/utils/downloads.ts` - Cálculo de descargas basado en fechas
 
 ### Datos
-- La estructura de los recursos incluye:
-  ```typescript
-  interface IResource {
-    id: string;
-    image: string;
-    title: string;
-    type: string;
-    description?: string;
-    price: number;
-    isFree?: boolean;
-    url: string;
-    category: string;
-    date?: string;
-    featured?: boolean;
-    downloads?: number;
-  }
-  ```
+- `src/data/product-data.ts` - Modelo unificado `ProductItem` para todos los recursos
 
 ## Algoritmos implementados
-- **Normalización de cadenas**: `str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()`
-- **Cálculo de descargas**: 
-  ```typescript
-  const calculateDownloads = (publishDate: string): number => {
-    const pubDate = new Date(publishDate);
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - pubDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    // Algoritmo: base + (días * factor aleatorio)
-    const base = 50;
-    const dailyFactor = 2 + Math.random() * 3; // Entre 2 y 5 descargas por día
-    
-    return Math.floor(base + (diffDays * dailyFactor));
-  };
-  ```
+- **Normalización de cadenas**: Función para eliminar acentos y convertir a minúsculas
+- **Cálculo de descargas**: Algoritmo basado en la antigüedad de la publicación
+- **Mapeo de modelos**: Conversión de `ProductItem` a `IResource` para mantener compatibilidad con componentes existentes
 
 ## Pendientes y consideraciones
 - Algunas fechas de recursos están establecidas en el futuro (2025), lo que resultará en contadores de descargas mínimos.
 - Las fechas podrían ajustarse a fechas pasadas para mostrar números de descargas más realistas.
 - El diseño actual muestra las descargas tanto en las tarjetas destacadas como en las regulares, con estilos consistentes.
+- La navegación ahora utiliza slugs en lugar de IDs, mejorando el SEO y la experiencia de usuario.

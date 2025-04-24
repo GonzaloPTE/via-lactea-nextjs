@@ -28,6 +28,7 @@ const iconUrls = {
   infographic: `${ICON_PATH}design.svg`,
   subscription: `${ICON_PATH}employees.svg`,
   pdf: `${ICON_PATH}document.svg`,
+  module: `${ICON_PATH}video-chat.svg`,
 };
 
 // Definición de formatos de producto
@@ -611,6 +612,552 @@ export const getFormatDetails = (productId: number, format: ProductFormat) => {
 export const getProductsByDifficulty = (difficulty: string) => {
   return productList.filter(product => product.difficulty === difficulty);
 };
+
+// Agregar productos adicionales convertidos desde resourcesData
+const additionalProducts: ProductItem[] = [
+  {
+    id: 3,
+    title: "Guía de Sueño - 0 a 6 meses",
+    slug: "guia-sueno-0-6-meses",
+    level: "module",
+    levelLabel: "Guía",
+    formats: ["guide", "pdf"],
+    formatLabels: ["Guía", "PDF"],
+    primaryFormat: "guide",
+    iconUrl: iconUrls.guide,
+    description: "Soluciones prácticas para mejorar el sueño de bebés de 0 a 6 meses. Aprende técnicas efectivas para ayudar a tu bebé a dormir mejor y establecer rutinas saludables.",
+    shortDescription: "Soluciones prácticas para mejorar el sueño de bebés de 0 a 6 meses.",
+    prices: [
+      { format: "guide", price: 19.99 },
+      { format: "pdf", price: 19.99 }
+    ],
+    isFree: false,
+    includeInSubscription: true,
+    publishDate: "2024-10-15",
+    topic: "sueño",
+    benefits: [
+      {
+        id: 1,
+        title: "Información precisa sobre horas de sueño necesarias",
+        icon: ClockThree,
+        description: "Aprende exactamente cuánto sueño necesita tu bebé en cada etapa de desarrollo."
+      },
+      {
+        id: 2,
+        title: "Rutinas efectivas adaptadas a cada mes",
+        icon: List,
+        description: "Rutinas personalizadas según la edad de tu bebé."
+      }
+    ],
+    highlighted: true,
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Sueño infantil", "Rutinas", "Recién nacido"],
+    formatDetails: [
+      {
+        format: "guide",
+        details: {
+          pageCount: 50,
+          fileSize: "7.5 MB",
+          fileFormat: "PDF"
+        }
+      }
+    ],
+    difficulty: "principiante",
+    downloads: calculateDownloads("2024-10-15")
+  },
+  {
+    id: 4,
+    title: "Cómo manejar las tomas nocturnas",
+    slug: "tomas-nocturnas",
+    level: "publication",
+    levelLabel: "Infografía",
+    formats: ["infographic", "pdf"],
+    formatLabels: ["Infografía", "PDF"],
+    primaryFormat: "infographic",
+    iconUrl: iconUrls.infographic,
+    description: "Consejos para gestionar las tomas nocturnas manteniendo la lactancia. Una guía visual con pasos prácticos para equilibrar el descanso y la alimentación de tu bebé.",
+    shortDescription: "Consejos para gestionar las tomas nocturnas manteniendo la lactancia.",
+    prices: [
+      { format: "infographic", price: 0 },
+      { format: "pdf", price: 0 }
+    ],
+    isFree: true,
+    includeInSubscription: false,
+    publishDate: "2024-11-20",
+    topic: "lactancia",
+    benefits: [
+      {
+        id: 1,
+        title: "Identificación de patrones de alimentación nocturna",
+        icon: ClockThree,
+        description: "Reconoce los patrones normales de tu bebé durante la noche."
+      },
+      {
+        id: 2,
+        title: "Técnicas para mantener la lactancia",
+        icon: Shield,
+        description: "Estrategias para equilibrar tu descanso sin interrumpir la lactancia."
+      }
+    ],
+    highlighted: true,
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Lactancia", "Sueño nocturno", "Alimentación"],
+    formatDetails: [
+      {
+        format: "infographic",
+        details: {
+          dimensions: "1920x1080px",
+          fileSize: "2.5 MB",
+          fileFormat: "PDF/PNG"
+        }
+      }
+    ],
+    difficulty: "principiante",
+    downloads: calculateDownloads("2024-11-20")
+  },
+  {
+    id: 5,
+    title: "Desarrollo del sueño por etapas",
+    slug: "curso-desarrollo-sueno",
+    level: "course",
+    levelLabel: "Curso",
+    formats: ["course", "module"],
+    formatLabels: ["Curso", "Módulos"],
+    primaryFormat: "course",
+    iconUrl: iconUrls.video,
+    description: "Todo lo que necesitas saber sobre el desarrollo del sueño desde el nacimiento hasta los 4 años. Incluye videos, material descargable y ejemplos prácticos.",
+    shortDescription: "Curso completo sobre desarrollo del sueño infantil de 0 a 4 años.",
+    prices: [
+      { format: "course", price: 49.99 },
+      { format: "module", price: 19.99 }
+    ],
+    isFree: false,
+    includeInSubscription: true,
+    publishDate: "2024-12-05",
+    topic: "sueño",
+    benefits: [
+      {
+        id: 1,
+        title: "Conocimientos avanzados sobre el sueño infantil",
+        icon: Shield,
+        description: "Base científica actualizada sobre el desarrollo del sueño."
+      },
+      {
+        id: 2,
+        title: "Material multimedia para cada etapa",
+        icon: VideoEditing,
+        description: "Videos explicativos y ejemplos prácticos para cada edad."
+      }
+    ],
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Desarrollo infantil", "Sueño", "Etapas"],
+    formatDetails: [
+      {
+        format: "course",
+        details: {
+          duration: "6h 30min",
+          lessonCount: 24,
+          videoQuality: "HD"
+        }
+      }
+    ],
+    difficulty: "intermedio",
+    downloads: calculateDownloads("2024-12-05")
+  },
+  {
+    id: 6,
+    title: "Señales tempranas de hambre",
+    slug: "senales-hambre",
+    level: "publication",
+    levelLabel: "Infografía",
+    formats: ["infographic", "pdf"],
+    formatLabels: ["Infografía", "PDF"],
+    primaryFormat: "infographic",
+    iconUrl: iconUrls.infographic,
+    description: "Aprende a reconocer las señales sutiles que indican que tu bebé tiene hambre antes de que llegue al llanto.",
+    shortDescription: "Guía visual para reconocer las señales de hambre antes del llanto.",
+    prices: [
+      { format: "infographic", price: 0 },
+      { format: "pdf", price: 0 }
+    ],
+    isFree: true,
+    includeInSubscription: false,
+    publishDate: "2025-01-18",
+    topic: "lactancia",
+    benefits: [
+      {
+        id: 1,
+        title: "Reconocimiento de señales sutiles",
+        icon: Target,
+        description: "Identifica las señales tempranas para anticiparte a las necesidades de tu bebé."
+      },
+      {
+        id: 2,
+        title: "Menos llanto, más calma",
+        icon: Shield,
+        description: "Cómo mantener la calma familiar respondiendo a tiempo."
+      }
+    ],
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Lactancia", "Alimentación", "Lenguaje corporal"],
+    formatDetails: [
+      {
+        format: "infographic",
+        details: {
+          dimensions: "1920x1080px",
+          fileSize: "1.8 MB",
+          fileFormat: "PDF/PNG"
+        }
+      }
+    ],
+    difficulty: "principiante",
+    downloads: calculateDownloads("2025-01-18")
+  },
+  {
+    id: 7,
+    title: "Calendario de desarrollo del primer año",
+    slug: "calendario-desarrollo",
+    level: "module",
+    levelLabel: "Calendario",
+    formats: ["pdf", "guide"],
+    formatLabels: ["PDF", "Guía"],
+    primaryFormat: "pdf",
+    iconUrl: iconUrls.pdf,
+    description: "Un calendario mensual con los hitos de desarrollo más importantes del primer año de vida.",
+    shortDescription: "Calendario detallado de hitos del desarrollo en el primer año.",
+    prices: [
+      { format: "pdf", price: 9.99 },
+      { format: "guide", price: 9.99 }
+    ],
+    isFree: false,
+    includeInSubscription: true,
+    publishDate: "2025-02-01",
+    topic: "desarrollo",
+    benefits: [
+      {
+        id: 1,
+        title: "Seguimiento mes a mes del desarrollo",
+        icon: ClockThree,
+        description: "Hitos de desarrollo organizados cronológicamente."
+      },
+      {
+        id: 2,
+        title: "Actividades recomendadas por edad",
+        icon: LightBulb,
+        description: "Propuestas de actividades para estimular cada área."
+      }
+    ],
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Desarrollo", "Primer año", "Hitos"],
+    formatDetails: [
+      {
+        format: "pdf",
+        details: {
+          pageCount: 24,
+          fileSize: "5.2 MB",
+          fileFormat: "PDF"
+        }
+      }
+    ],
+    difficulty: "principiante",
+    downloads: calculateDownloads("2025-02-01")
+  },
+  {
+    id: 8,
+    title: "Canciones de cuna recomendadas",
+    slug: "canciones-cuna",
+    level: "module",
+    levelLabel: "Audio",
+    formats: ["module"],
+    formatLabels: ["Audio"],
+    primaryFormat: "module",
+    iconUrl: iconUrls.module,
+    description: "Colección de nanas y sonidos relajantes perfectos para ayudar a dormir a tu bebé.",
+    shortDescription: "Colección de nanas y sonidos para ayudar a dormir a tu bebé.",
+    prices: [
+      { format: "module", price: 7.99 }
+    ],
+    isFree: false,
+    includeInSubscription: true,
+    publishDate: "2025-02-15",
+    topic: "sueño",
+    benefits: [
+      {
+        id: 1,
+        title: "Música seleccionada para mejorar el sueño",
+        icon: CloudComputingTwo,
+        description: "Melodías específicas que favorecen la relajación."
+      },
+      {
+        id: 2,
+        title: "Sonidos blancos y ruido rosa",
+        icon: Shield,
+        description: "Variedad de sonidos ambientales para diferentes necesidades."
+      }
+    ],
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Música", "Relajación", "Sueño infantil"],
+    formatDetails: [
+      {
+        format: "module",
+        details: {
+          duration: "60min",
+          fileSize: "120 MB",
+          fileFormat: "MP3"
+        }
+      }
+    ],
+    difficulty: "principiante",
+    downloads: calculateDownloads("2025-02-15")
+  },
+  {
+    id: 9,
+    title: "10 consejos para amamantar gemelos",
+    slug: "amamantar-gemelos",
+    level: "publication",
+    levelLabel: "Guía PDF",
+    formats: ["guide", "pdf"],
+    formatLabels: ["Guía", "PDF"],
+    primaryFormat: "guide",
+    iconUrl: iconUrls.guide,
+    description: "Consejos prácticos para facilitar la lactancia de gemelos o múltiples. Aprende técnicas de posicionamiento y organización.",
+    shortDescription: "Consejos prácticos para amamantar gemelos o múltiples.",
+    prices: [
+      { format: "guide", price: 0 },
+      { format: "pdf", price: 0 }
+    ],
+    isFree: true,
+    includeInSubscription: false,
+    publishDate: "2024-08-25",
+    topic: "lactancia",
+    benefits: [
+      {
+        id: 1,
+        title: "Posiciones optimizadas para gemelos",
+        icon: Shield,
+        description: "Las mejores posiciones para amamantar a dos bebés simultáneamente."
+      },
+      {
+        id: 2,
+        title: "Organización y logística",
+        icon: List,
+        description: "Cómo organizar tu tiempo y espacio para facilitar la lactancia múltiple."
+      }
+    ],
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Lactancia", "Gemelos", "Múltiples"],
+    formatDetails: [
+      {
+        format: "guide",
+        details: {
+          pageCount: 15,
+          fileSize: "3.2 MB",
+          fileFormat: "PDF"
+        }
+      }
+    ],
+    difficulty: "intermedio",
+    downloads: calculateDownloads("2024-08-25")
+  },
+  {
+    id: 10,
+    title: "Rutinas para bebés de alto contacto",
+    slug: "bebes-alto-contacto",
+    level: "publication",
+    levelLabel: "Infografía",
+    formats: ["infographic", "pdf"],
+    formatLabels: ["Infografía", "PDF"],
+    primaryFormat: "infographic",
+    iconUrl: iconUrls.infographic,
+    description: "Organiza tu día con un bebé de alto contacto. Estrategias para respetar sus necesidades y mantener la calma.",
+    shortDescription: "Estrategias para organizar tu día con un bebé de alto contacto.",
+    prices: [
+      { format: "infographic", price: 0 },
+      { format: "pdf", price: 0 }
+    ],
+    isFree: true,
+    includeInSubscription: false,
+    publishDate: "2024-09-10",
+    topic: "sueño",
+    benefits: [
+      {
+        id: 1,
+        title: "Rutinas respetuosas",
+        icon: Shield,
+        description: "Cómo crear rutinas que respeten las necesidades de contacto."
+      },
+      {
+        id: 2,
+        title: "Porteo y sueño seguro",
+        icon: LightBulb,
+        description: "Técnicas de porteo para facilitar el descanso."
+      }
+    ],
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Colecho", "Porteo", "Alto contacto"],
+    formatDetails: [
+      {
+        format: "infographic",
+        details: {
+          dimensions: "1920x1080px",
+          fileSize: "2.2 MB",
+          fileFormat: "PDF/PNG"
+        }
+      }
+    ],
+    difficulty: "principiante",
+    downloads: calculateDownloads("2024-09-10")
+  },
+  {
+    id: 11,
+    title: "Comunicación temprana con tu bebé",
+    slug: "comunicacion-temprana",
+    level: "module",
+    levelLabel: "Guía PDF",
+    formats: ["guide", "pdf"],
+    formatLabels: ["Guía", "PDF"],
+    primaryFormat: "guide",
+    iconUrl: iconUrls.guide,
+    description: "Aprende a reconocer y responder a las primeras señales comunicativas de tu bebé, fortaleciendo vuestro vínculo.",
+    shortDescription: "Cómo reconocer y responder a las señales comunicativas de tu bebé.",
+    prices: [
+      { format: "guide", price: 0 },
+      { format: "pdf", price: 0 }
+    ],
+    isFree: true,
+    includeInSubscription: false,
+    publishDate: "2024-10-05",
+    topic: "desarrollo",
+    benefits: [
+      {
+        id: 1,
+        title: "Lenguaje pre-verbal",
+        icon: ChatTwo,
+        description: "Cómo interpretar el lenguaje corporal y las vocalizaciones."
+      },
+      {
+        id: 2,
+        title: "Fortalecimiento del vínculo",
+        icon: Shield,
+        description: "Actividades para fortalecer la conexión emocional."
+      }
+    ],
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Comunicación", "Desarrollo", "Vínculo"],
+    formatDetails: [
+      {
+        format: "guide",
+        details: {
+          pageCount: 20,
+          fileSize: "4.5 MB",
+          fileFormat: "PDF"
+        }
+      }
+    ],
+    difficulty: "principiante",
+    downloads: calculateDownloads("2024-10-05")
+  },
+  {
+    id: 12,
+    title: "Guía de alimentación complementaria",
+    slug: "alimentacion-complementaria",
+    level: "module",
+    levelLabel: "Guía PDF",
+    formats: ["guide", "pdf"],
+    formatLabels: ["Guía", "PDF"],
+    primaryFormat: "guide",
+    iconUrl: iconUrls.guide,
+    description: "Todo lo que necesitas saber para iniciar la alimentación complementaria. Includes recetas adaptadas por etapas.",
+    shortDescription: "Guía completa para iniciar la alimentación complementaria con éxito.",
+    prices: [
+      { format: "guide", price: 0 },
+      { format: "pdf", price: 0 }
+    ],
+    isFree: true,
+    includeInSubscription: false,
+    publishDate: "2024-07-15",
+    topic: "lactancia",
+    benefits: [
+      {
+        id: 1,
+        title: "Introducción segura de alimentos",
+        icon: Shield,
+        description: "Calendario de introducción de alimentos según la edad."
+      },
+      {
+        id: 2,
+        title: "Recetas adaptadas por etapas",
+        icon: List,
+        description: "Recetas fáciles y nutritivas para cada etapa del desarrollo."
+      }
+    ],
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Alimentación", "BLW", "Destete"],
+    formatDetails: [
+      {
+        format: "guide",
+        details: {
+          pageCount: 35,
+          fileSize: "6.8 MB",
+          fileFormat: "PDF"
+        }
+      }
+    ],
+    difficulty: "principiante",
+    downloads: calculateDownloads("2024-07-15")
+  },
+  {
+    id: 13,
+    title: "Checklist para viajes con bebés",
+    slug: "viajes-bebes",
+    level: "publication",
+    levelLabel: "Checklist",
+    formats: ["pdf"],
+    formatLabels: ["PDF"],
+    primaryFormat: "pdf",
+    iconUrl: iconUrls.pdf,
+    description: "Lista completa de todo lo necesario para viajar con tu bebé. Organizada por categorías y con consejos adicionales.",
+    shortDescription: "Lista completa organizada por categorías para viajar con bebés.",
+    prices: [
+      { format: "pdf", price: 0 }
+    ],
+    isFree: true,
+    includeInSubscription: false,
+    publishDate: "2024-06-20",
+    topic: "desarrollo",
+    benefits: [
+      {
+        id: 1,
+        title: "Lista organizada por categorías",
+        icon: List,
+        description: "Artículos esenciales clasificados para no olvidar nada importante."
+      },
+      {
+        id: 2,
+        title: "Consejos para diferentes tipos de viaje",
+        icon: LightBulb,
+        description: "Recomendaciones específicas para viajes en avión, coche o tren."
+      }
+    ],
+    thumbnailUrl: "/img/via-lactea/photos/recurso-mockup.jpg",
+    tags: ["Viajes", "Organización", "Consejos prácticos"],
+    formatDetails: [
+      {
+        format: "pdf",
+        details: {
+          pageCount: 10,
+          fileSize: "2.1 MB",
+          fileFormat: "PDF"
+        }
+      }
+    ],
+    difficulty: "principiante",
+    downloads: calculateDownloads("2024-06-20")
+  }
+];
+
+// Agregar los productos adicionales a la lista principal
+productList.push(...additionalProducts);
 
 // Exportamos el listado para uso en componentes
 export default productList; 
