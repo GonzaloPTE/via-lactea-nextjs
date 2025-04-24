@@ -30,11 +30,6 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
     publishDate
   } = resource;
 
-  // Para depuración - verificar si los recursos gratuitos tienen datos de urgencia
-  if (isFree) {
-    console.log(`ResourceCardFeatured [${title}] - urgency data:`, { limitDate, downloadLimit, currentDownloads });
-  }
-  
   // Limitar las etiquetas mostradas para evitar desbordamiento (mostrar máximo 4)
   const displayTags = tags.slice(0, 4);
   const hasMoreTags = tags.length > 4;
@@ -89,7 +84,7 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
               {/* Precio */}
               {isFree ? (
                 <div className="d-flex align-items-baseline">
-                  <span className="text-decoration-line-through text-muted me-2 fs-15">19.99€</span>
+                  <span className="text-decoration-line-through text-danger me-2 fs-15">19.99€</span>
                   <span className="fs-24 fw-bold text-primary">0€</span>
                 </div>
               ) : (
@@ -102,17 +97,22 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
             {/* Tipo de producto y categoría */}
             <div className="d-flex justify-content-between align-items-center mb-3">
               {type && (
-                <h6 className="mb-0 text-muted">{type.toUpperCase()}</h6>
+                <h6 className="mb-0">{type.toUpperCase()}</h6>
               )}
               
               {category && (
-                <span className="text-muted fs-sm">Categoría: {category}</span>
+                <span className="fs-sm">{category}</span>
               )}
             </div>
-            
-            {/* Barra de urgencia para recursos gratuitos con fecha límite */}
-            {isFree && limitDate && downloadLimit && (
-              <div className="mb-4">
+          </div>
+
+          <div className="post-content">
+            <p>{description}</p>
+          </div>
+
+          {/* Barra de urgencia para recursos gratuitos con fecha límite */}
+          {isFree && limitDate && downloadLimit && (
+              <div className="mt-12 mb-4">
                 <UrgencyProgressBar
                   currentDownloads={currentDownloads}
                   downloadLimit={downloadLimit}
@@ -120,18 +120,13 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
                 />
               </div>
             )}
-          </div>
-
-          <div className="post-content">
-            <p>{description}</p>
-          </div>
         </div>
 
         <div className="card-footer">
           <ul className="post-meta d-flex mb-3 align-items-center">
             <li className="post-date">
               {formattedDate && (
-                <span className="d-flex align-items-center">
+                <span className="d-flex align-items-center text-body">
                   <i className="uil uil-calendar-alt me-1"></i>
                   {formattedDate}
                   <span className="mx-2">•</span>

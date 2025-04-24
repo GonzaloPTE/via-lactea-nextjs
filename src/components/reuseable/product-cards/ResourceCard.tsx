@@ -43,11 +43,6 @@ export default function ResourceCard({
   publishDate
 }: ResourceCardProps) {
   const router = useRouter();
-  
-  // Para depuración - verificar si los recursos gratuitos tienen datos de urgencia
-  if (isFree) {
-    console.log(`ResourceCard [${title}] - urgency data:`, { limitDate, downloadLimit, currentDownloads });
-  }
 
   // Limitar las etiquetas mostradas para evitar desbordamiento (mostrar máximo 3)
   const displayTags = tags.slice(0, 3);
@@ -101,7 +96,7 @@ export default function ResourceCard({
             {/* Precio */}
             {isFree ? (
               <div className="d-flex align-items-baseline">
-                <span className="text-decoration-line-through text-muted me-2 fs-15">19.99€</span>
+                <span className="text-decoration-line-through text-danger me-2 fs-15">19.99€</span>
                 <span className="fs-22 fw-bold text-primary">0€</span>
               </div>
             ) : (
@@ -114,11 +109,11 @@ export default function ResourceCard({
           {/* Tipo de producto y categoría */}
           <div className="d-flex justify-content-between align-items-center mb-3">
             {type && (
-              <h6 className="mb-0 text-muted">{type.toUpperCase()}</h6>
+              <h6 className="mb-0">{type.toUpperCase()}</h6>
             )}
             
             {category && (
-              <span className="text-muted fs-sm">{category}</span>
+              <span className="fs-sm">{category}</span>
             )}
           </div>
 
@@ -165,7 +160,7 @@ export default function ResourceCard({
           {/* Fecha y descargas juntas */}
           <div className="d-flex align-items-center mb-2">
             {formattedDate && (
-              <div className="text-muted fs-sm d-flex align-items-center">
+              <div className="fs-sm d-flex align-items-center">
                 <i className="uil uil-calendar-alt me-1"></i>
                 {formattedDate}
                 <span className="mx-2">•</span>
@@ -183,7 +178,7 @@ export default function ResourceCard({
                   key={index}
                   href="#" 
                   onClick={(e) => handleTagClick(tag, e)}
-                  className="text-muted fs-sm me-2 text-nowrap"
+                  className="fs-sm me-2 text-nowrap"
                 >
                   <span className="text-primary fw-medium">#{tag}</span>
                 </a>

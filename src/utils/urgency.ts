@@ -4,13 +4,13 @@
  * @param currentDownloads - Número actual de descargas del recurso
  * @param downloadLimit - Límite máximo de descargas permitidas
  * @param limitDate - Fecha límite en formato ISO string
- * @returns Objeto con progreso calculado y días restantes
+ * @returns Objeto con progreso calculado y días restantes, y nueva fecha límite si era necesario recalcular
  */
 export function calculateUrgencyProgress(
   currentDownloads: number,
   downloadLimit: number,
   limitDate: string
-): { progress: number; daysRemaining: number } {
+): { progress: number; daysRemaining: number; recalculatedDate?: string } {
   console.log('[calculateUrgencyProgress] Input:', { currentDownloads, downloadLimit, limitDate });
   
   // Calcular el progreso basado en descargas (como porcentaje)
@@ -19,65 +19,90 @@ export function calculateUrgencyProgress(
   
   // Calcular días restantes
   const today = new Date();
-  const endDate = new Date(limitDate);
+  let endDate = new Date(limitDate);
   console.log('[calculateUrgencyProgress] Dates:', { 
     today: today.toISOString(), 
     endDate: endDate.toISOString() 
   });
   
+  // Verificar si la fecha límite ya pasó
+  let recalculatedDate: string | undefined;
+  if (endDate < today) {
+    // La fecha límite ha pasado, recalcular al último día del mes actual
+    const newEndDate = getEndOfCurrentMonth();
+    recalculatedDate = newEndDate.toISOString().split('T')[0];
+    endDate = newEndDate;
+    console.log('[calculateUrgencyProgress] Date expired, recalculated to:', recalculatedDate);
+  }
+  
   const timeDiff = endDate.getTime() - today.getTime();
   const daysRemaining = Math.max(Math.ceil(timeDiff / (1000 * 3600 * 24)), 0);
   console.log('[calculateUrgencyProgress] Time calculation:', { timeDiff, daysRemaining });
   
-  // Cálculo mejorado del progreso temporal - asegura alta urgencia en los últimos días
-  let timeProgress = 0;
-  
-  if (daysRemaining === 0) {
-    // Último día: la barra debe estar casi llena (95-100%)
-    timeProgress = 95 + Math.random() * 5; // Entre 95% y 100%
-  } else if (daysRemaining <= 3) {
-    // 1-3 días: progreso alto (80-95%)
-    timeProgress = 80 + ((3 - daysRemaining) / 3) * 15;
-  } else if (daysRemaining <= 7) {
-    // 4-7 días: progreso medio-alto (65-80%)
-    timeProgress = 65 + ((7 - daysRemaining) / 4) * 15;
-  } else if (daysRemaining <= 14) {
-    // 8-14 días: progreso medio (40-65%)
-    timeProgress = 40 + ((14 - daysRemaining) / 7) * 25;
-  } else {
-    // Más de 14 días: progreso bajo (basado en 30 días como referencia)
-    timeProgress = Math.max(5, 40 - ((daysRemaining - 14) / 16) * 35);
-  }
-  
-  // El progreso final es el mayor entre el progreso de descargas y el progreso temporal
-  const finalProgress = Math.max(downloadProgress, Math.round(timeProgress));
-  console.log('[calculateUrgencyProgress] Final calculation:', { 
-    timeProgress, 
-    finalProgress 
-  });
-  
   return {
-    progress: finalProgress,
-    daysRemaining
+    progress: downloadProgress, // Solo usamos el progreso de descargas
+    daysRemaining,
+    recalculatedDate
   };
 }
 
 /**
- * Recalcula una nueva fecha límite y resetea el contador de descargas
- * @returns Nueva fecha límite (1 mes adelante) y descargas reseteadas
+ * Devuelve la fecha del último día del mes actual
+ * @returns Fecha del último día del mes actual
  */
-export const resetUrgencyCounters = (): { newLimitDate: string; newCurrentDownloads: number } => {
-  // Calcular nueva fecha límite (1 mes adelante)
+function getEndOfCurrentMonth(): Date {
   const today = new Date();
-  const newEndDate = new Date(today);
-  newEndDate.setMonth(today.getMonth() + 1);
   
-  // Resetear al 61% de un límite estándar (500 por defecto)
-  const downloadLimit = 500;
-  const newCurrentDownloads = Math.round(downloadLimit * 0.61);
+  // Establecer al último día del mes actual
+  // Creamos una fecha con el día 0 del siguiente mes, que es el último día del mes actual
+  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  
+  // Configurar a las 23:59:59 de ese día
+  lastDay.setHours(23, 59, 59, 999);
+  
+  return lastDay;
+}
+
+/**
+ * Devuelve la fecha del último día del mes siguiente
+ * @returns Fecha del último día del mes siguiente
+ */
+function getEndOfNextMonth(): Date {
+  const today = new Date();
+  // Avanzar al siguiente mes
+  const nextMonth = new Date(today);
+  nextMonth.setMonth(today.getMonth() + 1);
+  
+  // Establecer al último día del mes
+  const lastDay = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0);
+  
+  // Configurar a las 23:59:59 de ese día
+  lastDay.setHours(23, 59, 59, 999);
+  
+  return lastDay;
+}
+
+/**
+ * Recalcula los contadores de urgencia para un recurso
+ * 
+ * @returns Objeto con nuevos valores de contadores recalculados
+ */
+export function resetUrgencyCounters(): { 
+  newDownloads: number; 
+  newLimitDate: string;
+} {
+  // Generar nueva fecha límite (fin del mes actual)
+  const newLimitDate = getEndOfCurrentMonth();
+  
+  // Formato ISO sin hora para la fecha límite (YYYY-MM-DD)
+  const formattedDate = newLimitDate.toISOString().split('T')[0];
+  
+  // Establecer descargas al 61% del límite estándar (500)
+  const standardLimit = 500;
+  const newDownloads = Math.round(standardLimit * 0.61);
   
   return {
-    newLimitDate: newEndDate.toISOString().split('T')[0],
-    newCurrentDownloads
+    newDownloads,
+    newLimitDate: formattedDate
   };
-}; 
+} 

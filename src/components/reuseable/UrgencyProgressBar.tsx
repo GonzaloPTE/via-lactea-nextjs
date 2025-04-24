@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react';
 import { calculateUrgencyProgress } from '../../utils/urgency';
-import React from 'react';
 
 export interface UrgencyProgressBarProps {
   currentDownloads?: number;
@@ -18,19 +18,23 @@ export function UrgencyProgressBar({
   limitDate,
   className = '',
 }: UrgencyProgressBarProps) {
-  // Calcular días restantes solo si hay fecha límite
-  const progressData = limitDate 
-    ? calculateUrgencyProgress(currentDownloads, downloadLimit, limitDate) 
-    : { progress: 0, daysRemaining: 0 };
-
-  // Usamos solo los días restantes del cálculo
-  const { daysRemaining } = progressData;
+  const [progressData, setProgressData] = useState<{
+    progress: number;
+    daysRemaining: number;
+    recalculatedDate?: string;
+  }>({
+    progress: 0,
+    daysRemaining: 0,
+    recalculatedDate: undefined
+  });
   
-  // Calcular el progreso basado en las descargas ocupadas
-  const downloadPercentage = Math.round((currentDownloads / downloadLimit) * 100);
-  
-  // Calcular descargas restantes
-  const remainingDownloads = downloadLimit - currentDownloads;
+  useEffect(() => {
+    if (limitDate) {
+      // Calcular el progreso basado en descargas y fecha límite
+      const result = calculateUrgencyProgress(currentDownloads, downloadLimit, limitDate);
+      setProgressData(result);
+    }
+  }, [currentDownloads, downloadLimit, limitDate]);
   
   // Si no hay fecha límite, no renderizar nada
   if (!limitDate) {
@@ -47,38 +51,60 @@ export function UrgencyProgressBar({
     });
   };
   
+  // Calcular las descargas restantes
+  const remainingDownloads = downloadLimit - currentDownloads;
+  
+  // Usar directamente el progreso de descargas para la barra de progreso
+  const displayDate = progressData.recalculatedDate || limitDate;
+  
+  // Estilos para la animación de reflejo
+  const animationStyle = `
+    @keyframes shineEffect {
+      0% { background-position: 600% 0; }
+      100% { background-position: -600% 0; }
+    }
+  `;
+  
   return (
     <div className={`urgency-container ${className}`}>
+      {/* Estilos para la animación */}
+      <style>{animationStyle}</style>
+      
       {/* Información de descargas y fecha */}
       <div className="d-flex justify-content-between mb-1">
-        <small className="text-muted">
+        <small className="">
           {currentDownloads} de {downloadLimit} descargas gratis
         </small>
         
-        <small className="text-muted">
-          Gratis hasta el <i className="uil uil-calendar-alt"></i> {formatDate(limitDate)}
+        <small className="">
+          Gratis hasta el <i className="uil uil-calendar-alt"></i> {formatDate(displayDate)}
         </small>
       </div>
       
-      {/* Barra de progreso simple con color primario */}
+      {/* Barra de progreso simple con color según nivel de progreso */}
       <div className="progress" style={{ height: '12px', borderRadius: '6px', background: '#e9ecef' }}>
         <div 
           role="progressbar" 
           className="bg-primary"
           style={{ 
-            width: `${downloadPercentage}%`, 
+            width: `${progressData.progress}%`, 
             height: '100%',
             borderRadius: '6px',
             transition: 'width 0.5s ease',
-            minWidth: downloadPercentage > 0 ? '10px' : '0'
+            minWidth: progressData.progress > 0 ? '10px' : '0',
+            background: 'linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.53), transparent)',
+            backgroundSize: '200% 50%',
+            animation: 'shineEffect 20s infinite linear',
+            backgroundBlendMode: 'overlay',
+            backgroundColor: 'var(--bs-primary)'
           }} 
-          aria-valuenow={downloadPercentage} 
+          aria-valuenow={progressData.progress} 
           aria-valuemin={0} 
           aria-valuemax={100}
         />
       </div>
       
-      {/* Un solo literal sobre descargas restantes */}
+      {/* Mensaje sobre descargas restantes */}
       <p className="mt-2 mb-0 text-center">
         <span className="text-primary fw-semibold">
           ¡Solo quedan {remainingDownloads} descargas disponibles!
