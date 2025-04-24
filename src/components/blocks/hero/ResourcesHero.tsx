@@ -28,16 +28,16 @@ export default function ResourcesHero() {
             </p>
 
             <div className="d-flex flex-column flex-lg-row justify-content-center justify-content-lg-start">
-              <span className="mb-3 mb-lg-0 me-lg-3">
-                <NextLink href="/recursos" title="Explorar recursos" className="btn btn-lg btn-primary rounded-pill" />
-              </span>
               <span>
-                <NextLink href="/suscripcion" title="Suscripción mensual" className="btn btn-lg btn-outline-primary rounded-pill" />
+                <NextLink href="/suscripcion" title="Suscripción por sólo 10€/mes" className="btn btn-lg btn-outline-primary rounded-pill" />
               </span>
             </div>
             
-            <p className="mt-4 text-muted fs-15">
-              <i className="uil uil-check-circle text-primary me-1"></i> Todos los recursos premium incluidos en la suscripción mensual
+            <p className="mt-4 fs-15">
+              <i className="uil uil-check-circle text-primary me-1"></i> Todos los recursos premium están incluidos en la suscripción mensual
+            </p>
+            <p className="mt-4 fs-15">
+              <i className="uil uil-check-circle text-primary me-1"></i> Cancela cuando quieras
             </p>
           </div>
         </div>
