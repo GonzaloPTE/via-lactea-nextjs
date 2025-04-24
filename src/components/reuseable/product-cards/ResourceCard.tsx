@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import NextLink from "../links/NextLink";
 import { UrgencyProgressBar } from "../../reuseable/UrgencyProgressBar";
