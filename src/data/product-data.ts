@@ -332,7 +332,7 @@ export const productList: ProductItem[] = [
     highlighted: true,
     downloads: calculateDownloads('2023-10-15'),
     color: 'purple',
-    thumbnailUrl: '/img/illustrations/i8.png',
+    thumbnailUrl: '/img/via-lactea/photos/recurso-mockup.jpg',
     ratings: {
       average: 4.8,
       count: 65,
@@ -459,7 +459,7 @@ export const productList: ProductItem[] = [
     highlighted: true,
     downloads: calculateDownloads('2024-02-10'),
     color: 'blue',
-    thumbnailUrl: '/img/illustrations/i15.png',
+    thumbnailUrl: '/img/via-lactea/photos/recurso-mockup.jpg',
     relatedProductIds: [3, 4, 5],
     ratings: {
       average: 4.9,
