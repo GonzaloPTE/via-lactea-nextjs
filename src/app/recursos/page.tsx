@@ -32,7 +32,10 @@ const mapProductToResource = (product: ProductItem): IResource => {
     publishDate: product.publishDate,
     limitDate: product.limitDate,
     downloadLimit: product.downloadLimit,
-    currentDownloads: product.currentDownloads
+    currentDownloads: product.currentDownloads,
+    author: product.author ? {
+      name: product.author.name
+    } : undefined
   };
 };
 

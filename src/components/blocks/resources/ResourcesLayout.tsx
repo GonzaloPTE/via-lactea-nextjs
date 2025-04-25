@@ -23,6 +23,9 @@ export interface IResource {
   downloadLimit?: number; // Límite de descargas antes de dejar de ser gratuito
   currentDownloads?: number; // Número actual de descargas (para el sistema de urgencia)
   publishDate?: string; // Fecha de publicación del recurso
+  author?: {
+    name?: string;
+  };
 }
 
 interface ResourcesLayoutProps {

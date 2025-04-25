@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { ProductItem } from "../../../data/product-data";
+import { UrgencyProgressBar } from "../UrgencyProgressBar";
 
 interface ResourceDetailActionsProps {
   product: ProductItem;
@@ -9,11 +10,11 @@ interface ResourceDetailActionsProps {
 
 export default function ResourceDetailActions({ product }: ResourceDetailActionsProps) {
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
   
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log({ name, email });
+    console.log({ email });
+    // Aquí iría la lógica para procesar la descarga
   };
 
   // Determinar precio basado en el formato principal
@@ -22,71 +23,64 @@ export default function ResourceDetailActions({ product }: ResourceDetailActions
   const isFree = product.isFree || price === 0;
 
   return (
-    <div className="col-lg-6">
+    <>
       <div className="post-header mb-5">
         <h2 className="post-title display-5">
-          <a href="#" className="link-dark">
-            {product.title}
-          </a>
+          {product.title}
         </h2>
 
-        {/* Etiqueta de formato y tipo */}
-        <div className="d-flex align-items-center mb-3">
-          <span className="badge bg-pale-primary text-primary rounded-pill me-2">
-            {product.levelLabel}
-          </span>
-          <span className="badge bg-pale-blue text-blue rounded-pill">
-            {product.formatLabels.find(f => product.formats.indexOf(product.primaryFormat as any) >= 0) || product.primaryFormat}
-          </span>
-        </div>
-
-        {/* Precio del producto */}
-        <p className="price fs-20 mb-2">
-          {isFree ? (
-            <>
-              <span className="amount text-primary">Gratis</span>
-              {!product.includeInSubscription && (
-                <span className="text-muted ms-2 text-decoration-line-through">
-                  {price.toFixed(2)}€
+        {/* Formato y precio en la misma línea */}
+        <div className="d-flex align-items-center justify-content-between mb-3">
+          <h5 className="text-muted text-uppercase">
+            {(product.formatLabels?.find((f: string) => product.formats?.indexOf(product.primaryFormat as any) >= 0) || product.primaryFormat).toUpperCase()}
+          </h5>
+          
+          <h5 className="price mb-0">
+            {isFree ? (
+              <div className="d-flex align-items-baseline">
+                <span className="text-decoration-line-through text-danger me-2 fs-20">
+                  {product.prices?.find((p: {format: string, price: number}) => p.format === product.primaryFormat)?.price.toFixed(2)}€
                 </span>
-              )}
-            </>
-          ) : (
-            <span className="amount">{price.toFixed(2)}€</span>
-          )}
-        </p>
+                <span className="amount text-primary fs-30">Gratis</span>
+              </div>
+            ) : (
+              <span className="amount text-primary fs-30">
+                {product.prices?.find((p: {format: string, price: number}) => p.format === product.primaryFormat)?.price.toFixed(2)}€
+              </span>
+            )}
+          </h5>
+        </div>
+        <h6 className="text-body">
+          Autor: {product.author?.name || 'Miriam Rubio'}
+        </h6>
+      </div>
 
-        {product.includeInSubscription && (
-          <div className="alert alert-blue alert-icon mb-4">
-            <i className="uil uil-exclamation-circle"></i>
-            <span>Este recurso está incluido en la <a href="/suscripcion" className="alert-link hover">suscripción premium</a></span>
-          </div>
+      <div className="mb-6">
+        <p>{product.description}</p>
+        
+        {product.content?.find((c: {format: string, excerpt: string}) => c.format === product.primaryFormat)?.excerpt && (
+          <p className="mt-3">{product.content.find((c: {format: string, excerpt: string}) => c.format === product.primaryFormat)?.excerpt}</p>
         )}
       </div>
 
-      <p className="mb-6">
-        {product.shortDescription}
-      </p>
-
+      {/* Mostrar barra de urgencia antes del componente de acciones si es un producto gratuito */}
+      {product.isFree && (product.limitDate || product.downloadLimit) && (
+        <div className="mb-4">
+          <UrgencyProgressBar
+            currentDownloads={product.currentDownloads || 0}
+            downloadLimit={product.downloadLimit || 500}
+            limitDate={product.limitDate || new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]}
+          />
+        </div>
+      )}
+      
+      {/* Formulario de descarga o botón de compra */}
       {isFree ? (
         <div className="subscription-form">
           <h3 className="h4 mb-4">Descarga gratuita</h3>
-          <p className="mb-4">Introduce tus datos para recibir este recurso directamente en tu correo. No enviaremos spam a tu bandeja de entrada.</p>
+          <p className="mb-4">Introduce tu correo electrónico para recibir este recurso directamente en tu bandeja. No enviaremos spam.</p>
           
           <form onSubmit={handleFormSubmit} className="mb-3">
-            <div className="form-floating mb-4">
-              <input 
-                id="name" 
-                type="text" 
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Nombre y apellidos" 
-                className="form-control" 
-                required 
-              />
-              <label htmlFor="name">Nombre y apellidos</label>
-            </div>
-            
             <div className="form-floating mb-4">
               <input 
                 id="email" 
@@ -111,20 +105,18 @@ export default function ResourceDetailActions({ product }: ResourceDetailActions
         </div>
       ) : (
         <div className="purchase-form mb-0">
-          <button type="button" className="btn btn-primary rounded-pill btn-icon btn-icon-start w-100">
+          <button type="button" className="btn btn-primary rounded-pill btn-icon btn-icon-start w-100 mb-3">
             <i className="uil uil-shopping-cart"></i> Comprar ahora
           </button>
           
           {product.includeInSubscription && (
-            <div className="text-center mt-3">
-              <span className="text-muted">o</span>
-              <a href="/suscripcion" className="btn btn-soft-primary rounded-pill btn-sm mx-1">
-                Acceder con suscripción
-              </a>
+            <div className="alert alert-blue alert-icon mb-0">
+              <i className="uil uil-info-circle"></i>
+              <span>Este recurso está incluido en la <a href="/suscripcion" className="alert-link hover">suscripción por 10€/mes</a></span>
             </div>
           )}
         </div>
       )}
-    </div>
+    </>
   );
 } 

@@ -5,7 +5,11 @@ import { UrgencyProgressBar } from "../../reuseable/UrgencyProgressBar";
 import { useRouter } from "next/navigation";
 
 interface ResourceCardFeaturedProps {
-  resource: IResource;
+  resource: IResource & {
+    author?: {
+      name?: string;
+    };
+  };
 }
 
 export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
@@ -27,7 +31,8 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
     downloadLimit,
     currentDownloads,
     tags = [],
-    publishDate
+    publishDate,
+    author
   } = resource;
 
   // Limitar las etiquetas mostradas para evitar desbordamiento (mostrar máximo 4)
@@ -104,6 +109,13 @@ export function ResourceCardFeatured({ resource }: ResourceCardFeaturedProps) {
                 <span className="fs-sm">{category}</span>
               )}
             </div>
+            
+            {/* Autor */}
+            {author?.name && (
+              <h6 className="text-body mb-3">
+                Autor: {author.name}
+              </h6>
+            )}
           </div>
 
           <div className="post-content">

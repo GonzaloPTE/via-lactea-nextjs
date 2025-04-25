@@ -23,6 +23,9 @@ interface ResourceCardProps {
   currentDownloads?: number;
   tags?: string[];
   publishDate?: string;
+  author?: {
+    name?: string;
+  };
 }
 // =======================================================================================
 
@@ -42,7 +45,8 @@ export default function ResourceCard({
   downloadLimit,
   currentDownloads,
   tags = [],
-  publishDate
+  publishDate,
+  author
 }: ResourceCardProps) {
   const router = useRouter();
 
@@ -118,6 +122,13 @@ export default function ResourceCard({
               <span className="fs-sm">{category}</span>
             )}
           </div>
+
+          {/* Autor */}
+          {author?.name && (
+            <h6 className="text-body mb-3">
+              Autor: {author.name}
+            </h6>
+          )}
 
           {description && (
             <p className="card-text mb-4" style={{ 
