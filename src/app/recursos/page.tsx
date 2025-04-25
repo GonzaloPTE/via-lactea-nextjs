@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, Suspense } from "react";
 import ResourcesHero from "components/blocks/hero/ResourcesHero";
 import ResourcesLayout, { IResource } from "components/blocks/resources/ResourcesLayout";
 import ResourcesSubscriptionCTA from "components/blocks/call-to-action/ResourcesSubscriptionCTA";
@@ -30,7 +30,10 @@ const mapProductToResource = (product: ProductItem): IResource => {
     downloads: product.downloads || 0,
     includeInSubscription: product.includeInSubscription,
     tags: product.tags || [],
-    publishDate: product.publishDate
+    publishDate: product.publishDate,
+    limitDate: product.limitDate,
+    downloadLimit: product.downloadLimit,
+    currentDownloads: product.currentDownloads
   };
 };
 
@@ -45,7 +48,17 @@ const categories = [
   { id: "desarrollo", name: "Desarrollo" }
 ];
 
+// Componente principal pero con Suspense
 export default function ResourcesPage() {
+  return (
+    <Suspense fallback={<div className="text-center p-5">Cargando recursos...</div>}>
+      <ResourcesContent />
+    </Suspense>
+  );
+}
+
+// Componente interno que usa useSearchParams
+function ResourcesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname() ?? '/';
