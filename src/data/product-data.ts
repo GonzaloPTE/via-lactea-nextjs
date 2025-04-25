@@ -451,9 +451,9 @@ const mainProductList: ProductItem[] = [
           rating: 5,
           comment: 'Esta guía me salvó el sueño. Literalmente. Los consejos por etapas son muy útiles.',
           date: '2024-01-20'
-        },
-        {
-          id: 2,
+  },
+  {
+    id: 2,
           userName: 'Carlos M.',
           rating: 4,
           comment: 'Muy completa. Me habría gustado más ejemplos prácticos, pero la información es muy valiosa.',
@@ -543,8 +543,8 @@ const mainProductList: ProductItem[] = [
         icon: VideoEditing,
         description: 'Lecciones en vídeo complementadas con guías prácticas y recursos descargables.'
       },
-      {
-        id: 4,
+  {
+    id: 4,
         title: 'Acceso a los 3 módulos completos',
         icon: List,
         description: 'Incluye los módulos: Sueño del recién nacido, Ventanas de sueño y Plan de sueño.'

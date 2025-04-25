@@ -16,6 +16,7 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
     'red': 'red',
     'blue': 'blue',
     'teal': 'sky',
+    'sky': 'sky',
     'yellow': 'yellow',
     'orange': 'orange',
     'violet': 'violet',
@@ -26,27 +27,6 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
 
   // Obtener el color de Tailwind correspondiente, o usar 'grape' como valor predeterminado
   const tailwindColor = service.color ? colorMap[service.color] || 'grape' : 'grape';
-
-  // Mapeo de slug a imagen de hero
-  const getHeroImage = (slug: string): string => {
-    const imageMap: { [key: string]: string } = {
-      'asesoria-big-bang': 'asesoria-big-bang-hero.png',
-      'asesoria-lactancia': 'asesoria-via-lactea-hero.png',
-      'valoracion-gratuita': 'valoracion-hero.png',
-      'videollamada-sos': 'llamada-sos.png',
-      'plan-luna': 'luna-hero.png',
-      'plan-enana-blanca': 'enana-blanca-hero.png',
-      'plan-sol': 'sol-hero.png',
-      'plan-gigante-roja': 'gigante-roja-hero.png',
-      'semana-seguimiento': 'semana-seguimiento-hero.png',
-      'asesoria-grupal': 'asesoria-grupal.png'
-    };
-
-    return `/img/via-lactea/illustrations/${imageMap[slug] || 'gigante-roja-hero.png'}`;
-  };
-
-  // Obtener la ruta de la imagen basada en el slug del servicio
-  const heroImagePath = getHeroImage(service.slug);
 
   return (
     <section className="wrapper bg-light">
@@ -91,8 +71,8 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
                   <img
                     alt={service.title}
                     className="img-fluid mb-n15 transform scale-200 md:scale-[1.5]"
-                    src={heroImagePath}
-                    srcSet={heroImagePath}
+                    src={service.heroImageUrl}
+                    srcSet={service.heroImageUrl}
                     style={fadeInAnimate("300ms")}
                   />
                 </div>

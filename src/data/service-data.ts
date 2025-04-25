@@ -41,6 +41,7 @@ export interface ServiceItem {
   category: 'baby' | 'child' | 'general';
   categoryLabel: string;
   iconUrl: string; // Ruta al SVG del icono
+  heroImageUrl: string; // Ruta a la imagen hero para la página de detalle
   description: string;
   shortDescription: string;
   forWho: string[]; // Texto para '¿Para quién es?' múltiple
@@ -100,6 +101,7 @@ export const serviceList: ServiceItem[] = [
     category: 'baby',
     categoryLabel: '0-6 meses',
     iconUrl: iconUrls.baby,
+    heroImageUrl: '/img/via-lactea/illustrations/asesoria-big-bang-hero.png',
     description: 'Consulta online de 1 hora para resolver dudas de lactancia (materna o artificial), inicio de alimentación complementaria y BLW (Baby Let Weanning), ventanas de sueño, horarios y rutinas, llegada de nuevo hermano,... cualquier duda que os surja de los primeros 6 meses.',
     shortDescription: 'Resuelve todas tus dudas sobre los primeros 6 meses de tu bebé en una consulta personalizada.',
     forWho: [
@@ -198,6 +200,7 @@ export const serviceList: ServiceItem[] = [
     category: 'baby',
     categoryLabel: '0-6 meses',
     iconUrl: iconUrls.bottle,
+    heroImageUrl: '/img/via-lactea/illustrations/asesoria-via-lactea-hero.png',
     description: 'Consulta online de 1 hora para resolver dudas de lactancia (materna o artificial), inicio de alimentación complementaria, BLW (Baby Let Weanning), destete, lactancia diferida, lactancia mixta, mejores posiciones, arículos necesarios, etc.',
     shortDescription: 'Asesoramiento especializado en lactancia materna o artificial para superar cualquier dificultad.',
     forWho: [
@@ -280,9 +283,10 @@ export const serviceList: ServiceItem[] = [
     id: 3,
     title: 'Valoración gratuita',
     slug: 'valoracion-gratuita',
-    category: 'child',
-    categoryLabel: '6 meses a 4 años',
+    category: 'general',
+    categoryLabel: 'Servicios generales',
     iconUrl: iconUrls.calendar,
+    heroImageUrl: '/img/via-lactea/illustrations/valoracion-hero.png',
     description: '30 minutos para valoración personalizada de la situación de sueño de tu hijo.',
     shortDescription: 'Descubre cómo podemos ayudarte con una valoración inicial sin compromiso.',
     forWho: [
@@ -352,9 +356,10 @@ export const serviceList: ServiceItem[] = [
     id: 4,
     title: 'Videollamada SOS',
     slug: 'videollamada-sos',
-    category: 'child',
-    categoryLabel: '6 meses a 4 años',
+    category: 'general',
+    categoryLabel: 'Servicios generales',
     iconUrl: iconUrls.videoChat,
+    heroImageUrl: '/img/via-lactea/illustrations/llamada-sos.png',
     description: '30 minutos para resolución de dudas. Se priorizará tu consulta lo máximo posible.',
     shortDescription: 'Atención prioritaria para resolver dudas urgentes sobre el sueño de tu hijo.',
     forWho: [
@@ -426,6 +431,7 @@ export const serviceList: ServiceItem[] = [
     category: 'child',
     categoryLabel: '6 meses a 4 años',
     iconUrl: iconUrls.plan,
+    heroImageUrl: '/img/via-lactea/illustrations/luna-hero.png',
     description: 'Plan básico sin seguimiento que incluye formulario inicial, diario de sueño de 2 días y una videollamada para crear el plan de sueño personalizado.',
     shortDescription: 'Plan básico para familias que necesitan orientación pero pueden implementar el plan por su cuenta.',
     forWho: [
@@ -503,6 +509,7 @@ export const serviceList: ServiceItem[] = [
     category: 'child',
     categoryLabel: '6 meses a 4 años',
     iconUrl: iconUrls.plan,
+    heroImageUrl: '/img/via-lactea/illustrations/enana-blanca-hero.png',
     description: 'Plan de 2 semanas que incluye formulario inicial, diario de sueño, videollamada para crear el plan y una videollamada de seguimiento a los 14 días.',
     shortDescription: 'Plan con seguimiento de 2 semanas para asegurar la correcta implementación de las técnicas.',
     forWho: [
@@ -546,7 +553,7 @@ export const serviceList: ServiceItem[] = [
     ],
     requiresCalendly: true,
     calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
-    color: 'teal',
+    color: 'sky',
     process: {
       title: 'Plan Enana Blanca paso a paso',
       steps: [
@@ -580,6 +587,7 @@ export const serviceList: ServiceItem[] = [
     category: 'child',
     categoryLabel: '6 meses a 4 años',
     iconUrl: iconUrls.star,
+    heroImageUrl: '/img/via-lactea/illustrations/sol-hero.png',
     description: 'Plan de 4 semanas que incluye formulario inicial, diario de sueño, videollamada inicial, dos videollamadas de seguimiento y pautas finales por escrito.',
     shortDescription: 'Plan completo de 4 semanas con seguimiento continuo para transformar los hábitos de sueño.',
     forWho: [
@@ -686,6 +694,7 @@ export const serviceList: ServiceItem[] = [
     category: 'child',
     categoryLabel: '6 meses a 4 años',
     iconUrl: iconUrls.star,
+    heroImageUrl: '/img/via-lactea/illustrations/gigante-roja-hero.png',
     description: 'Plan premium de 6 semanas que incluye pautas iniciales, formulario detallado, diario de sueño, tres videollamadas y pautas finales por escrito.',
     shortDescription: 'Nuestro plan más completo con pautas iniciales y 6 semanas de acompañamiento para casos complejos.',
     forWho: [
@@ -805,9 +814,10 @@ export const serviceList: ServiceItem[] = [
     id: 9,
     title: 'Semana de seguimiento',
     slug: 'semana-seguimiento',
-    category: 'child',
-    categoryLabel: '6 meses a 4 años',
+    category: 'general',
+    categoryLabel: 'Servicios generales',
     iconUrl: iconUrls.calendar,
+    heroImageUrl: '/img/via-lactea/illustrations/semana-seguimiento-hero.png',
     description: 'Para antiguos pacientes que necesiten una semana extra a uno de nuestros planes. Incluye plan de sueño con diarios y seguimiento diario por Whatsapp o email.',
     shortDescription: 'Semana adicional de seguimiento para antiguos clientes que necesitan apoyo extra.',
     forWho: [
@@ -860,6 +870,7 @@ export const serviceList: ServiceItem[] = [
     category: 'general',
     categoryLabel: 'Servicios generales',
     iconUrl: iconUrls.users,
+    heroImageUrl: '/img/via-lactea/illustrations/asesoria-grupal.png',
     description: 'Plan de sueño Sol en formato grupal (máximo 4 personas) con un descuento del 30% para cada participante.',
     shortDescription: 'Asesoría en grupo reducido con todas las ventajas del Plan Sol a un precio más accesible.',
     forWho: [
