@@ -11,19 +11,14 @@ export function calculateUrgencyProgress(
   downloadLimit: number,
   limitDate: string
 ): { progress: number; daysRemaining: number; recalculatedDate?: string } {
-  console.log('[calculateUrgencyProgress] Input:', { currentDownloads, downloadLimit, limitDate });
   
   // Calcular el progreso basado en descargas (como porcentaje)
   const downloadProgress = Math.min(Math.round((currentDownloads / downloadLimit) * 100), 100);
-  console.log('[calculateUrgencyProgress] downloadProgress:', downloadProgress);
   
   // Calcular días restantes
   const today = new Date();
   let endDate = new Date(limitDate);
-  console.log('[calculateUrgencyProgress] Dates:', { 
-    today: today.toISOString(), 
-    endDate: endDate.toISOString() 
-  });
+  
   
   // Verificar si la fecha límite ya pasó
   let recalculatedDate: string | undefined;
@@ -32,12 +27,10 @@ export function calculateUrgencyProgress(
     const newEndDate = getEndOfCurrentMonth();
     recalculatedDate = newEndDate.toISOString().split('T')[0];
     endDate = newEndDate;
-    console.log('[calculateUrgencyProgress] Date expired, recalculated to:', recalculatedDate);
   }
   
   const timeDiff = endDate.getTime() - today.getTime();
   const daysRemaining = Math.max(Math.ceil(timeDiff / (1000 * 3600 * 24)), 0);
-  console.log('[calculateUrgencyProgress] Time calculation:', { timeDiff, daysRemaining });
   
   return {
     progress: downloadProgress, // Solo usamos el progreso de descargas
@@ -56,25 +49,6 @@ function getEndOfCurrentMonth(): Date {
   // Establecer al último día del mes actual
   // Creamos una fecha con el día 0 del siguiente mes, que es el último día del mes actual
   const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  
-  // Configurar a las 23:59:59 de ese día
-  lastDay.setHours(23, 59, 59, 999);
-  
-  return lastDay;
-}
-
-/**
- * Devuelve la fecha del último día del mes siguiente
- * @returns Fecha del último día del mes siguiente
- */
-function getEndOfNextMonth(): Date {
-  const today = new Date();
-  // Avanzar al siguiente mes
-  const nextMonth = new Date(today);
-  nextMonth.setMonth(today.getMonth() + 1);
-  
-  // Establecer al último día del mes
-  const lastDay = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0);
   
   // Configurar a las 23:59:59 de ese día
   lastDay.setHours(23, 59, 59, 999);

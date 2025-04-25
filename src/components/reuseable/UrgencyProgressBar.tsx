@@ -107,7 +107,7 @@ export function UrgencyProgressBar({
       {/* Mensaje sobre descargas restantes */}
       <p className="mt-2 mb-0 text-center">
         <span className="text-primary fw-semibold">
-          ¡Solo quedan {remainingDownloads} descargas disponibles!
+          ¡Solo quedan <strong>{remainingDownloads}</strong> descargas gratuitas!
         </span>
       </p>
     </div>

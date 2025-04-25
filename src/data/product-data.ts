@@ -96,7 +96,7 @@ export interface ProductItem {
   }[];
   relatedProductIds?: number[]; // IDs de productos relacionados
   highlighted?: boolean;
-  downloads?: number; // Número de descargas
+  downloads?: number; // Número total de descargas del producto
   color?: string; // Color representativo del producto
   thumbnailUrl?: string; // URL de la imagen de miniatura
   
@@ -174,6 +174,10 @@ export interface ProductItem {
   
   // Nuevo: Fecha de última actualización
   lastUpdated?: string;
+  
+  // Propiedades para la barra de urgencia
+  downloadLimit?: number; // Límite máximo de descargas para la promoción
+  limitDate?: string; // Fecha límite de la promoción
 }
 
 // Categorías de nivel de productos
@@ -249,6 +253,38 @@ export const productFormats = [
   }
 ];
 
+// Función para generar un número pseudoaleatorio determinista basado en una semilla
+const seededRandom = (seed: string): () => number => {
+  // Función hash simple para convertir string en número
+  const hashString = (str: string): number => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convertir a entero de 32 bits
+    }
+    return hash;
+  };
+  
+  const seedValue = hashString(seed);
+  
+  // Implementación de un generador congruencial lineal
+  let state = seedValue || 1;
+  
+  return () => {
+    // Parámetros del generador congruencial
+    const a = 1664525;
+    const c = 1013904223;
+    const m = Math.pow(2, 32);
+    
+    // Actualizar estado
+    state = (a * state + c) % m;
+    
+    // Normalizar a [0, 1)
+    return state / m;
+  };
+};
+
 // Función para calcular descargas basado en la fecha de publicación
 const calculateDownloads = (publishDate: string): number => {
   const pubDate = new Date(publishDate);
@@ -257,14 +293,87 @@ const calculateDownloads = (publishDate: string): number => {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   
   // Algoritmo simple: base + (días * factor aleatorio)
+  // Creamos una semilla determinista para que el resultado sea consistente
+  const seed = `downloads-${publishDate}-${today.toISOString().split('T')[0]}`;
+  const random = seededRandom(seed);
+  
   const base = 50;
-  const dailyFactor = 2 + Math.random() * 3; // Entre 2 y 5 descargas por día
+  const dailyFactor = 2 + random() * 3; // Entre 2 y 5 descargas por día
   
   return Math.floor(base + (diffDays * dailyFactor));
 };
 
+// Función para calcular las descargas actuales durante una promoción
+const calculateCurrentDownloads = (downloadLimit: number, limitDate: string): number => {
+  // Convertir fechas a objetos Date
+  const endDate = new Date(limitDate);
+  const today = new Date();
+  
+  // Calcular porcentaje de tiempo transcurrido de la promoción
+  // Asumimos que una promoción típica dura 30 días
+  const promoStartDate = new Date(endDate);
+  promoStartDate.setDate(promoStartDate.getDate() - 30);
+  
+  // Si la fecha de inicio de la promoción es futura, retornamos 0
+  if (promoStartDate > today) {
+    return 0;
+  }
+  
+  // Calcular el tiempo transcurrido como porcentaje de la duración total
+  const totalDuration = endDate.getTime() - promoStartDate.getTime();
+  let elapsedTime = today.getTime() - promoStartDate.getTime();
+  
+  // Si la promoción ya terminó, consideramos el 100% del tiempo
+  if (elapsedTime > totalDuration) {
+    elapsedTime = totalDuration;
+  }
+  
+  const timePercentage = elapsedTime / totalDuration;
+  
+  // Crear una semilla basada en los inputs para asegurar resultados deterministas
+  // Usamos una fecha fija (hoy al inicio del día) para que no cambie cada segundo
+  const fixedToday = new Date();
+  fixedToday.setHours(0, 0, 0, 0); // Inicio del día actual
+  const seed = `${downloadLimit}-${limitDate}-${fixedToday.toISOString().split('T')[0]}`;
+  const random = seededRandom(seed);
+  
+  // Generar un número de descargas basado en tiempo transcurrido
+  // Añadimos algo de aleatoriedad para simular picos de descargas
+  // El objetivo es generar un número entre 60% y 85% del límite cuando estamos a mitad de tiempo
+  const baseProgress = timePercentage * 1.2; // 120% para acelerar al inicio
+  const randomFactor = 0.1 * (random() - 0.5); // ±5% de variación
+  const progressPercentage = Math.min(Math.max(baseProgress + randomFactor, 0), 0.95); // Limitar entre 0 y 95%
+  
+  // Calcular el número base de descargas
+  const baseDownloads = Math.floor(downloadLimit * progressPercentage);
+  
+  // Añadir una variación natural para evitar números muy redondos
+  // Esto hace que los números no terminen en 0 o 5 y tengan una apariencia más orgánica
+  let naturalVariation = 0;
+  
+  // Si el número es múltiplo de 5, añadimos entre -4 y +4 descargas
+  if (baseDownloads % 5 === 0) {
+    naturalVariation = Math.floor(random() * 9) - 4; // Valor entre -4 y +4
+  } 
+  // Si el número termina en 3 o 7, a veces lo dejamos así para mantener algunos patrones naturales
+  else if (baseDownloads % 10 === 3 || baseDownloads % 10 === 7) {
+    if (random() < 0.7) { // 70% de probabilidad de mantenerlo
+      naturalVariation = 0;
+    } else {
+      naturalVariation = Math.floor(random() * 3) - 1; // Pequeña variación: -1, 0, o +1
+    }
+  } 
+  // Para otros números, añadimos una pequeña variación
+  else {
+    naturalVariation = Math.floor(random() * 5) - 2; // Valor entre -2 y +2
+  }
+  
+  // Asegurar que el resultado final sea positivo y no exceda el límite
+  return Math.min(Math.max(baseDownloads + naturalVariation, 1), downloadLimit - 5);
+};
+
 // Datos de los productos
-export const productList: ProductItem[] = [
+const mainProductList: ProductItem[] = [
   // Producto: Big Bang - Sus primeros momentos (Guía)
   {
     id: 1,
@@ -529,90 +638,6 @@ export const productList: ProductItem[] = [
   // Aquí muestro solo los dos primeros como ejemplo del nuevo formato
 ];
 
-// Función para obtener productos por nivel
-export const getProductsByLevel = (level: string) => {
-  return productList.filter(product => product.level === level);
-};
-
-// Función para obtener productos por formato
-export const getProductsByFormat = (format: ProductFormat) => {
-  return productList.filter(product => product.formats.includes(format));
-};
-
-// Función para obtener productos gratuitos
-export const getFreeProducts = () => {
-  return productList.filter(product => product.isFree || product.prices.some(p => p.price === 0));
-};
-
-// Función para obtener productos incluidos en la suscripción
-export const getSubscriptionProducts = () => {
-  return productList.filter(product => product.includeInSubscription);
-};
-
-// Función para obtener productos destacados
-export const getHighlightedProducts = () => {
-  return productList.filter(product => product.highlighted);
-};
-
-// Función para obtener productos nuevos
-export const getNewProducts = () => {
-  return productList.filter(product => product.isNew);
-};
-
-// Función para obtener un producto por su slug
-export const getProductBySlug = (slug: string) => {
-  return productList.find(product => product.slug === slug);
-};
-
-// Función para obtener productos relacionados
-export const getRelatedProducts = (productId: number) => {
-  const product = productList.find(p => p.id === productId);
-  if (!product || !product.relatedProductIds) return [];
-  
-  return productList.filter(p => product.relatedProductIds?.includes(p.id));
-};
-
-// Función para obtener productos por tema
-export const getProductsByTopic = (topic: string) => {
-  return productList.filter(product => product.topic === topic);
-};
-
-// Función para obtener productos por etiqueta
-export const getProductsByTag = (tag: string) => {
-  return productList.filter(product => product.tags?.includes(tag));
-};
-
-// Función para obtener ruta de aprendizaje
-export const getLearningPath = (productId: number) => {
-  const product = productList.find(p => p.id === productId);
-  if (!product || !product.learningPath) return [];
-  
-  return product.learningPath.map(id => productList.find(p => p.id === id)).filter(Boolean);
-};
-
-// Función para obtener el precio de un producto en un formato específico
-export const getProductPrice = (productId: number, format: ProductFormat) => {
-  const product = productList.find(p => p.id === productId);
-  if (!product) return null;
-  
-  const priceInfo = product.prices.find(p => p.format === format);
-  return priceInfo ? priceInfo.price : null;
-};
-
-// Función para obtener detalles específicos de un formato
-export const getFormatDetails = (productId: number, format: ProductFormat) => {
-  const product = productList.find(p => p.id === productId);
-  if (!product || !product.formatDetails) return null;
-  
-  const formatDetail = product.formatDetails.find(fd => fd.format === format);
-  return formatDetail ? formatDetail.details : null;
-};
-
-// Función para obtener productos por nivel de dificultad
-export const getProductsByDifficulty = (difficulty: string) => {
-  return productList.filter(product => product.difficulty === difficulty);
-};
-
 // Agregar productos adicionales convertidos desde resourcesData
 const additionalProducts: ProductItem[] = [
   {
@@ -713,7 +738,9 @@ const additionalProducts: ProductItem[] = [
       }
     ],
     difficulty: "principiante",
-    downloads: calculateDownloads("2024-11-20")
+    downloads: calculateDownloads("2024-11-20"),
+    downloadLimit: 500,
+    limitDate: "2024-07-30"
   },
   {
     id: 5,
@@ -811,7 +838,9 @@ const additionalProducts: ProductItem[] = [
       }
     ],
     difficulty: "principiante",
-    downloads: calculateDownloads("2025-01-18")
+    downloads: calculateDownloads("2025-01-18"),
+    downloadLimit: 500,
+    limitDate: "2024-07-15"
   },
   {
     id: 7,
@@ -957,7 +986,9 @@ const additionalProducts: ProductItem[] = [
       }
     ],
     difficulty: "intermedio",
-    downloads: calculateDownloads("2024-08-25")
+    downloads: calculateDownloads("2024-08-25"),
+    downloadLimit: 500,
+    limitDate: "2024-08-30"
   },
   {
     id: 10,
@@ -1006,7 +1037,9 @@ const additionalProducts: ProductItem[] = [
       }
     ],
     difficulty: "principiante",
-    downloads: calculateDownloads("2024-09-10")
+    downloads: calculateDownloads("2024-09-10"),
+    downloadLimit: 500,
+    limitDate: "2024-08-20"
   },
   {
     id: 11,
@@ -1055,7 +1088,9 @@ const additionalProducts: ProductItem[] = [
       }
     ],
     difficulty: "principiante",
-    downloads: calculateDownloads("2024-10-05")
+    downloads: calculateDownloads("2024-10-05"),
+    downloadLimit: 500,
+    limitDate: "2024-08-05"
   },
   {
     id: 12,
@@ -1104,7 +1139,9 @@ const additionalProducts: ProductItem[] = [
       }
     ],
     difficulty: "principiante",
-    downloads: calculateDownloads("2024-07-15")
+    downloads: calculateDownloads("2024-07-15"),
+    downloadLimit: 500,
+    limitDate: "2024-07-20"
   },
   {
     id: 13,
@@ -1156,8 +1193,112 @@ const additionalProducts: ProductItem[] = [
   }
 ];
 
-// Agregar los productos adicionales a la lista principal
-productList.push(...additionalProducts);
+// Exportamos un listado combinado para uso en componentes
+export const productList: ProductItem[] = [];
 
-// Exportamos el listado para uso en componentes
+// Primero procesamos los productos principales
+[...mainProductList].forEach(product => {
+  // Calcular currentDownloads para productos gratuitos con límite de descargas
+  if (product.isFree && product.downloadLimit && product.limitDate && !product.currentDownloads) {
+    product.currentDownloads = calculateCurrentDownloads(product.downloadLimit, product.limitDate);
+  }
+  
+  productList.push(product);
+});
+
+// Luego procesamos los productos adicionales
+[...additionalProducts].forEach(product => {
+  // Calcular currentDownloads para productos gratuitos con límite de descargas
+  if (product.isFree && product.downloadLimit && product.limitDate && !product.currentDownloads) {
+    product.currentDownloads = calculateCurrentDownloads(product.downloadLimit, product.limitDate);
+  }
+  
+  productList.push(product);
+});
+
+// Función para obtener productos por nivel
+export const getProductsByLevel = (level: string) => {
+  return productList.filter(product => product.level === level);
+};
+
+// Función para obtener productos por formato
+export const getProductsByFormat = (format: ProductFormat) => {
+  return productList.filter(product => product.formats.includes(format));
+};
+
+// Función para obtener productos gratuitos
+export const getFreeProducts = () => {
+  return productList.filter(product => product.isFree || product.prices.some(p => p.price === 0));
+};
+
+// Función para obtener productos incluidos en la suscripción
+export const getSubscriptionProducts = () => {
+  return productList.filter(product => product.includeInSubscription);
+};
+
+// Función para obtener productos destacados
+export const getHighlightedProducts = () => {
+  return productList.filter(product => product.highlighted);
+};
+
+// Función para obtener productos nuevos
+export const getNewProducts = () => {
+  return productList.filter(product => product.isNew);
+};
+
+// Función para obtener un producto por su slug
+export const getProductBySlug = (slug: string) => {
+  return productList.find(product => product.slug === slug);
+};
+
+// Función para obtener productos relacionados
+export const getRelatedProducts = (productId: number) => {
+  const product = productList.find(p => p.id === productId);
+  if (!product || !product.relatedProductIds) return [];
+  
+  return productList.filter(p => product.relatedProductIds?.includes(p.id));
+};
+
+// Función para obtener productos por tema
+export const getProductsByTopic = (topic: string) => {
+  return productList.filter(product => product.topic === topic);
+};
+
+// Función para obtener productos por etiqueta
+export const getProductsByTag = (tag: string) => {
+  return productList.filter(product => product.tags?.includes(tag));
+};
+
+// Función para obtener ruta de aprendizaje
+export const getLearningPath = (productId: number) => {
+  const product = productList.find(p => p.id === productId);
+  if (!product || !product.learningPath) return [];
+  
+  return product.learningPath.map(id => productList.find(p => p.id === id)).filter(Boolean);
+};
+
+// Función para obtener el precio de un producto en un formato específico
+export const getProductPrice = (productId: number, format: ProductFormat) => {
+  const product = productList.find(p => p.id === productId);
+  if (!product) return null;
+  
+  const priceInfo = product.prices.find(p => p.format === format);
+  return priceInfo ? priceInfo.price : null;
+};
+
+// Función para obtener detalles específicos de un formato
+export const getFormatDetails = (productId: number, format: ProductFormat) => {
+  const product = productList.find(p => p.id === productId);
+  if (!product || !product.formatDetails) return null;
+  
+  const formatDetail = product.formatDetails.find(fd => fd.format === format);
+  return formatDetail ? formatDetail.details : null;
+};
+
+// Función para obtener productos por nivel de dificultad
+export const getProductsByDifficulty = (difficulty: string) => {
+  return productList.filter(product => product.difficulty === difficulty);
+};
+
+// Si se necesitan exportaciones adicionales, mantenerlas aquí
 export default productList; 

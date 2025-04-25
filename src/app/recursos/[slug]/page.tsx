@@ -10,6 +10,7 @@ import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar
 import ResourceDetailActions from "components/reuseable/products/ResourceDetailActions";
 import ResourceDetailDescription from "components/reuseable/products/ResourceDetailDescription";
 import ResourceDetailAuthor from "components/reuseable/products/ResourceDetailAuthor";
+import { UrgencyProgressBar } from "components/reuseable/UrgencyProgressBar";
 // CUSTOM DATA
 import { productList, getProductBySlug } from "../../../data/product-data";
 
@@ -111,6 +112,17 @@ export default function ResourceDetailPage({ params }: ResourceDetailParams) {
           {product.author && (
             <ResourceDetailAuthor author={product.author} />
           )}
+
+          {/* Mostrar barra de urgencia si es un producto gratuito */}
+          {product.isFree && (product.limitDate || product.downloadLimit) && (
+            <div className="mt-4">
+              <UrgencyProgressBar
+                currentDownloads={product.currentDownloads || 0}
+                downloadLimit={product.downloadLimit || 500}
+                limitDate={product.limitDate || new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]}
+              />
+            </div>
+          )}
         </div>
       </section>
 
@@ -136,8 +148,8 @@ export default function ResourceDetailPage({ params }: ResourceDetailParams) {
                                 {item.title}
                               </a>
                             </h2>
-          </div>
-        </div>
+                          </div>
+                        </div>
                         <p className="mb-6">{item.shortDescription}</p>
                         <div className="d-flex justify-content-between">
                           <span className="price fs-18">
