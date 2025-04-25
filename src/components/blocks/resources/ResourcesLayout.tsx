@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import Image from "next/image";
 import ResourcesSidebar, { SortOption } from "./ResourcesSidebar";
 import ResourceCard from "components/reuseable/product-cards/ResourceCard";
 import { ResourceCardFeatured } from "./ResourceCardFeatured";

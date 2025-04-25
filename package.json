@@ -48,6 +48,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "eslint": "^9",
     "eslint-config-next": "15.0.4",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "sass": "^1.69.5",
     "typescript": "^5",
     "wrangler": "^4.13.2"

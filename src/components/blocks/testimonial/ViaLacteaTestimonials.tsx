@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ViaLacteaTestimonialCard from "components/reuseable/testimonial-cards/ViaLacteaTestimonialCard";
 // CUSTOM DATA
 import { viaLacteaTestimonials } from "../../../data/via-lactea-testimonials";

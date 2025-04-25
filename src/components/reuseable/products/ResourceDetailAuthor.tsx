@@ -3,6 +3,7 @@ import { Fragment } from "react";
 interface AuthorProps {
   author: {
     name: string;
+    lastName: string;
     role: string;
     bio: string;
     imageUrl: string;
@@ -23,7 +24,7 @@ export default function ResourceDetailAuthor({ author }: AuthorProps) {
                     <img 
                       className="rounded-circle w-15 d-inline" 
                       src={author.imageUrl} 
-                      alt={author.name} 
+                      alt={`${author.name} ${author.lastName}`} 
                       style={{ width: '130px', height: '130px', objectFit: 'cover' }} 
                     />
                   </figure>
@@ -31,7 +32,10 @@ export default function ResourceDetailAuthor({ author }: AuthorProps) {
                 
                 <div className="col-md-9 ps-md-7">
                   <div className="post-header mb-3">
-                    <h3 className="h4 mb-0">{author.name}</h3>
+                    <div className="flex flex-row items-center gap-2">
+                      <h3 className="h4 mb-0">{author.name}</h3>
+                      <h3 className="h4 mb-0">{author.lastName}</h3>
+                    </div>
                     <p className="lead fs-lg mb-0 text-primary">{author.role}</p>
                   </div>
                   

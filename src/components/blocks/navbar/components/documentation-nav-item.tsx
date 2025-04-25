@@ -1,5 +1,4 @@
 // GLOBAL CUSTOM COMPONENTS
-import ListItemLink from "components/reuseable/links/ListItemLink";
 import DropdownToggleLink from "components/reuseable/links/DropdownToggleLink";
 // LOCAL CUSTOM COMPONENTS
 import renderLinks from "./render-links";

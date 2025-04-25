@@ -1,13 +1,10 @@
 "use client";
 
-import { useState } from 'react';
-import Link from "types/link";
 // GLOBAL CUSTOM COMPONENTS
 import NextLink from "components/reuseable/links/NextLink";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 //import TurnstileProtection, { validateTurnstileToken } from "components/common/TurnstileProtection";
 // CUSTOM DATA
-import { helps, learnMore } from "data/via-lactea-footer";
 import { ServiceItem } from "data/service-data";
 import { serviceList } from "data/service-data";
 import SubscriptionForm from "components/reuseable/SubscriptionForm";

@@ -1,4 +1,3 @@
-import { StaticImageData } from 'next/image';
 import IconProps from 'types/icon';
 
 // Importar iconos de la carpeta lineal
@@ -11,11 +10,9 @@ import List from 'icons/lineal/List';
 import Email from 'icons/lineal/Email';
 import Target from 'icons/lineal/Target';
 import Shield from 'icons/lineal/Shield';
-import Medal from 'icons/lineal/Medal';
 import CheckList from 'icons/lineal/CheckList';
 import VideoEditing from 'icons/lineal/VideoEditing';
 import Analytics from 'icons/lineal/Analytics';
-import Telephone from 'icons/lineal/Telephone';
 import Team from 'icons/lineal/Team';
 import Savings from 'icons/lineal/Savings';
 import User from 'icons/lineal/User';

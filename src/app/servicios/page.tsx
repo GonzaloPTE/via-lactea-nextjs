@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { serviceList, serviceCategories } from 'data/service-data';
+import { serviceList } from 'data/service-data';
 
 // VIA LACTEA CUSTOM COMPONENTS
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
