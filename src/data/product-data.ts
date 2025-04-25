@@ -56,6 +56,13 @@ export interface FormatDetails {
   };
 }
 
+export interface IAuthor {
+  name: string;
+  role?: string;
+  bio?: string;
+  imageUrl?: string;
+}
+
 // Definición de tipos para los productos
 export interface ProductItem {
   id: number;
@@ -135,12 +142,7 @@ export interface ProductItem {
   }[];
   
   // Nuevo: Información sobre autor/experto
-  author?: {
-    name: string;
-    role: string;
-    bio: string;
-    imageUrl: string;
-  };
+  author?: IAuthor;
   
   parentId?: number; // ID del producto padre (si es parte de un módulo o curso)
   
@@ -470,9 +472,9 @@ const mainProductList: ProductItem[] = [
       }
     ],
     author: {
-      name: 'Ana Martín',
+      name: 'Miriam Rubio',
       role: 'Asesora de sueño infantil',
-      bio: 'Especialista certificada en sueño infantil con más de 10 años de experiencia ayudando a familias.',
+      bio: 'Especialista certificada en sueño infantil con más de 15 años de experiencia ayudando a familias.',
       imageUrl: '/img/team/ana.jpg'
     },
     isNew: false,
@@ -591,9 +593,9 @@ const mainProductList: ProductItem[] = [
       }
     ],
     author: {
-      name: 'Ana Martín',
+      name: 'Miriam Rubio',
       role: 'Asesora de sueño infantil',
-      bio: 'Especialista certificada en sueño infantil con más de 10 años de experiencia ayudando a familias.',
+      bio: 'Especialista certificada en sueño infantil con más de 15 años de experiencia ayudando a familias.',
       imageUrl: '/img/team/ana.jpg'
     },
     learningPath: [3, 4, 5],
@@ -684,6 +686,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "principiante",
     downloads: calculateDownloads("2024-10-15")
   },
@@ -700,8 +708,8 @@ const additionalProducts: ProductItem[] = [
     description: "Consejos para gestionar las tomas nocturnas manteniendo la lactancia. Una guía visual con pasos prácticos para equilibrar el descanso y la alimentación de tu bebé.",
     shortDescription: "Consejos para gestionar las tomas nocturnas manteniendo la lactancia.",
     prices: [
-      { format: "infographic", price: 0 },
-      { format: "pdf", price: 0 }
+      { format: "infographic", price: 19.99 },
+      { format: "pdf", price: 19.99 }
     ],
     isFree: true,
     includeInSubscription: false,
@@ -734,6 +742,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "principiante",
     downloads: calculateDownloads("2024-11-20"),
     downloadLimit: 500,
@@ -785,6 +799,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "intermedio",
     downloads: calculateDownloads("2024-12-05")
   },
@@ -834,6 +854,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "principiante",
     downloads: calculateDownloads("2025-01-18"),
     downloadLimit: 500,
@@ -885,6 +911,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "principiante",
     downloads: calculateDownloads("2025-02-01")
   },
@@ -933,6 +965,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "principiante",
     downloads: calculateDownloads("2025-02-15")
   },
@@ -982,6 +1020,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "intermedio",
     downloads: calculateDownloads("2024-08-25"),
     downloadLimit: 500,
@@ -1033,6 +1077,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "principiante",
     downloads: calculateDownloads("2024-09-10"),
     downloadLimit: 500,
@@ -1084,6 +1134,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "principiante",
     downloads: calculateDownloads("2024-10-05"),
     downloadLimit: 500,
@@ -1135,6 +1191,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "principiante",
     downloads: calculateDownloads("2024-07-15"),
     downloadLimit: 500,
@@ -1185,6 +1247,12 @@ const additionalProducts: ProductItem[] = [
         }
       }
     ],
+    author: {
+      name: 'Miriam Rubio',
+      role: 'Asesora de lactancia y sueño infantil',
+      bio: 'Especialista certificada con más de 15 años de experiencia ayudando a familias a mejorar el sueño y la lactancia de sus bebés.',
+      imageUrl: '/img/via-lactea/photos/perfil-hero.png'
+    },
     difficulty: "principiante",
     downloads: calculateDownloads("2024-06-20")
   }

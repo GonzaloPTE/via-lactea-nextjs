@@ -9,7 +9,9 @@ import ThumbsCarousel from "components/reuseable/ThumbsCarousel";
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
 import { UrgencyProgressBar } from "components/reuseable/UrgencyProgressBar";
 // CUSTOM DATA
-import { productList, getProductBySlug, ProductItem } from "../../../data/product-data";
+import { productList, getProductBySlug, ProductItem, IAuthor } from "../../../data/product-data";
+// Importar el componente ResourceDetailActions
+import ResourceDetailActions from "components/reuseable/products/ResourceDetailActions";
 
 // Tipado para params como Promise
 interface ResourceDetailParams {
@@ -20,17 +22,15 @@ interface ResourceDetailParams {
 const ProductBenefits = ({ benefits }: { benefits: any[] }) => {
   return (
     <div className="row mt-8">
-      <div className="col-12">
-        <h3 className="mb-4">Beneficios</h3>
-        <div className="row gx-lg-8 gx-xl-12 gy-6 process-wrapper">
+      <div className="col-12 text-center">
+        <h3 className="mb-4 text-center">Beneficios</h3>
+        <div className="row gx-lg-8 gx-xl-12 gy-6 process-wrapper justify-content-center">
           {benefits.map((benefit: any) => {
             const Icon = benefit.icon;
             return (
               <div className="col-md-6 col-lg-3" key={benefit.id}>
-                <div className="d-flex flex-column h-100">
-                  <div className="icon btn btn-circle btn-lg btn-primary disabled mb-4">
-                    <Icon className="icon-svg m-0" />
-                  </div>
+                <div className="d-flex flex-column h-100 align-items-center text-center">
+                    <Icon className="icon-svg mx-0 my-4" />
                   <h4 className="mb-3">{benefit.title}</h4>
                   <p className="mb-0">{benefit.description}</p>
                 </div>
@@ -74,76 +74,99 @@ const ProductAuthor = ({ author }: { author: any }) => {
   );
 };
 
-// Componente para el formulario de descarga con nombre y apellidos separados
-const DownloadForm = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log({ firstName, lastName, email });
-    // Aquí iría la lógica para procesar la descarga
-  };
-  
+// Componente reutilizable para la sección de detalles
+const ProductDetails = ({ product }: { product: ProductItem }) => {
   return (
-    <div className="subscription-form">
-      <h3 className="h4 mb-4">Descarga gratuita</h3>
-      <p className="mb-4">Introduce tus datos para recibir este recurso directamente en tu correo. No enviaremos spam a tu bandeja de entrada.</p>
+    <div className="mt-12">
+      <ul className="nav nav-tabs nav-tabs-basic">
+        <li className="nav-item">
+          <a 
+            className="nav-link active"
+            style={{ cursor: "pointer" }}
+          >
+            Detalles
+          </a>
+        </li>
+      </ul>
       
-      <form onSubmit={handleSubmit} className="mb-3">
-        <div className="row">
-          <div className="col-md-6">
-            <div className="form-floating mb-4">
-              <input 
-                id="firstName" 
-                type="text" 
-                value={firstName}
-                onChange={e => setFirstName(e.target.value)}
-                placeholder="Nombre" 
-                className="form-control" 
-                required 
-              />
-              <label htmlFor="firstName">Nombre</label>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="form-floating mb-4">
-              <input 
-                id="lastName" 
-                type="text" 
-                value={lastName}
-                onChange={e => setLastName(e.target.value)}
-                placeholder="Apellidos" 
-                className="form-control" 
-                required 
-              />
-              <label htmlFor="lastName">Apellidos</label>
+      <div className="tab-content mt-0 mt-md-5">
+        <div className="tab-pane fade show active">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="table-responsive">
+                <table className="table table-striped">
+                  <tbody>
+                    {product.formatDetails?.find(fd => fd.format === product.primaryFormat) && (
+                      <>
+                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.pageCount && (
+                          <tr>
+                            <td className="w-25"><strong>Número de páginas</strong></td>
+                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.pageCount}</td>
+                          </tr>
+                        )}
+                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileSize && (
+                          <tr>
+                            <td><strong>Tamaño del archivo</strong></td>
+                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileSize}</td>
+                          </tr>
+                        )}
+                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileFormat && (
+                          <tr>
+                            <td><strong>Formato</strong></td>
+                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileFormat}</td>
+                          </tr>
+                        )}
+                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.duration && (
+                          <tr>
+                            <td><strong>Duración</strong></td>
+                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.duration}</td>
+                          </tr>
+                        )}
+                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.lessonCount && (
+                          <tr>
+                            <td><strong>Número de lecciones</strong></td>
+                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.lessonCount}</td>
+                          </tr>
+                        )}
+                      </>
+                    )}
+                    <tr>
+                      <td className="w-25"><strong>Fecha de publicación</strong></td>
+                      <td>{new Date(product.publishDate).toLocaleDateString('es-ES', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })}</td>
+                    </tr>
+                    {product.lastUpdated && (
+                      <tr>
+                        <td><strong>Última actualización</strong></td>
+                        <td>{new Date(product.lastUpdated).toLocaleDateString('es-ES', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}</td>
+                      </tr>
+                    )}
+                    {product.topic && (
+                      <tr>
+                        <td><strong>Categoría</strong></td>
+                        <td>{product.topic}</td>
+                      </tr>
+                    )}
+                    {product.tags && product.tags.length > 0 && (
+                      <tr>
+                        <td><strong>Etiquetas</strong></td>
+                        <td>{product.tags.join(', ')}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-        
-        <div className="form-floating mb-4">
-          <input 
-            id="email" 
-            type="email" 
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Email" 
-            className="form-control" 
-            required 
-          />
-          <label htmlFor="email">Email</label>
-        </div>
-        
-        <button type="submit" className="btn btn-primary rounded-pill btn-icon btn-icon-start mb-2 w-100">
-          <i className="uil uil-download-alt"></i> Descargar ahora
-        </button>
-      </form>
-      
-      <p className="text-muted fs-sm">
-        Al descargar este recurso, recibirás ocasionalmente información sobre nuevos recursos y contenidos exclusivos que puedan ayudarte. Puedes darte de baja en cualquier momento.
-      </p>
+      </div>
     </div>
   );
 };
@@ -155,7 +178,6 @@ export default function ResourceDetailPage({ params }: ResourceDetailParams) {
   const [product, setProduct] = useState<ProductItem | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("descripcion");
 
   useEffect(() => {
     if (!slug) return;
@@ -204,17 +226,16 @@ export default function ResourceDetailPage({ params }: ResourceDetailParams) {
   return (
     <Fragment>
       {/* ========== Header with Navbar ========== */}
-      <header className="wrapper bg-light">
+      <header className="wrapper bg-soft-primary">
         <ViaLacteaNavbar 
           fancy
-          logoAlt="via-lactea-logo" 
-          whiteBackground
+          logoAlt="via-lactea-logo"
         />
       </header>
 
       {/* ========== product info section ========== */}
-      <section className="wrapper bg-light">
-        <div className="container py-14 py-md-16">
+      <section className="wrapper bg-soft-primary">
+        <div className="container py-2 py-md-4">
           <div className="row gx-md-8 gx-xl-12 gy-8">
             <div className="col-lg-6">
               {product.thumbnailUrl ? (
@@ -232,221 +253,38 @@ export default function ResourceDetailPage({ params }: ResourceDetailParams) {
 
             {/* ========== product actions section ========== */}
             <div className="col-lg-6">
-              <div className="post-header mb-5">
-                <h2 className="post-title display-5">
-                  {product.title}
-                </h2>
-
-                {/* Etiqueta de formato y tipo */}
-                <div className="d-flex align-items-center mb-3">
-                  <span className="badge bg-pale-primary text-primary rounded-pill me-2">
-                    {product.levelLabel}
-                  </span>
-                  <span className="badge bg-pale-blue text-blue rounded-pill">
-                    {product.formatLabels?.find((f: string) => product.formats?.indexOf(product.primaryFormat as any) >= 0) || product.primaryFormat}
-                  </span>
-                </div>
-
-                {/* Precio del producto */}
-                <p className="price fs-20 mb-2">
-                  {isFree ? (
-                    <span className="amount text-primary">Gratis</span>
-                  ) : (
-                    <span className="amount">
-                      {product.prices?.find((p: {format: string, price: number}) => p.format === product.primaryFormat)?.price.toFixed(2)}€
-                    </span>
-                  )}
-                </p>
-              </div>
-
-              <p className="mb-6">
-                {product.shortDescription}
-              </p>
-
-              {/* Mostrar barra de urgencia antes del componente de acciones si es un producto gratuito */}
-              {product.isFree && (product.limitDate || product.downloadLimit) && (
-                <div className="mb-4">
-                  <UrgencyProgressBar
-                    currentDownloads={product.currentDownloads || 0}
-                    downloadLimit={product.downloadLimit || 500}
-                    limitDate={product.limitDate || new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]}
-                  />
-                </div>
-              )}
-              
-              {/* Formulario de descarga o botón de compra */}
-              {isFree ? (
-                <DownloadForm />
-              ) : (
-                <div className="purchase-form mb-0">
-                  <button type="button" className="btn btn-primary rounded-pill btn-icon btn-icon-start w-100">
-                    <i className="uil uil-shopping-cart"></i> Comprar ahora
-                  </button>
-                  
-                  {product.includeInSubscription && (
-                    <div className="text-center mt-3">
-                      <span className="text-muted">o</span>
-                      <a href="/suscripcion" className="btn btn-soft-primary rounded-pill btn-sm mx-1">
-                        Acceder con suscripción
-                      </a>
-                    </div>
-                  )}
-                </div>
-              )}
+              <ResourceDetailActions product={product} />
             </div>
           </div>
-
-          {/* ========== Tabs de descripción y detalles ========== */}
-          <div className="mt-12">
-            <ul className="nav nav-tabs nav-tabs-basic">
-              <li className="nav-item">
-                <a 
-                  className={clsx("nav-link", { active: activeTab === "descripcion" })}
-                  onClick={() => setActiveTab("descripcion")}
-                  style={{ cursor: "pointer" }}
-                >
-                  Descripción
-                </a>
-              </li>
-              <li className="nav-item">
-                <a 
-                  className={clsx("nav-link", { active: activeTab === "detalles" })}
-                  onClick={() => setActiveTab("detalles")}
-                  style={{ cursor: "pointer" }}
-                >
-                  Detalles
-                </a>
-              </li>
-            </ul>
-            
-            <div className="tab-content mt-0 mt-md-5">
-              {/* Tab de descripción */}
-              <div className={clsx("tab-pane fade", { "show active": activeTab === "descripcion" })}>
-                <div className="row">
-                  <div className="col-lg-8">
-                    <p>{product.description}</p>
-                    
-                    {product.content?.find((c: {format: string, excerpt: string}) => c.format === product.primaryFormat)?.excerpt && (
-                      <div className="mb-5">
-                        <p>{product.content.find((c: {format: string, excerpt: string}) => c.format === product.primaryFormat)?.excerpt}</p>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Previsualización del producto */}
-                  <div className="col-lg-4">
-                    {product.previewUrls?.find((p: {format: string, url: string}) => p.format === product.primaryFormat) && (
-                      <figure className="mb-6">
-                        <img 
-                          src={product.previewUrls.find((p: {format: string, url: string}) => p.format === product.primaryFormat)?.url} 
-                          alt={`Vista previa de ${product.title}`} 
-                          className="img-fluid rounded shadow-lg"
-                        />
-                        <figcaption className="mt-2 text-center fs-sm">
-                          Vista previa
-                        </figcaption>
-                      </figure>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Tab de detalles */}
-              <div className={clsx("tab-pane fade", { "show active": activeTab === "detalles" })}>
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="table-responsive">
-                      <table className="table table-striped">
-                        <tbody>
-                          {product.formatDetails?.find(fd => fd.format === product.primaryFormat) && (
-                            <>
-                              {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.pageCount && (
-                                <tr>
-                                  <td className="w-25"><strong>Número de páginas</strong></td>
-                                  <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.pageCount}</td>
-                                </tr>
-                              )}
-                              {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileSize && (
-                                <tr>
-                                  <td><strong>Tamaño del archivo</strong></td>
-                                  <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileSize}</td>
-                                </tr>
-                              )}
-                              {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileFormat && (
-                                <tr>
-                                  <td><strong>Formato</strong></td>
-                                  <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileFormat}</td>
-                                </tr>
-                              )}
-                              {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.duration && (
-                                <tr>
-                                  <td><strong>Duración</strong></td>
-                                  <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.duration}</td>
-                                </tr>
-                              )}
-                              {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.lessonCount && (
-                                <tr>
-                                  <td><strong>Número de lecciones</strong></td>
-                                  <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.lessonCount}</td>
-                                </tr>
-                              )}
-                            </>
-                          )}
-                          <tr>
-                            <td className="w-25"><strong>Fecha de publicación</strong></td>
-                            <td>{new Date(product.publishDate).toLocaleDateString('es-ES', {
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric'
-                            })}</td>
-                          </tr>
-                          {product.lastUpdated && (
-                            <tr>
-                              <td><strong>Última actualización</strong></td>
-                              <td>{new Date(product.lastUpdated).toLocaleDateString('es-ES', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric'
-                              })}</td>
-                            </tr>
-                          )}
-                          {product.topic && (
-                            <tr>
-                              <td><strong>Categoría</strong></td>
-                              <td>{product.topic}</td>
-                            </tr>
-                          )}
-                          {product.tags && product.tags.length > 0 && (
-                            <tr>
-                              <td><strong>Etiquetas</strong></td>
-                              <td>{product.tags.join(', ')}</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* ========== author section ========== */}
-          {product.author && (
-            <ProductAuthor author={product.author} />
-          )}
-          
-          {/* ========== beneficios section ========== */}
-          {product.benefits && product.benefits.length > 0 && (
-            <ProductBenefits benefits={product.benefits} />
-          )}
         </div>
+        <figure>
+          <img src="/img/photos/clouds.png" alt="Clouds" />
+        </figure>
+      </section>
+
+      {/* ========== beneficios section ========== */}
+      {product.benefits && product.benefits.length > 0 && (
+        <section className="wrapper bg-light">
+          <div className="container py-2 py-md-4">
+            <ProductBenefits benefits={product.benefits} />
+          </div>
+        </section>
+      )}
+      
+      {/* ========== details section ========== */}
+      <section className="wrapper bg-light">
+        <div className="container py-2 py-md-4">
+          <ProductDetails product={product} />
+        </div>
+        <figure className="bg-soft-primary">
+          <img src="/img/photos/clouds.png" alt="Clouds" style={{ transform: 'scaleY(-1)' }} />
+        </figure>
       </section>
 
       {/* ========== related products section ========== */}
       {relatedProducts.length > 0 && (
       <section className="wrapper bg-gray">
-        <div className="container py-14 py-md-16">
+        <div className="container py-2 py-md-4">
             <h3 className="h2 mb-6 text-center">Recursos relacionados</h3>
 
             <div className="row gy-6">

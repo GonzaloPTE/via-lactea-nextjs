@@ -37,22 +37,6 @@ export default function ResourceDetailDescription({ product }: ResourceDetailDes
                   </div>
                 )}
               </div>
-              
-              {/* Previsualización del producto */}
-              <div className="col-lg-4">
-                {product.previewUrls?.find(p => p.format === product.primaryFormat) && (
-                  <figure className="mb-6">
-                    <img 
-                      src={product.previewUrls.find(p => p.format === product.primaryFormat)?.url} 
-                      alt={`Vista previa de ${product.title}`} 
-                      className="img-fluid rounded shadow-lg"
-                    />
-                    <figcaption className="mt-2 text-center fs-sm">
-                      Vista previa
-                    </figcaption>
-                  </figure>
-                )}
-              </div>
             </div>
           </div>
 
