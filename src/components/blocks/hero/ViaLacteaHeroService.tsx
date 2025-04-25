@@ -1,4 +1,3 @@
-import NextLink from "components/reuseable/links/NextLink";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 // CUSTOM UTILS
 import { fadeInAnimate, slideInDownAnimate } from "utils/animation";

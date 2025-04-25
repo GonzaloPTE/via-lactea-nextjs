@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import Medal from 'icons/lineal/Medal';
 import Team from 'icons/lineal/Team';
 import IdCard from 'icons/lineal/IdCard';

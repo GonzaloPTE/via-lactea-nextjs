@@ -9,7 +9,6 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SortOption } from "components/blocks/resources/ResourcesSidebar";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
-import { calculateDownloads } from "utils/downloads";
 import productList from "data/product-data";
 import { ProductItem } from "data/product-data";
 

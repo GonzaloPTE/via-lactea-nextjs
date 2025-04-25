@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import Accordion from "components/reuseable/accordion";
 // CUSTOM DATA
 import { viaLacteaFAQList1 } from "data/via-lactea-faq";

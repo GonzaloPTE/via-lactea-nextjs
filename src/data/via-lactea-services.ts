@@ -7,8 +7,6 @@ import Alarm from 'icons/solid-mono/Alarm';
 import Team from 'icons/solid-mono/Team';
 import TeamTwo from 'icons/solid-mono/TeamTwo';
 import Verify from 'icons/solid-mono/Verify';
-import Puzzle from 'icons/solid-mono/Puzzle';
-import { ReactNode } from 'react';
 
 // Lista de servicios de Vía Láctea
 export const serviceList = [

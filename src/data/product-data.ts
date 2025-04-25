@@ -1,19 +1,15 @@
-import { StaticImageData } from 'next/image';
 import IconProps from 'types/icon';
 
 // Importar iconos de la carpeta lineal
 import CloudComputingTwo from 'icons/lineal/CloudComputingTwo';
 import ChatTwo from 'icons/lineal/ChatTwo';
 import LightBulb from 'icons/lineal/LightBulb';
-import ShoppingBasket from 'icons/lineal/ShoppingBasket';
 import ClockThree from 'icons/lineal/ClockThree';
 import List from 'icons/lineal/List';
-import Email from 'icons/lineal/Email';
 import Target from 'icons/lineal/Target';
 import Shield from 'icons/lineal/Shield';
 import Medal from 'icons/lineal/Medal';
 import VideoEditing from 'icons/lineal/VideoEditing';
-import Browser from 'icons/lineal/Browser';
 
 // Definimos las rutas a los iconos SVG disponibles en public/img/icons/solid
 const ICON_PATH = '/img/icons/solid/';

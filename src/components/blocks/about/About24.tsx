@@ -1,4 +1,3 @@
-import Progress from "components/Progress";
 import CountUp from "components/reuseable/CountUp";
 import { ProcessList2 } from "components/reuseable/process-list";
 // CUSTOM DATA

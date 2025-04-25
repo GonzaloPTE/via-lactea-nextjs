@@ -1,4 +1,3 @@
-import { clientList } from "data/client";
 import NextLink from "components/reuseable/links/NextLink";
 
 export default function ResourcesHero() {
