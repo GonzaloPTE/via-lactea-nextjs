@@ -178,6 +178,7 @@ export interface ProductItem {
   // Propiedades para la barra de urgencia
   downloadLimit?: number; // Límite máximo de descargas para la promoción
   limitDate?: string; // Fecha límite de la promoción
+  currentDownloads?: number; // Descargas actuales durante la promoción (distintas del total)
 }
 
 // Categorías de nivel de productos
