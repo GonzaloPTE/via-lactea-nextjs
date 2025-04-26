@@ -142,7 +142,7 @@
 **Dependencias:** TASK-004, TASK-005
 **Version:** 1
 
-### TASK-007 Implementar página de inicio - Alta - [EN PROGRESO]
+### TASK-007 Implementar página de inicio - Alta - [INTEGRACIONES]
 **Descripción:** Adaptar y personalizar componentes del tema para crear la página de inicio que represente adecuadamente la marca "Vía Láctea" y sus servicios.
 
 **Objetivos:**
@@ -163,72 +163,77 @@
 **Dependencias:** TASK-006
 **Version:** 0
 
-### TASK-008 Implementar página "Sobre mí" - Media - Por hacer
+### TASK-008: Implementar sistema de newsletter - Alta - [CAPTCHA]
+**Descripción:** Implementar newsletter en Hubspot y MailGun. Añadir captcha de Cloudflare para evitar spam en el formulario de contacto.
+**Dependencias:** TASK-006
+**Version:** 1
+
+### TASK-009 Implementar página "Sobre mí" - Media - [PENDIENTE]
 **Descripción:** Crear página con biografía detallada, formación, certificaciones y filosofía de trabajo de la asesora.
 **Dependencias:** TASK-006
 **Version:** 1
 
-### TASK-009 Implementar página de servicios de asesoría de sueño - Alta - Por hacer
+### TASK-010 Implementar página de servicios - Alta - [INTEGRACIONES]
 **Descripción:** Desarrollar página detallando los servicios específicos de asesoría de sueño, metodología, beneficios y precios, aprovechando componentes del tema.
 **Dependencias:** TASK-006
 **Version:** 1
 
-### TASK-010 Implementar página de servicios de lactancia - Alta - Por hacer
+### TASK-011 Implementar página de detalle servicios - Alta - [INTEGRACIONES]
 **Descripción:** Desarrollar página detallando los servicios específicos de asesoría en lactancia, metodología, beneficios y precios, aprovechando componentes del tema.
 **Dependencias:** TASK-006
 **Version:** 1
 
-### TASK-011 Implementar blog - Media - Por hacer
-**Descripción:** Adaptar componentes del tema para crear sección de blog con artículos informativos sobre sueño infantil y lactancia. Incluir sistema de categorías y búsqueda.
+### TASK-012 Implementar blog y sistema de creación de contenido automatizado - Media - [PENDIENTE]
+**Descripción:** Adaptar componentes del tema para crear sección de blog con artículos informativos sobre sueño infantil y lactancia. Incluir sistema de creación de contenido automatizado.
 **Dependencias:** TASK-006
 **Version:** 1
 
-### TASK-012 Implementar sistema de reserva de citas - Alta - Por hacer
-**Descripción:** Desarrollar formulario de contacto y sistema para reservar consultas, integrando calendario y posible pasarela de pago.
+### TASK-013 Implementar sistema de reserva de citas - Alta - [PENDIENTE]
+**Descripción:** Crear en calendly todos los eventos asociados a los servicios.
 **Dependencias:** TASK-006
 **Version:** 1
 
-### TASK-013 Implementar sección de testimonios - Media - Por hacer
-**Descripción:** Adaptar componentes del tema para crear una página de testimonios que muestre experiencias positivas de clientes anteriores.
+### TASK-014 Implementar sistema de testimonios o reseñas - Media - [PENDIENTE]
+**Descripción:** Crear un sistema de testimonios o reseñas simulado.
 **Dependencias:** TASK-006
 **Version:** 1
 
-### TASK-014 Implementar formulario de contacto - Alta - Por hacer
+### TASK-015 Implementar formulario de contacto - Alta - [PENDIENTE]
 **Descripción:** Personalizar formulario de contacto del tema con validación y sistema de envío de correos electrónicos.
 **Dependencias:** TASK-006
 **Version:** 1
 
-### TASK-015 Implementar recursos gratuitos descargables - Baja - Por hacer
+### TASK-016 Implementar recursos gratuitos descargables - Baja - [COMPLETADO]
 **Descripción:** Crear sección para ofrecer guías, checklists o infografías gratuitas como estrategia de generación de leads.
 **Dependencias:** TASK-006
 **Version:** 1
 
-### TASK-016 Implementar FAQ - Media - Por hacer
+### TASK-017 Implementar FAQ - Media - [PENDIENTE]
 **Descripción:** Adaptar componentes del tema para desarrollar sección de preguntas frecuentes sobre los servicios, metodología y temas comunes.
 **Dependencias:** TASK-006
 **Version:** 1
 
-### TASK-017 Optimizar SEO - Alta - Por hacer
-**Descripción:** Implementar metadatos, etiquetas semánticas, alt text en imágenes y optimización para motores de búsqueda. Integrar Google Analytics.
-**Dependencias:** TASK-007, TASK-008, TASK-009, TASK-010, TASK-011
+### TASK-018 Optimizar SEO - Alta - [PENDIENTE]
+**Descripción:** Implementar metadatos, etiquetas semánticas, alt text en imágenes y optimización para motores de búsqueda. Integrar Google Analytics. Implementar las recomendaciones de `.llm/optimizacion-seo.md`
+**Dependencias:** TASK-007, TASK-008, TASK-010, TASK-011
 **Version:** 1
 
-### TASK-018 Personalizar diseño responsive - Alta - Por hacer
-**Descripción:** Revisar y ajustar el diseño responsive del tema para garantizar que el sitio sea completamente funcional y estéticamente agradable en todos los tamaños de dispositivos.
-**Dependencias:** TASK-007, TASK-008, TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014, TASK-015, TASK-016
+### TASK-019 Implementar estrategia de contenidos - Alta - [PENDIENTE]
+**Descripción:** Seguir el plan detallado en `.llm/estrategia-contenidos.md`
+**Dependencias:** TASK-007, TASK-008, TASK-010, TASK-011
 **Version:** 1
 
-### TASK-019 Implementar accesibilidad - Alta - Por hacer
-**Descripción:** Revisar y mejorar la accesibilidad del tema para asegurar que cumpla con estándares WCAG, incluyendo contraste adecuado, navegación por teclado, etiquetas aria, etc.
-**Dependencias:** TASK-018
+### TASK-020 Configuración de Analytics - Alta - [PENDIENTE]
+**Descripción:** Implementar el sistema de analytics según `.llm/analytics.md`
+**Dependencias:** TASK-007, TASK-008, TASK-010, TASK-011
 **Version:** 1
 
-### TASK-020 Realizar pruebas y corrección de errores - Alta - Por hacer
-**Descripción:** Probar exhaustivamente todas las funcionalidades, enlaces y visualización en diferentes navegadores y dispositivos.
-**Dependencias:** TASK-018, TASK-019
+### TASK-021 Sistema de testimonios dinámicos - Alta - [PENDIENTE]
+**Descripción:** Implementar la estrategia de testimonios detallada en `.llm/testimonials.md`
+**Dependencias:** TASK-007, TASK-008, TASK-010, TASK-011
 **Version:** 1
 
-### TASK-021 Desplegar sitio web - Alta - Por hacer
+### TASK-022 Desplegar sitio web - Alta - [COMPLETADO]
 **Descripción:** Configurar hosting y desplegar sitio web en producción. Configurar dominio y certificados SSL.
 **Dependencias:** TASK-020
 **Version:** 1 
