@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
-import { serviceList, ServiceItem } from '../src/data/service-data';
-import { subscriptionList, SubscriptionItem } from '../src/data/subscription-data';
+import { serviceList, ServiceItem } from 'data/service-data';
+import { subscriptionList, SubscriptionItem } from 'data/subscription-data';
 import * as dotenv from 'dotenv';
 
 // Load environment variables from .env.local file

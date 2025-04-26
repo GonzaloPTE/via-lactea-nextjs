@@ -48,7 +48,7 @@ export const subscriptionList: SubscriptionItem[] = [
     description: 'Acceso completo e ilimitado a todos nuestros recursos premium: guías, módulos, cursos, infografías y contenido exclusivo añadido regularmente. La mejor forma de mantenerte al día y tener apoyo continuo.',
     shortDescription: 'Acceso ilimitado a todo el contenido premium por 10€/mes.',
     iconUrl: iconUrls.subscription, // This will now use the loyalty icon path
-    heroImageUrl: '/img/via-lactea/illustrations/subscription-hero.png',
+    heroImageUrl: '/img/via-lactea/illustrations/suscripcion-hero.png',
     price: 10,
     currency: 'eur',
     interval: 'month',
