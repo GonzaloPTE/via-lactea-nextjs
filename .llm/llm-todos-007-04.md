@@ -1,13 +1,13 @@
 ## Mejoras en la página de recursos
 
-### 1. Filtros con caracteres acentuados
+### 1. Filtros con caracteres acentuados [COMPLETADO]
 - **Problema**: En el filtro de recursos, las categorías con caracteres especiales como "ñ" (ej: "Sueño") no funcionaban correctamente al ser codificados en la URL.
 - **Solución**: Implementación de normalización de strings para manejar correctamente categorías con acentos.
 - **Archivos modificados**:
   - `src/app/recursos/page.tsx` - Adición de función `normalizeString` y su aplicación en filtros y URLs
   - `src/components/blocks/resources/ResourcesSidebar.tsx` - Aplicación de normalización en comparaciones de categorías
 
-### 2. Visualización de descargas de recursos
+### 2. Visualización de descargas de recursos [COMPLETADO]
 - **Problema**: Los badges "Gratuito" tenían problemas de centrado vertical y se requería mostrar el número de descargas.
 - **Solución**: Corrección del centrado mediante clases Bootstrap y adición de contadores de descargas dinámicos.
 - **Archivos modificados**:
@@ -15,14 +15,14 @@
   - `src/components/reuseable/product-cards/ResourceCard.tsx` - Mejora visual y adición de contador
   - `src/components/blocks/resources/ResourcesLayout.tsx` - Actualización de la interfaz `IResource` para incluir campo `downloads`
 
-### 3. Cálculo dinámico de descargas
+### 3. Cálculo dinámico de descargas [COMPLETADO]
 - **Problema**: Necesidad de mostrar descargas que incrementen con el tiempo desde la publicación.
 - **Solución**: Implementación de un algoritmo que calcula descargas basadas en la fecha de publicación.
 - **Archivos creados/modificados**:
   - `src/utils/downloads.ts` (nuevo) - Función `calculateDownloads` que utiliza la fecha para calcular descargas
   - `src/app/recursos/page.tsx` - Integración del cálculo dinámico de descargas
 
-### 4. Unificación del modelo de datos y enrutamiento por slug
+### 4. Unificación del modelo de datos y enrutamiento por slug [COMPLETADO]
 - **Problema**: Los datos de recursos estaban dispersos entre `resourcesData` en `page.tsx` y el modelo `ProductItem` en `product-data.ts`, causando inconsistencias y problemas de navegación con las URLs basadas en slug.
 - **Solución**: Migración completa al modelo `ProductItem` y cambio de la estructura de carpetas para usar [slug] en lugar de [id].
 - **Archivos modificados/creados**:
