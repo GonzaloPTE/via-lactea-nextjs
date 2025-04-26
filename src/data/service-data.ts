@@ -71,6 +71,7 @@ export interface ServiceItem {
     question: string;
     answer: string;
   }[];
+  stripePaymentLink?: string | null; // Link de pago de Stripe (opcional)
 }
 
 // Categorías de servicios
@@ -193,7 +194,8 @@ export const serviceList: ServiceItem[] = [
         question: '¿Puedo cambiar la fecha de mi consulta si surge algún imprevisto?',
         answer: 'Sí, puedes reprogramar tu cita hasta 24 horas antes de la hora reservada sin ningún coste adicional.'
       }
-    ]
+    ],
+    stripePaymentLink: 'https://buy.stripe.com/14k8yC5OW8Ae9448wE'
   },
   {
     id: 2,
@@ -278,7 +280,8 @@ export const serviceList: ServiceItem[] = [
           description: 'Pon en práctica las técnicas y consejos proporcionados para mejorar tu experiencia de lactancia.'
         }
       ]
-    }
+    },
+    stripePaymentLink: 'https://buy.stripe.com/6oE9CGcdk2bQfssdQX'
   },
 
   // Servicios de 6 meses a 4 años
@@ -354,7 +357,8 @@ export const serviceList: ServiceItem[] = [
           description: 'Te presentaremos las opciones disponibles que mejor se adapten a tus necesidades específicas.'
         }
       ]
-    }
+    },
+    stripePaymentLink: null // Es gratuito
   },
   {
     id: 4,
@@ -427,7 +431,8 @@ export const serviceList: ServiceItem[] = [
           description: 'Recibirás recomendaciones prácticas que podrás implementar de inmediato.'
         }
       ]
-    }
+    },
+    stripePaymentLink: 'https://buy.stripe.com/dR69CGelsaIm3JK006'
   },
   {
     id: 5,
@@ -506,7 +511,8 @@ export const serviceList: ServiceItem[] = [
           description: 'Te enviaremos el plan detallado por escrito para que puedas implementarlo por tu cuenta.'
         }
       ]
-    }
+    },
+    stripePaymentLink: 'https://buy.stripe.com/3csaGKcdkeYC8009AF'
   },
   {
     id: 6,
@@ -585,7 +591,8 @@ export const serviceList: ServiceItem[] = [
           description: 'Realizaremos una videollamada de seguimiento para evaluar progresos y hacer ajustes necesarios.'
         }
       ]
-    }
+    },
+    stripePaymentLink: 'https://buy.stripe.com/eVa3ei0uCeYC4NOeUY'
   },
   {
     id: 7,
@@ -648,12 +655,12 @@ export const serviceList: ServiceItem[] = [
         featureIcon: BriefcaseTwo,
         description: 'Pautas de seguimiento por escrito para mantener y mejorar el sueño de tu hijo.'
       },
-      {
+      /*{
         id: 8,
         title: '1 mes de suscripción mensual incluido',
         featureIcon: Gift,
         description: '1 mes de suscripción mensual incluido para mantener y mejorar el sueño de tu hijo.'
-      }
+      }*/
     ],
     highlighted: true,
     requiresCalendly: true,
@@ -693,7 +700,8 @@ export const serviceList: ServiceItem[] = [
           description: 'Tercera videollamada para revisar resultados y proporcionar pautas futuras por escrito.'
         }
       ]
-    }
+    },
+    stripePaymentLink: 'https://buy.stripe.com/bIYg144KS4jYa88003'
   },
   {
     id: 8,
@@ -762,12 +770,12 @@ export const serviceList: ServiceItem[] = [
         featureIcon: BriefcaseTwo,
         description: 'Pautas de seguimiento finales por escrito para mantener y mejorar el sueño de tu hijo.'
       },
-      {
+      /*{
         id: 9,
         title: '3 meses de suscripción mensual incluidos',
         featureIcon: Gift,
         description: '3 meses de suscripción mensual incluidos para mantener y mejorar el sueño de tu hijo.'
-      }
+      }*/
     ],
     highlighted: true,
     requiresCalendly: true,
@@ -817,7 +825,8 @@ export const serviceList: ServiceItem[] = [
           description: 'Tercera videollamada para evaluar resultados y entrega de pautas futuras por escrito.'
         }
       ]
-    }
+    },
+    stripePaymentLink: 'https://buy.stripe.com/3cs8yCgtA8Ae9445kk'
   },
   {
     id: 9,
@@ -871,7 +880,8 @@ export const serviceList: ServiceItem[] = [
     ],
     requiresCalendly: true,
     calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
-    color: 'violet'
+    color: 'violet',
+    stripePaymentLink: 'https://buy.stripe.com/5kA2ae3GOdUyfss002'
   },
   {
     id: 10,
@@ -955,7 +965,8 @@ export const serviceList: ServiceItem[] = [
           description: 'Las sesiones de seguimiento son en grupo, beneficiándote de la experiencia compartida.'
         }
       ]
-    }
+    },
+    stripePaymentLink: null // Aún no definido, requiere coordinación
   }
 ];
 
