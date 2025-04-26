@@ -46,10 +46,12 @@
     "@types/react-dom": "^18",
     "@types/react-scroll": "^1.8.10",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "dotenv": "^16.5.0",
     "eslint": "^9",
     "eslint-config-next": "15.0.4",
     "eslint-plugin-unused-imports": "^4.1.4",
     "sass": "^1.69.5",
+    "stripe": "^18.0.0",
     "typescript": "^5",
     "wrangler": "^4.13.2"
   }

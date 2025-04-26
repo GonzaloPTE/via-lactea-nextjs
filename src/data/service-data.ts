@@ -46,6 +46,7 @@ export interface ServiceItem {
   shortDescription: string;
   forWho: string[]; // Texto para '¿Para quién es?' múltiple
   price: number;
+  currency: string; // Added currency field (e.g., 'eur', 'usd')
   duration: string;
   features: {
     id: number;
@@ -110,6 +111,7 @@ export const serviceList: ServiceItem[] = [
       'Quienes buscan orientación en lactancia, alimentación y sueño'
     ],
     price: 90,
+    currency: 'eur',
     duration: '1 hora + 2 semanas de seguimiento por email',
     features: [
       {
@@ -209,6 +211,7 @@ export const serviceList: ServiceItem[] = [
       'Familias iniciando alimentación complementaria'
     ],
     price: 60,
+    currency: 'eur',
     duration: '1 hora',
     features: [
       {
@@ -295,6 +298,7 @@ export const serviceList: ServiceItem[] = [
       'Quienes buscan recomendaciones iniciales sin compromiso'
     ],
     price: 0,
+    currency: 'eur',
     duration: '30 minutos',
     features: [
       {
@@ -368,6 +372,7 @@ export const serviceList: ServiceItem[] = [
       'Quienes requieren atención prioritaria'
     ],
     price: 50,
+    currency: 'eur',
     duration: '30 minutos',
     features: [
       {
@@ -440,6 +445,7 @@ export const serviceList: ServiceItem[] = [
       'Padres con disponibilidad limitada de seguimiento'
     ],
     price: 200,
+    currency: 'eur',
     duration: '1 videollamada',
     features: [
       {
@@ -518,6 +524,7 @@ export const serviceList: ServiceItem[] = [
       'Quienes buscan seguimiento personalizado'
     ],
     price: 300,
+    currency: 'eur',
     duration: '2 semanas',
     features: [
       {
@@ -596,6 +603,7 @@ export const serviceList: ServiceItem[] = [
       'Padres que quieren múltiples videollamadas de seguimiento'
     ],
     price: 400,
+    currency: 'eur',
     duration: '4 semanas',
     features: [
       {
@@ -703,6 +711,7 @@ export const serviceList: ServiceItem[] = [
       'Padres que necesitan varias videollamadas y seguimiento detallado'
     ],
     price: 500,
+    currency: 'eur',
     duration: '6 semanas',
     features: [
       {
@@ -826,6 +835,7 @@ export const serviceList: ServiceItem[] = [
       'Quienes necesitan ajustes adicionales a su plan'
     ],
     price: 150,
+    currency: 'eur',
     duration: '1 semana',
     features: [
       {
@@ -879,6 +889,7 @@ export const serviceList: ServiceItem[] = [
       'Padres que buscan descuento y dinámica colaborativa'
     ],
     price: 280,
+    currency: 'eur',
     duration: '4 semanas',
     features: [
       {
