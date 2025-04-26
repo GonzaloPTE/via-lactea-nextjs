@@ -11,7 +11,8 @@
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "sync:stripe": "tsx src/scripts/sync-stripe-products.ts"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.0.0-beta.3",
@@ -52,7 +53,9 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "sass": "^1.69.5",
     "stripe": "^18.0.0",
-    "typescript": "^5",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
     "wrangler": "^4.13.2"
   }
 }
