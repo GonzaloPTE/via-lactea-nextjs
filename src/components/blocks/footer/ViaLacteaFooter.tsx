@@ -18,6 +18,8 @@ export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Pr
   const colorMap: Record<string,string> = { purple:'grape', aqua:'aqua', green:'green', red:'red', blue:'blue', teal:'sky', yellow:'yellow', orange:'orange', violet:'violet', pink:'pink' };
   const tailwindColor = service?.color ? (colorMap[service.color] || 'grape') : 'grape';
 
+  hiddenNewsletter = true; // TODO: Descomentar cuando se quiera el newsletter
+
   return (
     <footer className={`bg-white pt-14 pb-8`}>
       <div className="container pb-7">
@@ -71,7 +73,7 @@ export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Pr
                 text="Te llamo"
                 icon="uil uil-whatsapp"
                 className={`btn btn-${tailwindColor} rounded-pill`}
-                calendlyUrl={service?.calendlyUrl}
+                calendlyUrl="https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba"
               />
             </div>
           </div>

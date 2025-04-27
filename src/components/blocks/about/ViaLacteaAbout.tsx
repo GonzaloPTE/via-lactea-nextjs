@@ -28,9 +28,9 @@ export default function ViaLacteaAbout() {
         <h3 className="display-4 mb-6">Miriam Rubio, tu acompañante en la crianza</h3>
 
         <p className="mb-6">
-          Con más de 15 años de experiencia, soy asesora del sueño infantil respetuoso certificada,
-          asesora de lactancia certificada, enfermera y madre. Mi misión es 
-          acompañarte en este camino de la crianza, ayudándote a encontrar soluciones adaptadas a 
+          Con más de 15 años de experiencia, soy <strong>asesora del sueño infantil respetuoso certificada, 
+          asesora de lactancia certificada</strong>, <strong>enfermera</strong> y madre. Mi misión
+          es <strong>acompañarte en este camino de la crianza</strong>, ayudándote a encontrar soluciones adaptadas a 
           tu familia y a las necesidades específicas de tu bebé.
         </p>
 

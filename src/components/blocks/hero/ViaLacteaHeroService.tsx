@@ -2,6 +2,7 @@ import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 // CUSTOM UTILS
 import { fadeInAnimate, slideInDownAnimate } from "utils/animation";
 import { ServiceItem } from "data/service-data";
+import NextLink from "components/reuseable/links/NextLink";
 
 interface ViaLacteaHeroServiceProps {
   service: ServiceItem;
@@ -27,6 +28,16 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
 
   // Obtener el color de Tailwind correspondiente, o usar 'grape' como valor predeterminado
   const tailwindColor = service.color ? colorMap[service.color] || 'grape' : 'grape';
+
+  // List of services that bypass free assessment
+  const directBookingSlugs = [
+    'valoracion-gratuita',
+    'videollamada-sos',
+    'semana-seguimiento',
+    'asesoria-big-bang',
+    'asesoria-lactancia'
+  ];
+  const requiresDirectBooking = directBookingSlugs.includes(service.slug);
 
   return (
     <section className="wrapper bg-light">
@@ -59,11 +70,28 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
                   </div>
 
                   <div style={slideInDownAnimate("1500ms")}>
-                    <CalendlyButton
-                      text={service.price === 0 ? "Reservar gratis" : `Reservar por ${service.price}€`}
-                      className={`btn btn-lg btn-${tailwindColor} rounded mt-6`}
-                      calendlyUrl={service.calendlyUrl}
-                    />
+                    {requiresDirectBooking ? (
+                      // Render only direct payment link for specific services
+                      <NextLink
+                        title={`Reservar por ${service.price}€`}
+                        className={`btn btn-lg btn-${tailwindColor} rounded mt-6 me-4`}
+                        href={service.calendlyUrl || '#'} // Fallback href
+                      />
+                    ) : (
+                      // Render standard buttons (Free assessment + Payment)
+                      <>
+                        <CalendlyButton
+                          text="Agendar valoración gratuita"
+                          className={`btn btn-lg btn-${tailwindColor} rounded mt-6 me-4`}
+                          calendlyUrl={service.calendlyUrl} // This should ideally be the free assessment URL
+                        />
+                        <NextLink
+                          title={service.price === 0 ? "Reservar gratis" : `Reservar por ${service.price}€`}
+                          className={`btn btn-lg btn-outline-${tailwindColor} rounded-pill mt-6`}
+                          href={service.stripePaymentLink || '#'} // Fallback href
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
 
