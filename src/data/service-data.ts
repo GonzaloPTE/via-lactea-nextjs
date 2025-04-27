@@ -56,7 +56,8 @@ export interface ServiceItem {
   }[];
   highlighted?: boolean;
   requiresCalendly?: boolean;
-  calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
+  calendlyUrl?: string;
+  calendlyDescription?: string;
   includes?: string[];
   color?: string; // Color representativo del servicio
   process?: {
@@ -154,7 +155,6 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'purple',
     includes: [
       'Guía "Big Bang - Sus primeros momentos"',
@@ -195,7 +195,21 @@ export const serviceList: ServiceItem[] = [
         answer: 'Sí, puedes reprogramar tu cita hasta 24 horas antes de la hora reservada sin ningún coste adicional.'
       }
     ],
-    stripePaymentLink: 'https://buy.stripe.com/14k8yC5OW8Ae9448wE'
+    stripePaymentLink: 'https://buy.stripe.com/14k8yC5OW8Ae9448wE',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/asesoria-big-bang?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyDescription: `✨ ¡Bienvenida a los primeros meses! ✨
+
+¿Dudas sobre lactancia 🤱, sueño 😴, alimentación 🥕 o rutinas ⏰?
+
+🔔📆 Reserva tu Asesoría Big Bang de 1 hora y resolveremos juntas todas esas preguntas iniciales (0-6 meses).
+
+¿Qué haremos?
+
+🔎 Analizaremos tu situación específica para darte pautas claras y adaptadas.
+
+👀 Si está al cuidado de dos, genial si podéis estar ambos.
+
+📝 ¡Prepara tus preguntas y sal de dudas!`
   },
   {
     id: 2,
@@ -254,7 +268,6 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'aqua',
     process: {
       title: 'Asesoría de lactancia paso a paso',
@@ -281,7 +294,21 @@ export const serviceList: ServiceItem[] = [
         }
       ]
     },
-    stripePaymentLink: 'https://buy.stripe.com/6oE9CGcdk2bQfssdQX'
+    stripePaymentLink: 'https://buy.stripe.com/6oE9CGcdk2bQfssdQX',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/asesoria-lactancia?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyDescription: `🤱 ¿La lactancia no está siendo como esperabas? 🤱
+
+¿Dolor? ¿Dudas sobre el agarre? ¿Poca ganancia de peso? ¿Quieres preparar la vuelta al trabajo?
+
+🔔📆 Reserva tu Asesoría de Lactancia de 1 hora y buscaremos soluciones juntas.
+
+¿Qué haremos?
+
+🔎 Evaluaremos la toma, resolveremos tus dudas y te daré herramientas prácticas.
+
+👀 Si es posible, ten a tu bebé contigo durante la sesión.
+
+💪 ¡Disfruta de tu lactancia con confianza!`
   },
 
   // Servicios de 6 meses a 4 años
@@ -331,7 +358,14 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyDescription: `¿Qué haremos?
+
+🔎 Estudiaré vuestro caso detenidamente y veremos las posibles opciones durante la videollamada.
+
+👀 Si está al cuidado de dos, lo ideal es que estéis presentes ambos papás y resolver cualquier duda.
+
+🤓 ¡Y recuerda: ten a mano tus notas!`,
     color: 'green',
     process: {
       title: 'Valoración gratuita paso a paso',
@@ -405,7 +439,20 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/videollamada-sos?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyDescription: `🚨 ¿Tienes alguna urgencia puntual? 🚨 
+
+¿Te vas de vacaciones 🚢 o tienes una mudanza 🚚 y tu bebé vuelve a dormir mal?
+
+🔔📆 Reserva cita con una videollamada SOS de 30 minutos y aclara tus dudas sobre el sueño y la lactancia.
+
+¿Qué haremos?
+
+🔎 Trataré vuestro caso detenidamente y veremos las pautas y próximos pasos durante la videollamada.
+
+👀 Si está al cuidado de dos, lo ideal es que estéis presentes ambos papás y resolver cualquier duda.
+
+📧 Finalmente, te enviaré por correo los ajustes recomendados`,
     color: 'red',
     process: {
       title: 'Videollamada SOS paso a paso',
@@ -485,7 +532,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'violet',
     process: {
       title: 'Plan Luna paso a paso',
@@ -565,7 +612,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'sky',
     process: {
       title: 'Plan Enana Blanca paso a paso',
@@ -664,7 +711,7 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'yellow',
     process: {
       title: 'Plan Sol paso a paso',
@@ -779,7 +826,7 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'orange',
     process: {
       title: 'Plan Gigante Roja paso a paso',
@@ -879,9 +926,22 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
     color: 'violet',
-    stripePaymentLink: 'https://buy.stripe.com/5kA2ae3GOdUyfss002'
+    stripePaymentLink: 'https://buy.stripe.com/5kA2ae3GOdUyfss002',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/semana-seguimiento?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyDescription: `📈 ¿Necesitas un ajuste en el plan? 📈
+
+Esta Semana de Seguimiento es EXCLUSIVA para familias que ya habéis hecho un plan conmigo.
+
+🔔📆 Reserva tu semana de seguimiento y revisaremos progresos, haremos ajustes y resolveremos nuevas dudas.
+
+¿Qué incluye?
+
+🔎 Revisión de la situación actual y ajuste del plan.
+
+💬 Seguimiento diario por WhatsApp/email durante 7 días.
+
+💪 ¡Consolidamos esos buenos hábitos!`
   },
   {
     id: 10,
@@ -934,7 +994,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'pink',
     process: {
       title: 'Asesorías grupales paso a paso',

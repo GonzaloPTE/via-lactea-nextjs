@@ -41,7 +41,7 @@ export const mainNavigation = [
        { id: 53, title: "Semana de seguimiento", url: "/servicios/semana-seguimiento" },
        { id: 54, title: "Asesorías grupales", url: "/servicios/asesoria-grupal" },
        // Link a todos los servicios puede ir aquí o como item separado
-       { id: 59, title: "Ver todos los servicios", url: "/servicios" }
+       //{ id: 59, title: "Ver todos los servicios", url: "/servicios" }
     ]
   },
   

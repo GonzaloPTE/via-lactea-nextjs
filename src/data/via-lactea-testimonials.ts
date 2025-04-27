@@ -19,7 +19,7 @@ export const viaLacteaTestimonials = [
     id: 3,
     name: 'Patricia Gómez',
     image: '/img/avatars/te3.jpg',
-    designation: 'Mamá de Leo, 5 meses',
+    designation: 'Mamá de Leo, 1 mes',
     review: '...quería darte las gracias de corazón. Estaba a punto de tirar la toalla con la lactancia x el dolor... y tú diste con el problema de agarre en un plis. La posición de rugby q me enseñaste fue mano de santo. Ahora las tomas son un momento bonito, no una tortura, y Leo está creciendo genial. Mil gracias x tu apoyo Miriam.'
   },
   {

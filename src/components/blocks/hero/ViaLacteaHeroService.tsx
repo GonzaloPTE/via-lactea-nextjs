@@ -72,10 +72,10 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
                   <div style={slideInDownAnimate("1500ms")}>
                     {requiresDirectBooking ? (
                       // Render only direct payment link for specific services
-                      <NextLink
-                        title={`Reservar por ${service.price}€`}
+                      <CalendlyButton
+                        text={`Reservar por ${service.price}€`}
                         className={`btn btn-lg btn-${tailwindColor} rounded mt-6 me-4`}
-                        href={service.calendlyUrl || '#'} // Fallback href
+                        calendlyUrl={service.calendlyUrl || '#'} // Fallback href
                       />
                     ) : (
                       // Render standard buttons (Free assessment + Payment)
