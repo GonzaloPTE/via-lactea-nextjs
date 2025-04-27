@@ -1,23 +1,5 @@
-import IconProps from 'types/icon';
 
 // Importar iconos de la carpeta lineal
-import CloudComputingTwo from 'icons/lineal/CloudComputingTwo';
-import ChatTwo from 'icons/lineal/ChatTwo';
-import LightBulb from 'icons/lineal/LightBulb';
-import ShoppingBasket from 'icons/lineal/ShoppingBasket';
-import ClockThree from 'icons/lineal/ClockThree';
-import List from 'icons/lineal/List';
-import Email from 'icons/lineal/Email';
-import Target from 'icons/lineal/Target';
-import Shield from 'icons/lineal/Shield';
-import CheckList from 'icons/lineal/CheckList';
-import VideoEditing from 'icons/lineal/VideoEditing';
-import Analytics from 'icons/lineal/Analytics';
-import Team from 'icons/lineal/Team';
-import Savings from 'icons/lineal/Savings';
-import User from 'icons/lineal/User';
-import Settings from 'icons/lineal/Settings';
-import BriefcaseTwo from 'icons/lineal/BriefcaseTwo';
 
 // Definimos las rutas a los iconos SVG que están disponibles en public/img/icons/solid
 const ICON_PATH = '/img/icons/solid/';

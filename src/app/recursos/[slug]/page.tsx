@@ -2,14 +2,12 @@
 
 import { Fragment, useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
-import clsx from "clsx";
 // GLOBAL CUSTOM COMPONENTS
 import ThumbsCarousel from "components/reuseable/ThumbsCarousel";
 // LOCAL CUSTOM COMPONENTS
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
-import { UrgencyProgressBar } from "components/reuseable/UrgencyProgressBar";
 // CUSTOM DATA
-import { productList, getProductBySlug, ProductItem, IAuthor } from "../../../data/product-data";
+import { productList, getProductBySlug, ProductItem } from "../../../data/product-data";
 // Importar el componente ResourceDetailActions
 import ResourceDetailActions from "components/reuseable/products/ResourceDetailActions";
 

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ServiceItem } from "data/service-data";
-import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import ListColumn from "components/reuseable/ListColumn";
 
 interface ServiceCardProps {
