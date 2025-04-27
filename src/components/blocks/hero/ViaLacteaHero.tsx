@@ -7,14 +7,14 @@ export default function ViaLacteaHero() {
         <div className="row gx-md-8 gx-xl-12 gy-10 align-items-center text-center text-lg-start mb-15">
           <div className="col-lg-6" data-cues="slideInDown" data-group="page-title" data-delay="900">
             <h1 className="display-1 mb-4 me-xl-5 mt-lg-8">
-              Asesoría profesional en <br className="d-none d-md-block d-lg-none" />
+              Asesoría especializada en <br className="d-none d-md-block d-lg-none" />
               <span className="text-grape">sueño infantil <span className="underline-3 style-3 aqua">respetuoso </span>y </span>
               <span className="text-grape">lactancia</span>
             </h1>
 
             <p className="lead fs-24 lh-sm mb-7 pe-xxl-15">
-              Te ayudo a recuperar el descanso familiar y <br className="d-none d-md-block d-lg-none" />
-              a disfrutar plenamente de la crianza de tu bebé.
+              Mediante asesorías online personalizadas, te ayudo a resolver problemas de sueño infantil desde un enfoque respetuoso,
+              así como dificultades con la lactancia, para recuperar el descanso y disfrutar la crianza.
             </p>
 
             <div className="d-inline-flex me-2">
@@ -34,7 +34,7 @@ export default function ViaLacteaHero() {
                 src="/img/via-lactea/photos/perfil-hero.png"
                 data-cue="fadeIn"
                 data-delay="300"
-                alt="3d"
+                alt="Miriam Rubio - Asesora de sueño infantil respetuoso y lactancia"
                 />
             </div>
           </div>

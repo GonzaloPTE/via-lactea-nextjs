@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { Metadata } from 'next';
 
 // VIA LACTEA CUSTOM COMPONENTS
 import ViaLacteaHero from "components/blocks/hero/ViaLacteaHero";
@@ -12,6 +13,14 @@ import ViaLacteaContact from "components/blocks/contact/ViaLacteaContact";
 import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import ViaLacteaServicesHome from "components/blocks/services/ViaLacteaServicesHome";
+
+// SEO Metadata
+export const metadata: Metadata = {
+  title: "Vía Láctea | Asesoría de Sueño Infantil y Lactancia Online",
+  description: "Especialistas en sueño infantil respetuoso y lactancia. Consultas 100% online y personalizadas para tu familia.",
+  keywords: ["asesoría sueño infantil respetuoso", "asesoría lactancia online", "tarifas asesoría sueño respetuoso", "precios consulta lactancia", "planes sueño respetuoso bebé"], // Optional: Add keywords if desired
+};
+
 export default function HomePage() {
   return (
     <Fragment>

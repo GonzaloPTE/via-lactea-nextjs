@@ -1,10 +1,18 @@
 import { Fragment } from "react";
+import { Metadata } from 'next';
 
 // VIA LACTEA CUSTOM COMPONENTS
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
 import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import ServicesPortfolio from "components/blocks/portfolio/ServicesPortfolio";
+
+// SEO Metadata for /servicios page
+export const metadata: Metadata = {
+  title: "Servicios y Tarifas | Asesoría Sueño Infantil y Lactancia | Vía Láctea",
+  description: "Descubre todos nuestros servicios de asesoría online en sueño infantil respetuoso y lactancia materna. Encuentra el plan y tarifa que mejor se adapta a tu familia.",
+  keywords: ["servicios sueño infantil respetuoso", "asesoría lactancia online", "tarifas asesoría sueño respetuoso", "precios consulta lactancia", "planes sueño respetuoso bebé"], // Optional: Add keywords if desired
+};
 
 export default function ServicesPage() {
   return (
@@ -20,14 +28,14 @@ export default function ServicesPage() {
         <section className="wrapper">
           <div className="row mt-8">
             <div className="col-lg-10 col-xl-9 col-xxl-8 mx-auto text-center">
-              <h2 className="fs-16 text-uppercase text-primary mb-3">Catálogo de servicios</h2>
-              <h3 className="display-5 mb-10">
+              <p className="fs-16 text-uppercase text-primary mb-3">Catálogo de servicios</p>
+              <h1 className="display-5 mb-10">
                 Descubre nuestras <span className="underline-3 style-2 grape">asesorías personalizadas</span> para ayudarte con el sueño de tu bebé y la lactancia.
-              </h3>
+              </h1>
             </div>
           </div>
           <figure className="bg-soft-primary">
-            <img src="/img/photos/clouds.png" alt="Clouds" />
+            <img src="/img/photos/clouds.png" alt="" />
           </figure>
         </section>
 

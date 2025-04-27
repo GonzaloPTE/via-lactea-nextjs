@@ -15,7 +15,7 @@ export default function ViaLacteaAbout() {
         <figure className="rounded">
           <Image 
             src="/img/via-lactea/illustrations/sobre-mi.png"
-            alt="Miriam Rubio - Asesora Vía Láctea"
+            alt="Miriam Rubio - Asesora de sueño y lactancia en Vía Láctea"
             width={570} // Ajusta según el tamaño real de tu imagen
             height={570} // Ajusta según el tamaño real de tu imagen
             style={{ width: '100%', height: 'auto' }} // Para mantener la responsividad
