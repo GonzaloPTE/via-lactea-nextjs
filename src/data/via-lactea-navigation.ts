@@ -4,26 +4,51 @@
 // Enlaces principales del sitio
 export const mainNavigation = [
   { id: 1, title: "Inicio", url: "/" },
-  { id: 2, title: "Sobre mí", url: "/sobre-mi" },
+  // { id: 2, title: "Sobre mí", url: "/sobre-mi" }, // TODO: Descomentar cuando esté implementada
+  
+  // --- Dropdown: 0-6 meses ---
   {
-    id: 3,
-    title: "Servicios",
-    url: "/servicios",
+    id: 2, // New ID for this dropdown
+    title: "0-6 meses",
+    url: "#", // Set URL to # for dropdown toggle
     children: [
-      // Servicios para bebés 0-6 meses
-      { id: 31, title: "Asesoría \"Big Bang\"", url: "/servicios/asesoria-big-bang" },
-      { id: 32, title: "Asesoría de lactancia", url: "/servicios/asesoria-lactancia" },
-      // Servicios para niños 6 meses a 4 años
-      { id: 33, title: "Valoración gratuita", url: "/servicios/valoracion-gratuita" },
-      { id: 34, title: "Plan de sueño Sol", url: "/servicios/plan-sol" },
-      { id: 35, title: "Plan de sueño Gigante Roja", url: "/servicios/plan-gigante-roja" },
-      // Link a todos los servicios
-      { id: 39, title: "Ver todos los servicios", url: "/servicios" }
+      { id: 31, title: "Asesoría integral Big Bang", url: "/servicios/asesoria-big-bang" },
+      { id: 32, title: "Asesoría de lactancia Vía láctea", url: "/servicios/asesoria-lactancia" },
     ]
   },
-  { id: 4, title: "Blog", url: "/blog" },
-  { id: 5, title: "Recursos", url: "/recursos" },
-  { id: 6, title: "Contacto", url: "/contacto" }
+  
+  // --- Dropdown: 6 meses a 4 años ---
+  {
+    id: 4, // New ID for this dropdown
+    title: "6 meses a 4 años",
+    url: "#",
+    children: [
+      { id: 41, title: "Plan de sueño Luna", url: "/servicios/plan-luna" },
+      { id: 42, title: "Plan de sueño Enana Blanca", url: "/servicios/plan-enana-blanca" },
+      { id: 43, title: "Plan de sueño Sol", url: "/servicios/plan-sol" },
+      { id: 44, title: "Plan de sueño Gigante Roja", url: "/servicios/plan-gigante-roja" },
+    ]
+  },
+  
+  // --- Dropdown: Servicios generales ---
+  {
+    id: 5, // New ID for this dropdown
+    title: "Servicios generales",
+    url: "#",
+    children: [
+       { id: 51, title: "Valoración gratuita", url: "/servicios/valoracion-gratuita" },
+       { id: 52, title: "Videollamada SOS", url: "/servicios/videollamada-sos" },
+       { id: 53, title: "Semana de seguimiento", url: "/servicios/semana-seguimiento" },
+       { id: 54, title: "Asesorías grupales", url: "/servicios/asesoria-grupal" },
+       // Link a todos los servicios puede ir aquí o como item separado
+       { id: 59, title: "Ver todos los servicios", url: "/servicios" }
+    ]
+  },
+  
+  // { id: 11, title: "Blog", url: "/blog" }, // TODO: Descomentar cuando esté implementado
+  // { id: 12, title: "Recursos", url: "/recursos" }, // TODO: Descomentar cuando esté implementado
+  // { id: 6, title: "Contacto", url: "/contacto" } 
+  { id: 6, title: "Tarifas", url: "/servicios" } 
 ];
 
 // Información de contacto para el footer y la barra lateral móvil

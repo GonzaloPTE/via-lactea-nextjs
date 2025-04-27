@@ -8,7 +8,8 @@ export default function ViaLacteaHero() {
           <div className="col-lg-6" data-cues="slideInDown" data-group="page-title" data-delay="900">
             <h1 className="display-1 mb-4 me-xl-5 mt-lg-8">
               Asesoría profesional en <br className="d-none d-md-block d-lg-none" />
-              <span className="text-grape">sueño infantil y lactancia</span>
+              <span className="text-grape">sueño infantil <span className="underline-3 style-3 aqua">respetuoso </span></span>
+              y <span className="text-grape">lactancia</span>
             </h1>
 
             <p className="lead fs-24 lh-sm mb-7 pe-xxl-15">

@@ -40,14 +40,14 @@ export default function ViaLacteaContact() {
               <div>
                 <h5 className="mb-0">Facebook</h5>
                 <p className="mb-3">
-                  <a href="https://www.facebook.com/vialactea.suenoylactancia" target="_blank" rel="noreferrer" className="link-body">
+                  <a href="https://www.facebook.com/profile.php?id=61575517253913" target="_blank" rel="noreferrer" className="link-body">
                     Vía Láctea - Sueño y Lactancia
                   </a>
                 </p>
               </div>
             </div>
             
-            {/* Email Section */}
+            {/* Email and Whatsapp Section */}
             {/*
             <div className="d-flex flex-row">
               <div>
@@ -63,7 +63,6 @@ export default function ViaLacteaContact() {
                 </p>
               </div>
             </div>
-            */}
 
             <div className="d-flex flex-row">
               <div>
@@ -79,6 +78,7 @@ export default function ViaLacteaContact() {
                 </p>
               </div>
             </div>
+            */}
           </div>
         </div>
       </div>

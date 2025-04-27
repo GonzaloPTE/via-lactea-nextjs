@@ -3,7 +3,6 @@ import { Fragment } from "react";
 // VIA LACTEA CUSTOM COMPONENTS
 import ViaLacteaHero from "components/blocks/hero/ViaLacteaHero";
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
-import ViaLacteaServices from "components/blocks/services/ViaLacteaServices";
 import ViaLacteaAbout from "components/blocks/about/ViaLacteaAbout";
 import ViaLacteaFacts from "components/blocks/facts/ViaLacteaFacts";
 import ViaLacteaTestimonials from "components/blocks/testimonial/ViaLacteaTestimonials";
@@ -12,7 +11,7 @@ import ViaLacteaFAQ from "components/blocks/faq/ViaLacteaFAQ";
 import ViaLacteaContact from "components/blocks/contact/ViaLacteaContact";
 import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
-
+import ViaLacteaServicesHome from "components/blocks/services/ViaLacteaServicesHome";
 export default function HomePage() {
   return (
     <Fragment>
@@ -38,7 +37,7 @@ export default function HomePage() {
         <ViaLacteaTestimonials />
 
         {/* ========== what do we do section ========== */}
-        <ViaLacteaServices />
+        <ViaLacteaServicesHome />
 
         {/* ========== partners section ========== */}
         <ViaLacteaPortfolio />
