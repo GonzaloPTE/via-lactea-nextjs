@@ -7,21 +7,14 @@ import ServiceDetailClient from "components/blocks/services/ServiceDetailClient"
 
 // Tipado para params
 interface ServiceDetailProps {
-  params: { slug: string };
-}
-
-// Dynamic Metadata Generation
-type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata(
-  { params }: Props,
+  { params }: ServiceDetailProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // Await params as suggested by the error message
-  const resolvedParamsMeta = await params;
-  const slug = resolvedParamsMeta.slug;
+  const { slug } = await params;
   const service = getServiceBySlug(slug);
 
   if (!service) {
@@ -66,8 +59,7 @@ export async function generateMetadata(
 // Default export is now a Server Component
 export default async function ServiceDetailPage({ params }: ServiceDetailProps) {
   // Await params as suggested by the error message
-  const resolvedParamsPage = await params;
-  const { slug } = resolvedParamsPage;
+  const { slug } = await params;
   const service = getServiceBySlug(slug);
 
   // If service not found, trigger the 404 page
