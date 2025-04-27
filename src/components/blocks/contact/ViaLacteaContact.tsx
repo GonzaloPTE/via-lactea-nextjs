@@ -46,7 +46,9 @@ export default function ViaLacteaContact() {
                 </p>
               </div>
             </div>
-
+            
+            {/* Email Section */}
+            {/*
             <div className="d-flex flex-row">
               <div>
                 <i className="uil uil-envelope fs-28 text-grape me-4 mt-n1"></i>
@@ -61,6 +63,7 @@ export default function ViaLacteaContact() {
                 </p>
               </div>
             </div>
+            */}
 
             <div className="d-flex flex-row">
               <div>
