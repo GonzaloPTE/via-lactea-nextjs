@@ -13,7 +13,7 @@ interface StatItem {
 // Lista en formato correcto para ListColumn (array de arrays de strings)
 export const aboutMiriamList: string[][] = [
   [
-    'Asesora del sueño infantil respetuoso certificada por el método Conecta',
+    'Asesora del sueño infantil respetuoso certificada',
     'Asesora de lactancia certificada',
     'Enfermera con más de 15 años de experiencia',
     'Madre comprometida con la crianza respetuosa'
@@ -31,7 +31,7 @@ export const miriamStats: StatItem[] = [
   {
     id: 1,
     value: "Sueño",
-    title: 'Certificada en Sueño Infantil Respetuoso - Método Conecta',
+    title: 'Certificada en Sueño Infantil Respetuoso',
     Icon: Shield
   },
   {

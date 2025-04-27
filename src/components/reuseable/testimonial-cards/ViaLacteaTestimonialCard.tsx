@@ -1,13 +1,34 @@
 "use client";
 
-import Image from "next/image";
 import clsx from "clsx";
 import { useState, useRef, useEffect } from "react";
+
+// Helper function to get initials
+const getInitials = (name: string): string => {
+  if (!name) return '?';
+  const parts = name.split(' ');
+  if (parts.length > 1) {
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  } else if (parts.length === 1 && parts[0].length > 0) {
+    return parts[0][0].toUpperCase();
+  }
+  return '?';
+};
+
+// Helper function to get a color based on name (simple hashing)
+const nameToColor = (name: string): string => {
+  const colors = ['bg-primary', 'bg-grape', 'bg-green', 'bg-orange', 'bg-red', 'bg-pink', 'bg-violet', 'bg-yellow', 'bg-aqua', 'bg-leaf'];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash % colors.length);
+  return colors[index];
+};
 
 // =================================================
 interface ViaLacteaTestimonialCardProps {
   name: string;
-  image?: string;
   review: string;
   shadow?: boolean;
   designation: string;
@@ -19,7 +40,6 @@ interface ViaLacteaTestimonialCardProps {
 
 export default function ViaLacteaTestimonialCard({
   name,
-  image,
   review,
   shadow,
   hideRating,
@@ -41,9 +61,9 @@ export default function ViaLacteaTestimonialCard({
     ? `${review.substring(0, maxLength)}...` 
     : review;
 
-  // Placeholder default image
-  const defaultImage = "/img/avatars/avatar.jpg";
-  const imageSource = image && image.trim() !== "" ? image : defaultImage;
+  // Get initials and color
+  const initials = getInitials(name);
+  const bgColorClass = nameToColor(name);
 
   // Sincronizar estado expandido con la propiedad isFullWidth
   useEffect(() => {
@@ -110,16 +130,15 @@ export default function ViaLacteaTestimonialCard({
           )}
 
           <div className="testimonial-details mt-3">
-            <figure className="rounded-circle w-12 overflow-hidden">
-              <Image 
-                alt={`Testimonio de ${name}`} 
-                width={100} 
-                height={100} 
-                src={imageSource}
-                className="w-100 h-auto" 
-              />
-            </figure>
-
+            {/* Avatar con iniciales */}
+            <div className={clsx(
+              "testimonial-avatar rounded-circle d-flex align-items-center justify-content-center text-white me-3",
+              bgColorClass
+            )} style={{ width: '3rem', height: '3rem' }}>
+              <span className="fs-18 fw-bold">{initials}</span>
+            </div>
+            {/* Fin Avatar con iniciales */}
+            
             <div className="info">
               <h5 className="mb-0">{name}</h5>
               <p className="mb-0">{designation}</p>
