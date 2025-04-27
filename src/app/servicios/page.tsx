@@ -57,7 +57,7 @@ export default function ServicesPage() {
               <div className="col-md-8 col-lg-7 col-xl-6 col-xxl-5">
                 <div className="d-flex justify-content-center">
                   <a 
-                    href="https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba" 
+                    href="https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba" 
                     target="_blank" 
                     rel="noreferrer"
                     className="btn btn-primary rounded-pill mb-0"
