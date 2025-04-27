@@ -17,7 +17,7 @@ declare global {
  */
 export default function useCalendly(
   uniqueId: string = 'default',
-  url: string = 'https://calendly.com/asesoriainfantilvialactea/30min?hide_gdpr_banner=1&primary_color=605dba'
+  url: string = 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba'
 ) {
   useEffect(() => {
     // Load Calendly script dynamically if not already loaded

@@ -22,6 +22,7 @@ export default function ViaLacteaHero() {
                 text="Agenda YA tu valoración GRATUITA"
                 icon="uil uil-calendar-alt"
                 className="btn btn-lg btn-grape rounded"
+                calendlyUrl="https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba"
               />
             </div>
           </div>
