@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "lint": "next lint",
+    "lint:fix": "npx eslint --fix",
     "build": "next build",
     "start": "next start",
     "sass": "sass --no-source-map src/assets/scss:public/css",
