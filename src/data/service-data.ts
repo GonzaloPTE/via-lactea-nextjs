@@ -18,7 +18,6 @@ import Savings from 'icons/lineal/Savings';
 import User from 'icons/lineal/User';
 import Settings from 'icons/lineal/Settings';
 import BriefcaseTwo from 'icons/lineal/BriefcaseTwo';
-import Gift from 'icons/lineal/Gift';
 
 // Definimos las rutas a los iconos SVG que están disponibles en public/img/icons/solid
 const ICON_PATH = '/img/icons/solid/';
@@ -51,7 +50,7 @@ export interface ServiceItem {
   features: {
     id: number;
     title: string;
-    featureIcon: React.FC<IconProps>; // Componente Icon para la característica
+    featureIcon: string; // Changed from React.FC<IconProps> to string identifier
     description: string; // Descripción corta de la característica
   }[];
   highlighted?: boolean;
@@ -80,17 +79,17 @@ export const serviceCategories = [
   {
     id: 'baby',
     label: '0-6 meses',
-    description: 'Servicios especializados para bebés de 0 a 6 meses'
+    description: 'Asesorías especializadas en sueño y lactancia para bebés de 0 a 6 meses.'
   },
   {
     id: 'child',
     label: '6 meses a 4 años',
-    description: 'Servicios adaptados para niños de 6 meses a 4 años'
+    description: 'Planes y asesorías de sueño respetuoso adaptados para niños de 6 meses a 4 años.'
   },
   {
     id: 'general',
     label: 'Servicios generales',
-    description: 'Otros servicios complementarios'
+    description: 'Valoraciones, consultas SOS y otros servicios complementarios de sueño y lactancia.'
   }
 ];
 
@@ -119,37 +118,37 @@ export const serviceList: ServiceItem[] = [
       {
         id: 1,
         title: 'Consulta online personalizada',
-        featureIcon: CloudComputingTwo,
+        featureIcon: 'CloudComputingTwo',
         description: 'Consulta online personalizada para resolver todas tus dudas sobre los primeros 6 meses de tu bebé.'
       },
       {
         id: 2,
         title: 'Resolución de dudas sobre lactancia',
-        featureIcon: ChatTwo,
+        featureIcon: 'ChatTwo',
         description: 'Asesoramiento especializado en lactancia materna o artificial para superar cualquier dificultad.'
       },
       {
         id: 3,
         title: 'Asesoramiento sobre alimentación complementaria',
-        featureIcon: ShoppingBasket,
+        featureIcon: 'ShoppingBasket',
         description: 'Ayuda para implementar la alimentación complementaria y BLW (Baby Let Weanning) para tu bebé.'
       },
       {
         id: 4,
         title: 'Consultas sobre ventanas de sueño',
-        featureIcon: ClockThree,
+        featureIcon: 'ClockThree',
         description: 'Asesoramiento sobre cómo manejar las ventanas de sueño para tu bebé.'
       },
       {
         id: 5,
         title: 'Ayuda con horarios y rutinas',
-        featureIcon: List,
+        featureIcon: 'List',
         description: 'Asistencia para establecer horarios y rutinas para tu bebé.'
       },
       {
         id: 6,
         title: 'Seguimiento por email durante 2 semanas',
-        featureIcon: Email,
+        featureIcon: 'Email',
         description: 'Seguimiento personalizado por email durante 2 semanas para asegurar que todo va bien.'
       }
     ],
@@ -233,37 +232,37 @@ export const serviceList: ServiceItem[] = [
       {
         id: 1,
         title: 'Consulta online especializada en lactancia',
-        featureIcon: CloudComputingTwo,
+        featureIcon: 'CloudComputingTwo',
         description: 'Consulta online especializada en lactancia para resolver dudas sobre la alimentación del bebé.'
       },
       {
         id: 2,
         title: 'Asesoramiento sobre posiciones correctas',
-        featureIcon: Target,
+        featureIcon: 'Target',
         description: 'Asesoramiento sobre cómo mantener una posición correcta para la lactancia.'
       },
       {
         id: 3,
         title: 'Ayuda con problemas de agarre',
-        featureIcon: Shield,
+        featureIcon: 'Shield',
         description: 'Asistencia para resolver problemas comunes al agarrar el pezón.'
       },
       {
         id: 4,
         title: 'Orientación sobre lactancia mixta',
-        featureIcon: Settings,
+        featureIcon: 'Settings',
         description: 'Asesoramiento sobre la lactancia mixta para bebés.'
       },
       {
         id: 5,
         title: 'Consejos para destete respetuoso',
-        featureIcon: CheckList,
+        featureIcon: 'CheckList',
         description: 'Recomendaciones para destetar de manera respetuosa y segura.'
       },
       {
         id: 6,
         title: 'Recomendación de artículos y accesorios',
-        featureIcon: ShoppingBasket,
+        featureIcon: 'ShoppingBasket',
         description: 'Asesoramiento sobre la elección de artículos y accesorios adecuados para la lactancia.'
       }
     ],
@@ -334,25 +333,25 @@ export const serviceList: ServiceItem[] = [
       {
         id: 1,
         title: 'Consulta online gratuita',
-        featureIcon: CloudComputingTwo,
+        featureIcon: 'CloudComputingTwo',
         description: 'Consulta online gratuita para obtener una valoración inicial de la situación de sueño de tu hijo.'
       },
       {
         id: 2,
         title: 'Evaluación inicial de la situación',
-        featureIcon: Analytics,
+        featureIcon: 'Analytics',
         description: 'Análisis detallado de la situación de sueño de tu hijo para identificar posibles problemas.'
       },
       {
         id: 3,
         title: 'Recomendaciones básicas personalizadas',
-        featureIcon: LightBulb,
+        featureIcon: 'LightBulb',
         description: 'Recomendaciones específicas para mejorar la situación de sueño de tu hijo.'
       },
       {
         id: 4,
         title: 'Información sobre planes disponibles',
-        featureIcon: List,
+        featureIcon: 'List',
         description: 'Conoce las opciones de planes disponibles para tu hijo.'
       }
     ],
@@ -416,25 +415,25 @@ export const serviceList: ServiceItem[] = [
       {
         id: 1,
         title: 'Atención prioritaria',
-        featureIcon: Shield,
+        featureIcon: 'Shield',
         description: 'Atención prioritaria para resolver dudas urgentes sobre el sueño de tu hijo.'
       },
       {
         id: 2,
         title: 'Resolución de dudas específicas',
-        featureIcon: ChatTwo,
+        featureIcon: 'ChatTwo',
         description: 'Resolución de dudas específicas sobre el sueño de tu hijo.'
       },
       {
         id: 3,
         title: 'Recomendaciones inmediatas',
-        featureIcon: LightBulb,
+        featureIcon: 'LightBulb',
         description: 'Recomendaciones prácticas para resolver dudas urgentes sobre el sueño de tu hijo.'
       },
       {
         id: 4,
         title: 'Consulta enfocada en problemas concretos',
-        featureIcon: Target,
+        featureIcon: 'Target',
         description: 'Consulta enfocada en problemas concretos sobre el sueño de tu hijo.'
       }
     ],
@@ -444,7 +443,7 @@ export const serviceList: ServiceItem[] = [
 
 ¿Te vas de vacaciones 🚢 o tienes una mudanza 🚚 y tu bebé vuelve a dormir mal?
 
-🔔📆 Reserva cita con una videollamada SOS de 30 minutos y aclara tus dudas sobre el sueño y la lactancia.
+��📆 Reserva cita con una videollamada SOS de 30 minutos y aclara tus dudas sobre el sueño y la lactancia.
 
 ¿Qué haremos?
 
@@ -503,31 +502,31 @@ export const serviceList: ServiceItem[] = [
       {
         id: 1,
         title: 'Formulario inicial detallado',
-        featureIcon: CheckList,
+        featureIcon: 'CheckList',
         description: 'Formulario inicial detallado para entender la situación de sueño de tu hijo.'
       },
       {
         id: 2,
         title: 'Análisis de diario de sueño de 2 días',
-        featureIcon: Analytics,
+        featureIcon: 'Analytics',
         description: 'Análisis de diario de sueño de 2 días para identificar patrones y problemas.'
       },
       {
         id: 3,
         title: 'Videollamada para crear plan personalizado',
-        featureIcon: VideoEditing,
+        featureIcon: 'VideoEditing',
         description: 'Videollamada para crear un plan de sueño personalizado adaptado a tu familia.'
       },
       {
         id: 4,
         title: 'Plan de sueño por escrito',
-        featureIcon: List,
+        featureIcon: 'List',
         description: 'Plan de sueño por escrito para que puedas implementarlo por tu cuenta.'
       },
       {
         id: 5,
         title: 'Sin seguimiento posterior',
-        featureIcon: Shield,
+        featureIcon: 'Shield',
         description: 'Plan sin seguimiento posterior para familias que pueden implementarlo por su cuenta.'
       }
     ],
@@ -583,31 +582,31 @@ export const serviceList: ServiceItem[] = [
       {
         id: 1,
         title: 'Formulario inicial detallado',
-        featureIcon: CheckList,
+        featureIcon: 'CheckList',
         description: 'Formulario inicial detallado para entender la situación de sueño de tu hijo.'
       },
       {
         id: 2,
         title: 'Análisis de diario de sueño de 2 días',
-        featureIcon: Analytics,
+        featureIcon: 'Analytics',
         description: 'Análisis de diario de sueño de 2 días para identificar patrones y problemas.'
       },
       {
         id: 3,
         title: 'Videollamada para crear plan personalizado',
-        featureIcon: VideoEditing,
+        featureIcon: 'VideoEditing',
         description: 'Videollamada para crear un plan de sueño personalizado adaptado a tu familia.'
       },
       {
         id: 4,
         title: 'Plan de sueño por escrito',
-        featureIcon: List,
+        featureIcon: 'List',
         description: 'Plan de sueño por escrito para que puedas implementarlo por tu cuenta.'
       },
       {
         id: 5,
         title: 'Videollamada de seguimiento a los 14 días',
-        featureIcon: VideoEditing,
+        featureIcon: 'VideoEditing',
         description: 'Videollamada de seguimiento a los 14 días para evaluar progresos y hacer ajustes necesarios.'
       }
     ],
@@ -663,43 +662,43 @@ export const serviceList: ServiceItem[] = [
       {
         id: 1,
         title: 'Formulario inicial detallado',
-        featureIcon: CheckList,
+        featureIcon: 'CheckList',
         description: 'Formulario inicial detallado para entender la situación de sueño de tu hijo.'
       },
       {
         id: 2,
         title: 'Análisis de diario de sueño de 2 días',
-        featureIcon: Analytics,
+        featureIcon: 'Analytics',
         description: 'Análisis de diario de sueño de 2 días para identificar patrones y problemas.'
       },
       {
         id: 3,
         title: 'Primera videollamada para crear el plan',
-        featureIcon: VideoEditing,
+        featureIcon: 'VideoEditing',
         description: 'Primera videollamada para crear un plan de sueño personalizado adaptado a tu familia.'
       },
       {
         id: 4,
         title: 'Plan de sueño por escrito',
-        featureIcon: BriefcaseTwo,
+        featureIcon: 'BriefcaseTwo',
         description: 'Plan de sueño por escrito para que puedas implementarlo por tu cuenta.'
       },
       {
         id: 5,
         title: 'Segunda videollamada de seguimiento (14 días)',
-        featureIcon: VideoEditing,
+        featureIcon: 'VideoEditing',
         description: 'Segunda videollamada de seguimiento (14 días) para evaluar progresos y hacer ajustes necesarios.'
       },
       {
         id: 6,
         title: 'Tercera videollamada final (28 días)',
-        featureIcon: VideoEditing,
+        featureIcon: 'VideoEditing',
         description: 'Tercera videollamada final (28 días) para revisar resultados y proporcionar pautas futuras por escrito.'
       },
       {
         id: 7,
         title: 'Pautas de seguimiento por escrito',
-        featureIcon: BriefcaseTwo,
+        featureIcon: 'BriefcaseTwo',
         description: 'Pautas de seguimiento por escrito para mantener y mejorar el sueño de tu hijo.'
       },
       /*{
@@ -772,49 +771,49 @@ export const serviceList: ServiceItem[] = [
       {
         id: 1,
         title: 'Formulario inicial detallado',
-        featureIcon: CheckList,
+        featureIcon: 'CheckList',
         description: 'Formulario inicial detallado para entender la situación de sueño de tu hijo.'
       },
       {
         id: 2,
         title: 'Análisis de diario de sueño de 2 días',
-        featureIcon: Analytics,
+        featureIcon: 'Analytics',
         description: 'Análisis de diario de sueño de 2 días para identificar patrones y problemas.'
       },
       {
         id: 3,
         title: 'Pautas iniciales personalizadas',
-        featureIcon: LightBulb,
+        featureIcon: 'LightBulb',
         description: 'Pautas iniciales personalizadas para preparar el terreno antes del plan completo.'
       },
       {
         id: 4,
         title: 'Primera videollamada para crear el plan (tras 10 días)',
-        featureIcon: VideoEditing,
+        featureIcon: 'VideoEditing',
         description: 'Primera videollamada para crear un plan personalizado adaptado a tu hijo tras 10 días.'
       },
       {
         id: 5,
         title: 'Plan de sueño por escrito',
-        featureIcon: List,
+        featureIcon: 'List',
         description: 'Plan de sueño por escrito para que puedas implementarlo por tu cuenta.'
       },
       {
         id: 6,
         title: 'Segunda videollamada de seguimiento (14 días después)',
-        featureIcon: VideoEditing,
+        featureIcon: 'VideoEditing',
         description: 'Segunda videollamada de seguimiento (14 días después) para evaluar progresos y hacer ajustes necesarios.'
       },
       {
         id: 7,
         title: 'Tercera videollamada final (14 días después)',
-        featureIcon: VideoEditing,
+        featureIcon: 'VideoEditing',
         description: 'Tercera videollamada final (14 días después) para revisar resultados y proporcionar pautas futuras por escrito.'
       },
       {
         id: 8,
         title: 'Pautas de seguimiento finales por escrito',
-        featureIcon: BriefcaseTwo,
+        featureIcon: 'BriefcaseTwo',
         description: 'Pautas de seguimiento finales por escrito para mantener y mejorar el sueño de tu hijo.'
       },
       /*{
@@ -897,31 +896,31 @@ export const serviceList: ServiceItem[] = [
       {
         id: 1,
         title: 'Solo para antiguos clientes',
-        featureIcon: User,
+        featureIcon: 'User',
         description: 'Solo para antiguos clientes que ya han recibido nuestro servicio.'
       },
       {
         id: 2,
         title: 'Revisión del plan de sueño',
-        featureIcon: CheckList,
+        featureIcon: 'CheckList',
         description: 'Revisión del plan de sueño actual para identificar posibles mejoras.'
       },
       {
         id: 3,
         title: 'Nuevos diarios de sueño',
-        featureIcon: List,
+        featureIcon: 'List',
         description: 'Registro de nuevos diarios de sueño para seguir el progreso.'
       },
       {
         id: 4,
         title: 'Seguimiento diario por Whatsapp o email',
-        featureIcon: Email,
+        featureIcon: 'Email',
         description: 'Seguimiento diario por Whatsapp o email para recibir apoyo y consejos.'
       },
       {
         id: 5,
         title: 'Ajustes personalizados según necesidad',
-        featureIcon: Settings,
+        featureIcon: 'Settings',
         description: 'Ajustes personalizados según las necesidades específicas de cada cliente.'
       }
     ],
@@ -965,31 +964,31 @@ Esta Semana de Seguimiento es EXCLUSIVA para familias que ya habéis hecho un pl
       {
         id: 1,
         title: 'Grupos de máximo 4 personas',
-        featureIcon: Team,
+        featureIcon: 'Team',
         description: 'Grupos de máximo 4 personas para compartir experiencias y apoyo.'
       },
       {
         id: 2,
         title: 'Mismas características que el Plan Sol',
-        featureIcon: CheckList,
+        featureIcon: 'CheckList',
         description: 'Características idénticas al Plan Sol para mantener la consistencia.'
       },
       {
         id: 3,
         title: 'Beneficio de aprendizaje compartido',
-        featureIcon: LightBulb,
+        featureIcon: 'LightBulb',
         description: 'Aprenderás de las experiencias y consejos de otros miembros del grupo.'
       },
       {
         id: 4,
         title: 'Descuento del 30% sobre el precio individual',
-        featureIcon: Savings,
+        featureIcon: 'Savings',
         description: 'Descuento del 30% sobre el precio individual para reducir el coste.'
       },
       {
         id: 5,
         title: 'Atención personalizada dentro del grupo',
-        featureIcon: User,
+        featureIcon: 'User',
         description: 'Atención personalizada para cada miembro del grupo para adaptarse a sus necesidades.'
       }
     ],

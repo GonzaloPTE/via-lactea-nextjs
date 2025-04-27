@@ -34,8 +34,8 @@ export default function ViaLacteaServices() {
             <Fragment key={group.id}>
               <div className="row text-center mt-10 mb-5">
                  <div className="col-lg-9 col-xl-8 col-xxl-7 mx-auto">
-                  {/* Título de la categoría */}
-                  <h3 className="display-5 mb-0 text-primary">{group.label}</h3>
+                  {/* Título de la categoría - Changed to h4 */}
+                  <h4 className="display-5 mb-0 text-primary">{group.label}</h4>
                   <p>{group.description}</p>
                 </div>
               </div>

@@ -1,77 +1,80 @@
-"use client";
+import { getServiceBySlug } from "data/service-data";
+import { Metadata, ResolvingMetadata } from 'next';
+import { notFound } from 'next/navigation';
 
-import { Fragment, useEffect, useState, use } from "react";
-import { useRouter } from "next/navigation";
-import { getServiceBySlug, ServiceItem } from "data/service-data";
+// Import the new client component
+import ServiceDetailClient from "components/blocks/services/ServiceDetailClient"; // Adjust path as needed
 
-// VIA LACTEA CUSTOM COMPONENTS
-import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
-import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
-import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
-import ViaLacteaProcess from "components/blocks/process/ViaLacteaProcess";
-import ViaLacteaHeroService from "components/blocks/hero/ViaLacteaHeroService";
-import ViaLacteaServiceFeatures from "components/blocks/services/ViaLacteaServiceFeatures";
-
-// Tipado para params como Promise
-interface ServiceDetailParams {
-  params: Promise<{ slug: string }>;
+// Tipado para params
+interface ServiceDetailProps {
+  params: { slug: string };
 }
 
-export default function ServiceDetail({ params }: ServiceDetailParams) {
-  const router = useRouter();
-  const resolvedParams = use(params);
-  const { slug } = resolvedParams;
-  const [service, setService] = useState<ServiceItem | null>(null);
-  const [loading, setLoading] = useState(true);
+// Dynamic Metadata Generation
+type Props = {
+  params: { slug: string }
+}
 
-  useEffect(() => {
-    if (!slug) return;
-    
-    // Obtener el servicio correspondiente al slug
-    const serviceData = getServiceBySlug(slug as string);
-    setService(serviceData || null);
-    setLoading(false);
-  }, [slug]);
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // Await params as suggested by the error message
+  const resolvedParamsMeta = await params;
+  const slug = resolvedParamsMeta.slug;
+  const service = getServiceBySlug(slug);
 
-  // Manejar la redirección si el servicio no existe
-  useEffect(() => {
-    if (!loading && !service) {
-      router.push('/servicios');
-    }
-  }, [loading, service, router]);
-
-  // Si está cargando o no hay servicio, mostrar pantalla de carga
-  if (loading || !service) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="spinner-border text-grape" role="status">
-          <span className="visually-hidden">Cargando...</span>
-        </div>
-      </div>
-    );
+  if (!service) {
+    // Metadata for not found page can be handled globally or here
+    // For consistency, we might let notFound() handle the page itself
+    // and set generic metadata perhaps in layout.tsx or a global not-found.tsx
+    return {
+      title: "Servicio no encontrado | Vía Láctea",
+    };
   }
 
-  return (
-    <Fragment>
-      {/* ========== header ========== */}
-      <header className="wrapper bg-soft-transparent">
-        <ViaLacteaNavbar button={<CalendlyButton />} whiteBackground={true} service={service} />
-      </header>
+  // Determine "tipo" based on category or title
+  let tipo = 'Sueño Infantil respetuoso'; // Default
+  if (service.title.toLowerCase().includes('lactancia')) {
+    tipo = 'Lactancia';
+  } else if (service.category === 'general') {
+    tipo = 'consulta'; // Or another appropriate term
+  }
 
-      {/* ========== main content ========== */}
-      <main className="content-wrapper">
-        {/* ========== hero section ========== */}
-        <ViaLacteaHeroService service={service} />
+  const title = `${service.title} | Asesoría de ${tipo} | Vía Láctea`;
+  const description = service.shortDescription || `Consulta nuestra asesoría ${tipo} de Vía Láctea: ${service.title}. Ayuda profesional y personalizada.`;
 
-        {/* ========== service features section ========== */}
-        <ViaLacteaServiceFeatures service={service} />
-        
-        {/* ========== process section ========== */}
-        <ViaLacteaProcess service={service} />
-      </main>
+  // Generate keywords dynamically
+  const keywords = [
+    service.title,
+    `asesoría ${tipo.toLowerCase()}`,
+    `ayuda ${tipo.toLowerCase()}`,
+    service.categoryLabel,
+    'Vía Láctea',
+    'Miriam Rubio', // Assuming this is the author/brand name
+    // Add more specific keywords based on service features or target audience if needed
+    ...(service.features ? service.features.map(f => f.title.toLowerCase()) : []),
+  ];
 
-      {/* ========== footer ========== */}
-      <ViaLacteaFooter service={service} />
-    </Fragment>
-  );
+  return {
+    title: title,
+    description: description,
+    keywords: keywords,
+  };
+}
+
+// Default export is now a Server Component
+export default async function ServiceDetailPage({ params }: ServiceDetailProps) {
+  // Await params as suggested by the error message
+  const resolvedParamsPage = await params;
+  const { slug } = resolvedParamsPage;
+  const service = getServiceBySlug(slug);
+
+  // If service not found, trigger the 404 page
+  if (!service) {
+    notFound();
+  }
+
+  // Render the Client Component, passing the fetched service data
+  return <ServiceDetailClient service={service} />;
 } 

@@ -37,14 +37,14 @@ export default function ViaLacteaProcess({ service }: ViaLacteaProcessProps) {
     <section className={`wrapper bg-soft-${tailwindColor}`}>
       
       <figure>
-        <img src="/img/photos/clouds.png" alt="Clouds" style={{ transform: 'scaleY(-1)' }} />
+        <img src="/img/photos/clouds.png" alt="" style={{ transform: 'scaleY(-1)' }} />
       </figure>
       <div className="container py-12">
         <div className="row gx-lg-8 gx-xl-12 gy-10 mb-15 mb-md-17 align-items-center">
           <div className="col-lg-7">
             <figure>
               <img
-                alt="proceso"
+                alt="Pasos del proceso de asesoría Vía Láctea"
                 className="w-auto"
                 src="/img/via-lactea/illustrations/pasos-proceso.png"
               />
@@ -69,7 +69,7 @@ export default function ViaLacteaProcess({ service }: ViaLacteaProcessProps) {
         </div>
       </div>
       <figure>
-        <img src="/img/photos/clouds.png" alt="Clouds" />
+        <img src="/img/photos/clouds.png" alt="" />
       </figure>
     </section>
   );
