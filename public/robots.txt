@@ -1,0 +1,12 @@
+# Allow all friendly web crawlers
+User-agent: *
+Allow: /
+
+# Disallow crawling of Next.js internal paths
+Disallow: /_next/
+
+# Disallow crawling of API routes (optional, adjust if needed)
+Disallow: /api/
+
+# Point crawlers to the sitemap
+Sitemap: https://vialacteasuenoylactancia.com/sitemap.xml 
