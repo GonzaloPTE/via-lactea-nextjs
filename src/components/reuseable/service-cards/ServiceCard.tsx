@@ -49,7 +49,7 @@ const ServiceCard = ({
                 <div className={`post-category mb-3 text-${colorClass}`}>{categoryLabel}</div>
                 
                 <div className="d-flex justify-content-between align-items-start mb-3">
-                  <h3 className="h1 post-title mb-0">{title}</h3>
+                  <h5 className="h1 post-title mb-0">{title}</h5>
                 </div>
                 <div className={`fs-40 fw-bold text-${colorClass} my-2 `}>{price}€</div>
                 
@@ -82,7 +82,7 @@ const ServiceCard = ({
                 <div className={`post-category mb-3 text-${colorClass}`}>{categoryLabel}</div>
                 
                 <div className="d-flex justify-content-between align-items-start mb-3">
-                  <h3 className="h1 post-title mb-0">{title}</h3>
+                  <h5 className="h1 post-title mb-0">{title}</h5>
                 </div>
                 <div className={`fs-40 fw-bold text-${colorClass} my-2 `}>{price}€</div>
 

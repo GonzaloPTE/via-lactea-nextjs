@@ -18,27 +18,12 @@ export default function ServicesPage() {
   return (
     <Fragment>
       {/* ========== header ========== */}
-      <header className="wrapper bg-soft-primary">
+      <header className="wrapper bg-transparent">
         <ViaLacteaNavbar button={<CalendlyButton />} />
       </header>
 
       {/* ========== main content ========== */}
-      <main className="content-wrapper bg-soft-primary">
-        {/* ========== hero section ========== */}
-        <section className="wrapper">
-          <div className="row mt-8">
-            <div className="col-lg-10 col-xl-9 col-xxl-8 mx-auto text-center">
-              <h1 className="fs-16 text-uppercase text-primary mb-3">Catálogo de servicios</h1>
-              <h2 className="display-5 mb-10">
-                Descubre nuestras <span className="underline-3 style-2 grape">asesorías personalizadas</span> para ayudarte con el sueño de tu bebé y la lactancia.
-              </h2>
-            </div>
-          </div>
-          <figure className="bg-soft-primary">
-            <img src="/img/photos/clouds.png" alt="" />
-          </figure>
-        </section>
-
+      <main className="content-wrapper bg-transparent">
         {/* ========== Servicios Portfolio ========== */}
         <ServicesPortfolio />
 

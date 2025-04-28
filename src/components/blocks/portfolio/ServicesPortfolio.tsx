@@ -20,13 +20,22 @@ const ServicesPortfolio = () => {
   return (
     <section className="wrapper bg-light wrapper-border">
       <div className="container py-7 py-md-8">
+        <div className="row mb-8">
+           <div className="col-lg-10 mx-auto text-center">
+             <h1 className="fs-16 text-uppercase text-primary mb-3">Servicios y Tarifas</h1>
+             <h2 className="display-4 mb-3">Planes de Sueño Infantil <span className="underline-3 style-2 grape">Respetuosos</span> y de Lactancia</h2>
+           </div>
+        </div>
+
         {/* 0-6 MESES */}
         {babyServices.length > 0 && (
           <>
             <div className="row mb-5">
               <div className="col-md-10 col-lg-8 col-xl-7 col-xxl-6">
-                <h2 className="fs-15 text-uppercase text-grape mb-3">{categoryMappings.baby}</h2>
-                <h3 className="display-4 mb-5">Asesorías para bebés recién nacidos</h3>
+                 {/* PASO 2a: Cambiar H2 a H3 */}
+                <h3 className="fs-15 text-uppercase text-grape mb-3">{categoryMappings.baby}</h3>
+                 {/* PASO 2b: Cambiar H3 a H4 */}
+                <h4 className="display-4 mb-5">Asesorías para bebés recién nacidos</h4>
               </div>
             </div>
 
@@ -47,8 +56,8 @@ const ServicesPortfolio = () => {
           <>
             <div className="row mt-15 mb-5">
               <div className="col-md-10 col-lg-8 col-xl-7 col-xxl-6">
-                <h2 className="fs-15 text-uppercase text-blue mb-3">{categoryMappings.child}</h2>
-                <h3 className="display-4 mb-5">Planes de sueño infantil respetuoso</h3>
+                <h3 className="fs-15 text-uppercase text-blue mb-3">{categoryMappings.child}</h3>
+                <h4 className="display-4 mb-5">Planes de sueño infantil respetuoso</h4>
               </div>
             </div>
 
@@ -69,8 +78,8 @@ const ServicesPortfolio = () => {
           <>
             <div className="row mt-5 mb-5">
               <div className="col-md-10 col-lg-8 col-xl-7 col-xxl-6">
-                <h2 className="fs-15 text-uppercase text-leaf mb-3">{categoryMappings.general}</h2>
-                <h3 className="display-4 mb-5">Valoraciones, consultas SOS y otros servicios complementarios</h3>
+                <h3 className="fs-15 text-uppercase text-leaf mb-3">{categoryMappings.general}</h3>
+                <h4 className="display-4 mb-5">Valoraciones, consultas SOS y otros servicios complementarios</h4>
               </div>
             </div>
 
