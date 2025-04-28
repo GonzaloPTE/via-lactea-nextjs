@@ -50,8 +50,11 @@ export default function ViaLacteaHeroService({ service }: ViaLacteaHeroServicePr
               <div className="row gx-md-8 gx-xl-12 gy-10 align-items-center text-center text-lg-start">
                 <div className="col-lg-6">
                   <h1 className="display-2 mb-4 me-xl-5 me-xxl-0" style={slideInDownAnimate("900ms")}>
-                    {service.title} <span className={`text-${tailwindColor}`}>{service.categoryLabel}</span>
+                    {service.title}
                   </h1>
+                  <h2 className="display-5 mb-10">
+                    <span className={`text-${tailwindColor}`} style={slideInDownAnimate("900ms")}>{service.categoryLabel}</span>
+                  </h2>
 
                   <p className="lead fs-23 lh-sm mb-7 pe-xxl-15" style={slideInDownAnimate("1200ms")}>
                     {service.shortDescription}

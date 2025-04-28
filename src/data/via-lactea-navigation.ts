@@ -48,7 +48,7 @@ export const mainNavigation = [
   // { id: 11, title: "Blog", url: "/blog" }, // TODO: Descomentar cuando esté implementado
   // { id: 12, title: "Recursos", url: "/recursos" }, // TODO: Descomentar cuando esté implementado
   // { id: 6, title: "Contacto", url: "/contacto" } 
-  { id: 6, title: "Tarifas", url: "/servicios" } 
+  { id: 6, title: "Servicios y Tarifas", url: "/servicios" } 
 ];
 
 // Información de contacto para el footer y la barra lateral móvil
