@@ -55,7 +55,7 @@ Para crear testimonios creíbles que parezcan escritos por personas reales:
 - Referirse a bebés específicamente difíciles ("no dormía más de 40 minutos seguidos")
 - Incluir detalles sobre cómo mejoró el humor/desarrollo del bebé
 
-### Para servicios de sueño 6 meses - 4 años
+### Para servicios de sueño 6 meses - 6 años
 - Mencionar el tiempo que llevaban con el problema ("después de 8 meses sin dormir")
 - Destacar cómo otros métodos fallaron
 - Enfatizar la autonomía ganada por el niño

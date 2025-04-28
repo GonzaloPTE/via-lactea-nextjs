@@ -8,7 +8,7 @@
 ### TASK-007-01: Estructura de datos para servicios [COMPLETADO]
 - Crear un archivo de datos estructurados para los servicios en `src/data/service-data.ts`
 - Migrar la información de `.llm/servicios.md` al formato adecuado para la aplicación
-- Organizar servicios por categorías (0-6 meses, 6 meses a 4 años)
+- Organizar servicios por categorías (0-6 meses, 6 meses a 6 años)
 - Incluir todos los campos necesarios: id, título, descripción, precio, icono, URL, etc.
 - Agregar flag para servicios que requieren integración con Calendly
 - Adaptar la estructura de datos para que sea compatible con los componentes del tema premium
@@ -72,7 +72,7 @@
 
 ### TASK-007-09: Modificar estructura de navegación del sitio [PENDIENTE]
 - Adaptar el navbar para incluir las nuevas secciones de servicios y productos (estos los llamaremos "recursos")
-- Crear dropdown menus para categorías de servicios (0-6 meses, 6 meses-4 años)
+- Crear dropdown menus para categorías de servicios (0-6 meses, 6 meses-6 años)
 - Revisar la estructura actual y buscar componentes de navegación del tema premium
 - Implementar breadcrumbs para mejorar la navegación entre páginas relacionadas
 - Asegurar que las rutas de navegación sean coherentes con la arquitectura del sitio. Crear páginas mockeadas para probar la navegación.

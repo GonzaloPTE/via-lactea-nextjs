@@ -24,7 +24,7 @@
      - "3-6 meses"
      - "6-12 meses"
      - "1-2 años"
-     - "2-4 años"
+     - "2-6 años"
    - Permite filtrar contenido específico para cada etapa
    - Indicación de hitos de desarrollo relevantes en cada etapa
 

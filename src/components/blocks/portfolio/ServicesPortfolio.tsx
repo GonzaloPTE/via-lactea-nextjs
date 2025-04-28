@@ -8,7 +8,7 @@ const ServicesPortfolio = () => {
   // Get categories and their labels from service-data.ts
   const categoryMappings = {
     baby: serviceCategories.find(cat => cat.id === 'baby')?.label || '0-6 meses',
-    child: serviceCategories.find(cat => cat.id === 'child')?.label || '6 meses a 4 años',
+    child: serviceCategories.find(cat => cat.id === 'child')?.label || '6 meses a 6 años',
     general: serviceCategories.find(cat => cat.id === 'general')?.label || 'Servicios generales'
   };
 
@@ -42,7 +42,7 @@ const ServicesPortfolio = () => {
           </>
         )}
 
-        {/* 6 MESES A 4 AÑOS */}
+        {/* 6 MESES A 6 AÑOS */}
         {childServices.length > 0 && (
           <>
             <div className="row mt-15 mb-5">

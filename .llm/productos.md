@@ -42,7 +42,7 @@ Las publicaciones, módulos y guías deben ser coherentes con el objetivo del pr
 - Guía de Recetas para bebés
 - Curso de Lactancia Materna
 - Guía de Sueño del recién nacido
-- Curso de Sueño de 6 meses a 4 años
+- Curso de Sueño de 6 meses a 6 años
 
 Precio: Según producto
 

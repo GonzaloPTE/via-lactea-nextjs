@@ -763,8 +763,8 @@ const additionalProducts: ProductItem[] = [
     formatLabels: ["Curso", "Módulos"],
     primaryFormat: "course",
     iconUrl: iconUrls.video,
-    description: "Todo lo que necesitas saber sobre el desarrollo del sueño desde el nacimiento hasta los 4 años. Incluye videos, material descargable y ejemplos prácticos.",
-    shortDescription: "Curso completo sobre desarrollo del sueño infantil de 0 a 4 años.",
+    description: "Todo lo que necesitas saber sobre el desarrollo del sueño desde el nacimiento hasta los 6 años. Incluye videos, material descargable y ejemplos prácticos.",
+    shortDescription: "Curso completo sobre desarrollo del sueño infantil de 0 a 6 años.",
     prices: [
       { format: "course", price: 49.99 },
       { format: "module", price: 19.99 }
