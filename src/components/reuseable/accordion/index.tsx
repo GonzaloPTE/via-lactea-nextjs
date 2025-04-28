@@ -20,7 +20,7 @@ export default function Accordion({ no, body, heading, expand, type }: Accordion
           data-bs-target={`#collapse${no}`}
           aria-expanded={expand ? "true" : "false"}
           className={expand ? "accordion-button" : "collapsed"}>
-          {heading}
+          <h4 className="accordion-header-title mb-0">{heading}</h4>
         </button>
       </div>
 

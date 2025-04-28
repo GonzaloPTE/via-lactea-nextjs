@@ -46,7 +46,7 @@ export default function ServiceCardViaLactea({
         </Link>
 
         <div className="card-body p-6 d-flex flex-column">
-          <h4 className="mb-1">{title}</h4>
+          <h5 className="mb-1">{title}</h5>
           <p className="mb-2">{description}</p>
           <NextLink title="Ver Detalles" href={linkUrl} className={`more hover link-${linkType} mt-auto`} />
         </div>
