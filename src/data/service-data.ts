@@ -65,8 +65,8 @@ export const serviceCategories = [
   },
   {
     id: 'child',
-    label: '6 meses a 4 años',
-    description: 'Planes y asesorías de sueño respetuoso adaptados para niños de 6 meses a 4 años.'
+    label: '6 meses a 6 años',
+    description: 'Planes y asesorías de sueño respetuoso adaptados para niños de 6 meses a 6 años.'
   },
   {
     id: 'general',
@@ -292,7 +292,7 @@ export const serviceList: ServiceItem[] = [
 💪 ¡Disfruta de tu lactancia con confianza!`
   },
 
-  // Servicios de 6 meses a 4 años
+  // Servicios de 6 meses a 6 años
   {
     id: 3,
     title: 'Valoración gratuita',
@@ -304,7 +304,7 @@ export const serviceList: ServiceItem[] = [
     description: '30 minutos para valoración personalizada de la situación de sueño de tu hijo.',
     shortDescription: 'Descubre cómo podemos ayudarte con una valoración inicial sin compromiso.',
     forWho: [
-      'Padres de niños de 6 meses a 4 años',
+      'Padres de niños de 6 meses a 6 años',
       'Familias con dudas sobre patrones de sueño',
       'Quienes buscan recomendaciones iniciales sin compromiso'
     ],
@@ -467,7 +467,7 @@ export const serviceList: ServiceItem[] = [
     title: 'Plan de sueño Luna',
     slug: 'plan-luna',
     category: 'child',
-    categoryLabel: '6 meses a 4 años',
+    categoryLabel: '6 meses a 6 años',
     iconUrl: iconUrls.plan,
     heroImageUrl: '/img/via-lactea/illustrations/luna-hero.png',
     description: 'Plan básico sin seguimiento que incluye formulario inicial, diario de sueño de 2 días y una videollamada para crear el plan de sueño personalizado.',
@@ -547,7 +547,7 @@ export const serviceList: ServiceItem[] = [
     title: 'Plan de sueño Enana Blanca',
     slug: 'plan-enana-blanca',
     category: 'child',
-    categoryLabel: '6 meses a 4 años',
+    categoryLabel: '6 meses a 6 años',
     iconUrl: iconUrls.plan,
     heroImageUrl: '/img/via-lactea/illustrations/enana-blanca-hero.png',
     description: 'Plan de 2 semanas que incluye formulario inicial, diario de sueño, videollamada para crear el plan y una videollamada de seguimiento a los 14 días.',
@@ -627,7 +627,7 @@ export const serviceList: ServiceItem[] = [
     title: 'Plan de sueño Sol',
     slug: 'plan-sol',
     category: 'child',
-    categoryLabel: '6 meses a 4 años',
+    categoryLabel: '6 meses a 6 años',
     iconUrl: iconUrls.star,
     heroImageUrl: '/img/via-lactea/illustrations/sol-hero.png',
     description: 'Plan de 4 semanas que incluye formulario inicial, diario de sueño, videollamada inicial, dos videollamadas de seguimiento y pautas finales por escrito.',
@@ -736,7 +736,7 @@ export const serviceList: ServiceItem[] = [
     title: 'Plan de sueño Gigante Roja',
     slug: 'plan-gigante-roja',
     category: 'child',
-    categoryLabel: '6 meses a 4 años',
+    categoryLabel: '6 meses a 6 años',
     iconUrl: iconUrls.star,
     heroImageUrl: '/img/via-lactea/illustrations/gigante-roja-hero.png',
     description: 'Plan premium de 6 semanas que incluye pautas iniciales, formulario detallado, diario de sueño, tres videollamadas y pautas finales por escrito.',

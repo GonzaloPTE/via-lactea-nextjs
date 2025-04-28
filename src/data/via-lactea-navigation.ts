@@ -17,10 +17,10 @@ export const mainNavigation = [
     ]
   },
   
-  // --- Dropdown: 6 meses a 4 años ---
+  // --- Dropdown: 6 meses a 6 años ---
   {
     id: 4, // New ID for this dropdown
-    title: "6 meses a 4 años",
+    title: "6 meses a 6 años",
     url: "#",
     children: [
       { id: 41, title: "Plan de sueño Luna", url: "/servicios/plan-luna" },

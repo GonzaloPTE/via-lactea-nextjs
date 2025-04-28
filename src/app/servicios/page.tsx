@@ -28,10 +28,10 @@ export default function ServicesPage() {
         <section className="wrapper">
           <div className="row mt-8">
             <div className="col-lg-10 col-xl-9 col-xxl-8 mx-auto text-center">
-              <p className="fs-16 text-uppercase text-primary mb-3">Catálogo de servicios</p>
-              <h1 className="display-5 mb-10">
+              <h1 className="fs-16 text-uppercase text-primary mb-3">Catálogo de servicios</h1>
+              <h2 className="display-5 mb-10">
                 Descubre nuestras <span className="underline-3 style-2 grape">asesorías personalizadas</span> para ayudarte con el sueño de tu bebé y la lactancia.
-              </h1>
+              </h2>
             </div>
           </div>
           <figure className="bg-soft-primary">

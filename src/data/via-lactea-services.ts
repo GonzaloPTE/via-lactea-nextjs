@@ -29,14 +29,14 @@ export const serviceList = [
     url: '/enana-blanca',
     Icon: Bulb,
     title: 'Plan Enana Blanca',
-    description: 'Un plan de sueño adaptado a tu familia para un descanso reparador. Ideal para niños de 6 meses a 4 años que buscan un cambio efectivo.'
+    description: 'Un plan de sueño adaptado a tu familia para un descanso reparador. Ideal para niños de 6 meses a 6 años que buscan un cambio efectivo.'
   },
   {
     id: 4,
     url: '/gigante-roja',
     Icon: TeamTwo,
     title: 'Plan Gigante Roja',
-    description: 'Un plan de sueño adaptado a tu familia, con pautas iniciales y seguimiento. Para niños de 6 meses a 4 años.'
+    description: 'Un plan de sueño adaptado a tu familia, con pautas iniciales y seguimiento. Para niños de 6 meses a 6 años.'
   },
   {
     id: 5,
