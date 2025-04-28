@@ -36,6 +36,27 @@ export default function ViaLacteaAbout() {
 
         <ListColumn rowClass="gx-xl-8" list={aboutMiriamList} bulletColor="grape" />
       </div>
+
+      {/* Schema.org Person */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Miriam Rubio",
+            "jobTitle": "Asesora de Sueño Infantil Respetuoso Certificada, Asesora de Lactancia Certificada, Enfermera",
+            "knowsAbout": ["Sueño Infantil Respetuoso", "Lactancia Materna", "Enfermería Pediátrica"],
+            "worksFor": {
+              "@type": "Organization",
+              "@id": "https://vialacteasuenoylactancia.com/#organization"
+            },
+            "image": "https://vialacteasuenoylactancia.com/img/via-lactea/photos/perfil-hero.png",
+            "url": "https://vialacteasuenoylactancia.com/",
+            "sameAs": []
+          })
+        }}
+      />
     </div>
   );
 } 

@@ -1,9 +1,8 @@
-import { getServiceBySlug } from "data/service-data";
+import { getServiceBySlug, ServiceItem } from "data/service-data";
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
-
-// Import the new client component
-import ServiceDetailClient from "components/blocks/services/ServiceDetailClient"; // Adjust path as needed
+import ServiceDetailClient from "components/blocks/services/ServiceDetailClient";
+import Script from 'next/script';
 
 // Tipado para params
 interface ServiceDetailProps {
@@ -67,6 +66,55 @@ export default async function ServiceDetailPage({ params }: ServiceDetailProps) 
     notFound();
   }
 
-  // Render the Client Component, passing the fetched service data
-  return <ServiceDetailClient service={service} />;
+  // --- INICIO: Lógica para Schema Service ---
+  // Determinar serviceType (similar a generateMetadata)
+  let serviceType = 'Asesoría de Sueño Infantil Respetuoso';
+  if (service.title.toLowerCase().includes('lactancia')) {
+    serviceType = 'Asesoría de Lactancia Materna';
+  } else if (service.category === 'general') {
+    serviceType = 'Consulta de Crianza'; // O término más adecuado
+  }
+
+  // Construir el objeto JSON-LD para Service
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": service.title,
+    "description": service.description || service.shortDescription,
+    "url": `https://vialacteasuenoylactancia.com/servicios/${service.slug}`,
+    "provider": {
+      "@type": "Organization",
+      "@id": "https://vialacteasuenoylactancia.com/#organization" // Enlaza a la organización
+    },
+    "serviceType": serviceType,
+    "areaServed": {
+      "@type": "Country",
+      "name": "ES" // Asumiendo España, ajustar si es global ("World") o múltiple
+    },
+    ...(service.price && { // Añadir 'offers' solo si hay precio
+      "offers": {
+        "@type": "Offer",
+        "price": service.price.toString(),
+        "priceCurrency": "EUR"
+      }
+    }),
+    ...(service.heroImageUrl && { // Añadir 'image' solo si existe
+       "image": `https://vialacteasuenoylactancia.com${service.heroImageUrl}` // Asegurar URL completa
+    })
+    // Podrías añadir más propiedades como "audience", "serviceOutput", etc.
+  };
+  // --- FIN: Lógica para Schema Service ---
+
+  return (
+    <>
+      <ServiceDetailClient service={service} />
+
+      {/* Schema.org Service */}
+      <Script
+        id={`service-schema-${service.slug}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
+    </>
+  );
 } 

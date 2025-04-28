@@ -47,6 +47,30 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
         {/* USED FOR PROGRESS BAR ANIMATE */}
         <Progress />
+
+        {/* Schema.org Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "@id": "https://vialacteasuenoylactancia.com/#organization",
+              "name": "Vía Láctea - Asesoría de Sueño Infantil y Lactancia",
+              "url": "https://vialacteasuenoylactancia.com/",
+              "logo": "https://vialacteasuenoylactancia.com/img/via-lactea/svg/via-lactea-logo.svg",
+              "sameAs": [
+                "https://www.instagram.com/vialacteasuenoylactancia/",
+                "https://www.facebook.com/profile.php?id=61575517253913"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "email": "contacto@vialacteasuenoylactancia.com",
+                "contactType": "Customer Support"
+              }
+            })
+          }}
+        />
       </body>
     </html>
   );

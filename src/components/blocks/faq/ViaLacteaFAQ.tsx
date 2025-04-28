@@ -3,7 +3,27 @@ import Accordion from "components/reuseable/accordion";
 import { viaLacteaFAQList1 } from "data/via-lactea-faq";
 import ValacteaCTAFAQ from "../call-to-action/ValacteaCTAFAQ";
 
+// Helper para aplanar la lista si es un array de arrays
+const flattenFAQList = (list: any[][]) => list.flat();
+
 export default function ViaLacteaFAQ() {
+  // Aplanar la lista de FAQs para facilitar el mapeo
+  const flatFAQList = flattenFAQList(viaLacteaFAQList1);
+
+  // Construir el JSON-LD para FAQPage
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": flatFAQList.map((item) => ({
+      "@type": "Question",
+      "name": item.heading, // Asume que la pregunta está en 'heading'
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.body // Asume que la respuesta está en 'body'
+      }
+    }))
+  };
+
   return (
     <section className="wrapper bg-soft-primary">
       <div className="container pt-16">
@@ -25,6 +45,12 @@ export default function ViaLacteaFAQ() {
         </div>
       </div>
       <ValacteaCTAFAQ />
+
+      {/* Schema.org FAQPage */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
     </section>
   );
 }
