@@ -6,9 +6,11 @@
 
 1.  **Workflow 1: Elicitación de Temas y Preguntas:**
     *   Disparador: Programado (`Schedule Trigger`) o Manual.
-    *   Monitorización: Acceder a fuentes de datos (Google Trends, RSS de foros, APIs redes sociales, scraping supervisado) usando `HTTP Request` o nodos específicos.
-    *   Análisis y Priorización: Usar `AI Agent` para identificar temas emergentes, preguntas frecuentes y palabras clave relevantes en los datos recopilados.
-    *   Almacenamiento (Opcional): Guardar temas/preguntas priorizadas en Supabase o Airtable para seguimiento.
+    *   Monitorización: Acceder a fuentes de datos (Reddit inicialmente).
+    *   Extracción y Procesamiento: Usar `AI Agent` para obtener hilos/posts e identificar `issues` dentro de ellos. Traducir issues al español.
+    *   Almacenamiento Detallado: Guardar hilos y **issues individuales** en tablas separadas de Supabase (`reddit_discovered_threads`, `discovered_issues`).
+    *   Análisis y Priorización: Usar `AI Agent` leyendo de la tabla `discovered_issues` para identificar y priorizar temas emergentes.
+    *   Almacenamiento (Opcional): Guardar temas priorizados en Supabase (`temas_potenciales`).
     *   Notificación: Informar al humano sobre los temas/preguntas más relevantes encontrados.
 
 2.  **Workflow 2: Investigación y Recopilación de Referencias:**
