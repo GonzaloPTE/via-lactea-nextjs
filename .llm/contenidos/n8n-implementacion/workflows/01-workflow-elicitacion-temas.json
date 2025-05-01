@@ -1,0 +1,492 @@
+{
+  "name": "Elicitacion de temas y preguntas",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2000,
+        20
+      ],
+      "id": "7789ece5-7e87-410a-ae3d-070d59cf0194",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "subreddits",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1560,
+        20
+      ],
+      "id": "b4110ebf-c260-47ca-8a40-a18f696d310f",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{ \"subreddits\" : [\n\"BabySleep\",\n\"NewParents\",\n\"sleeptrain\",\n\"cosleeping\",\n\"beyondthebump\",\n\"BeyondTheBumpUK\",\n\"BabyBumpsandBeyondAu\",\n\"breastfeeding\",\n\"BabyBumps\"\n]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1780,
+        20
+      ],
+      "id": "559d3fe1-6d99-43a2-89a8-b2a57cece5bf",
+      "name": "Subreddits"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "discovered_issues",
+        "returnAll": true,
+        "filterType": "none"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1560,
+        300
+      ],
+      "id": "564aaa6f-3e7b-43e8-b72b-a68e749dbb9f",
+      "name": "GET issues",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "subreddit": "={{ $json.subreddits }}",
+        "keyword": "sleep consultant",
+        "limit": 10,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.reddit",
+      "typeVersion": 1,
+      "position": [
+        -1340,
+        20
+      ],
+      "id": "d9765138-7d6d-40df-9e58-d9a2e77cfa4e",
+      "name": "GET posts",
+      "executeOnce": false,
+      "credentials": {
+        "redditOAuth2Api": {
+          "id": "S4MfvcCAmuHctiNQ",
+          "name": "Reddit account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const excludedUrls = new Set($(\"GET issues\").all().map(issue => issue.json.source_url));\nconst uniquePosts = $(\"GET posts\").all().filter(p => !excludedUrls.has(p.json.url));\n\nreturn uniquePosts;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        20
+      ],
+      "id": "40b96917-35be-4e21-94da-e8b759e7e28c",
+      "name": "Exclude repeated posts",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-04-17",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        220
+      ],
+      "id": "48a649f9-d125-4c13-97ad-3f26ba72c214",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZiLOPcBqDcW6izVO",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  let tmp = item.json.text;\n  try {\n    tmp = tmp.replaceAll('```json','').replaceAll('```','').trim();\n    item.json.agent_response = JSON.parse(tmp);\n  } catch (error) {\n    item.json.agent_response = {}\n  }\n}\n\nreturn $input.all().map(r => r.json.agent_response);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -304,
+        20
+      ],
+      "id": "704ec868-26b3-4b9d-99d5-999206ba0081",
+      "name": "Parse agent response"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Identifica preguntas y temas de discusión relevantes sobre sueño infantil y lactancia en este post:\n\n{{ $json.toJsonString() }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "**Objetivo:** Analizar el contenido de **un único post de Reddit proporcionado como entrada** para identificar preguntas y temas de discusión relevantes sobre sueño infantil y lactancia, con el fin de generar contenido para Vía Láctea.  **Contexto:** Eres un asistente de investigación para Vía Láctea, una consultoría especializada en sueño infantil respetuoso y lactancia materna. Tu tarea es analizar la información de un post de Reddit que se te proporcionará y extraer las preguntas y problemas reales que discuten los padres y madres.  **Información de Entrada:** Recibirás los datos de un único post de Reddit, incluyendo al menos su título, contenido (o un extracto inicial), nombre del subreddit, URL, y potencialmente metadatos como puntuación, número de comentarios y fecha de creación.  **Instrucciones:**  1.  **Analiza el Post Proporcionado:** Revisa el título y el contenido del post proporcionado. Determina si trata claramente sobre:     *   Problemas de sueño infantil (despertares, siestas, rutinas, regresiones, etc.)     *   Dificultades o dudas sobre lactancia (agarre, producción, dolor, destete, etc.)     *   Preguntas relacionadas con crianza respetuosa en estos contextos.     Si el post no es relevante (p.ej., es un anuncio, meme, o trata un tema completamente distinto), indica que no es relevante y detén el proceso para este post.  2.  **Extrae Información del Post Relevante:** Si el post **es relevante** según el paso anterior, extrae la siguiente información a partir de los datos proporcionados:     *   Nombre del subreddit (`subreddit`).     *   Título del hilo/post (`thread_title`).     *   Título del hilo/post en español (`thread_title_es`). (Tradúcelo si el original está en otro idioma).     *   URL del hilo/post (`thread_url`).     *   Puntuación/Upvotes del hilo (`thread_score`) (si está disponible en la entrada).     *   Número de comentarios del hilo (`thread_num_comments`) (si está disponible en la entrada).     *   Fecha de creación UTC del hilo (`thread_created_utc`) (si está disponible en la entrada).     *   Analiza el `thread_title` y el contenido proporcionado del post para identificar **una o más preguntas específicas o descripciones de problemas** dentro de ese post.     *   Para **cada pregunta o problema identificado**:         *   Identifica el texto literal de la pregunta o la descripción concisa del problema.         *   **Traduce este texto al español de España.**         *   Guarda **SOLO la versión en español** en el campo `issue_text`.         *   Analiza el texto en español para determinar el **`sentiment`** predominante como un **número entre -100 (muy negativo) y 100 (muy positivo)**. Considera el tono y la emoción expresada (0 = neutro).         *   Asigna una etiqueta que tipifique el issue (`type`), por ejemplo: \"Pregunta Directa\", \"Descripción Problema\", \"Solicitud Consejo\", \"Desahogo\", \"Comparativa Productos/Métodos\", \"Búsqueda Apoyo Emocional\". Elige el tipo más adecuado.         *   Genera una lista de 2-5 **`tags` en español** que categoricen el tema principal del issue (ej: [\"regresión del sueño\", \"4 meses\", \"siestas cortas\"], [\"dolor al amamantar\", \"pezón plano\", \"agarre\"]).         *   Asigna un **`priority_score` (de 0 a 100)** indicando la relevancia y urgencia percibida para Vía Láctea. Considera: ¿Es un problema común? ¿Causa mucha angustia (relacionado con `sentiment` bajo/negativo)? ¿Se alinea con nuestra especialización? (100 = máxima prioridad).  **Formato de Salida:** Si el post es relevante, presenta la información extraída como **un único objeto JSON** que representa el post analizado, con sus metadatos y una lista de los **issues identificados**. El campo `issue_text` debe contener el texto **en español**, y cada issue debe incluir `sentiment` (número -100 a 100), `type`, `tags` (también en español) y `priority_score`. Si el post no se consideró relevante en el paso 1, la salida debería ser un objeto JSON vacío `{}`.      ```json relevante     {       \"subreddit\": \"r/nombre_subreddit_ejemplo\",       \"thread_title\": \"Título del Post Relevante Analizado\",       \"thread_title_es\": \"Título del Post Relevante Analizado en español\",       \"thread_url\": \"URL del Post Analizado\",       \"thread_score\": 150, // si disponible       \"thread_num_comments\": 45, // si disponible       \"thread_created_utc\": \"2024-07-21T10:00:00Z\", // si disponible       \"issues\": [         {           \"issue_text\": \"Texto en ESPAÑOL de la primera pregunta/problema encontrada...\",           \"sentiment\": -75,           \"type\": \"Pregunta Directa\",           \"tags\": [\"palabra_clave_1\", \"palabra_clave_2\", \"tema_a\"],           \"priority_score\": 85         },         {           \"issue_text\": \"Descripción en ESPAÑOL del segundo problema encontrado...\",           \"sentiment\": 0,           \"type\": \"Descripción Problema\",           \"tags\": [\"palabra_clave_3\", \"tema_b\"],           \"priority_score\": 70         }         // ... más issues si se identifican en el mismo post       ]     }     ```     ```json no relevante     {}     ```"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        -680,
+        20
+      ],
+      "id": "86383986-237f-4531-83f9-ce38d8542fb6",
+      "name": "Elicitar issues",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "tableId": "reddit_discovered_threads",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "subreddit",
+              "fieldValue": "={{ $json.subreddit }}"
+            },
+            {
+              "fieldId": "thread_title",
+              "fieldValue": "={{ $json.thread_title }}"
+            },
+            {
+              "fieldId": "thread_title_es",
+              "fieldValue": "={{ $json.thread_title_es }}"
+            },
+            {
+              "fieldId": "thread_url",
+              "fieldValue": "={{ $json.thread_url }}"
+            },
+            {
+              "fieldId": "thread_score",
+              "fieldValue": "={{ $json.thread_score }}"
+            },
+            {
+              "fieldId": "thread_num_comments",
+              "fieldValue": "={{ $json.thread_num_comments }}"
+            },
+            {
+              "fieldId": "issues",
+              "fieldValue": "={{ $json.issues }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "pending_analysis"
+            },
+            {
+              "fieldId": "thread_created_utc",
+              "fieldValue": "={{ $json.thread_created_utc }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        120,
+        120
+      ],
+      "id": "4a4696a3-0cd9-4500-9de2-de5c39f19ef0",
+      "name": "INSERT reddit_discovered_threads",
+      "retryOnFail": false,
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "tableId": "discovered_issues",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "source_type",
+              "fieldValue": "reddit"
+            },
+            {
+              "fieldId": "source_id",
+              "fieldValue": "={{ $('INSERT reddit_discovered_threads').item.json.id }}"
+            },
+            {
+              "fieldId": "source_url",
+              "fieldValue": "={{ $('INSERT reddit_discovered_threads').item.json.thread_url }}"
+            },
+            {
+              "fieldId": "issue_text",
+              "fieldValue": "={{ $json.issues.issue_text }}"
+            },
+            {
+              "fieldId": "sentiment",
+              "fieldValue": "={{ $json.issues.sentiment }}"
+            },
+            {
+              "fieldId": "issue_type",
+              "fieldValue": "={{ $json.issues.type }}"
+            },
+            {
+              "fieldId": "tags",
+              "fieldValue": "={{ $json.issues.tags }}"
+            },
+            {
+              "fieldId": "priority_score",
+              "fieldValue": "={{ $json.issues.priority_score }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "new"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        580,
+        20
+      ],
+      "id": "13147cd1-6743-4045-9b05-4700d855b0fd",
+      "name": "INSERT discovered_issues",
+      "retryOnFail": false,
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "issues",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        360,
+        20
+      ],
+      "id": "452578b4-9085-4fe3-988a-93b709aab779",
+      "name": "Split Out Issues"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -1120,
+        20
+      ],
+      "id": "5964c617-4a85-44c6-8a7b-5257918cda4e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -40,
+        20
+      ],
+      "id": "f0f1747b-d9c2-43da-a562-6c9b70a3f09f",
+      "name": "Loop Over Items"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "GET issues",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Subreddits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "GET posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subreddits": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET issues": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "GET posts": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclude repeated posts": {
+      "main": [
+        [
+          {
+            "node": "Elicitar issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Elicitar issues",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Elicitar issues": {
+      "main": [
+        [
+          {
+            "node": "Parse agent response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse agent response": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INSERT reddit_discovered_threads": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Issues": {
+      "main": [
+        [
+          {
+            "node": "INSERT discovered_issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Exclude repeated posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Split Out Issues",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "INSERT reddit_discovered_threads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1ec2a514-0a63-4edb-8db8-4cc2083a4348",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5e33dba88246d1e281beb665c42a8df6b4eeade85f32b7ae9a4479565a113c95"
+  },
+  "id": "lgfLPEsu4gxoMg3a",
+  "tags": []
+}
