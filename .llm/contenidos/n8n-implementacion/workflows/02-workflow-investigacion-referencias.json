@@ -1,0 +1,292 @@
+{
+  "name": "02-workflow-investigacion-referencias",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3040,
+        -360
+      ],
+      "id": "d0e6d88e-8980-4c38-8499-4a2fa2bbe2c7",
+      "name": "Manual Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2820,
+        -360
+      ],
+      "id": "a4bba1a2-7b36-4097-9142-910ef7535f64",
+      "name": "Definir Tema"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Encuentra 5-10 URLs de fuentes fiables (blogs de expertos, estudios, organizaciones reconocidas) sobre el siguiente tema. Devuelve una lista JSON de objetos, cada uno con 'url', 'title', y 'snippet_inicial'.\n\nTema: {{ $json.tema_investigacion }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        -2600,
+        -360
+      ],
+      "id": "9f466de6-e7f5-45bf-93b3-0a3fe7c45622",
+      "name": "Buscador de Referencias",
+      "notes": "PLACEHOLDER: Necesita un modelo LLM conectado y potencialmente herramientas/instrucciones para búsqueda web real."
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2240,
+        -360
+      ],
+      "id": "4284182c-cc89-4f88-8cd4-0d2a8d571ae2",
+      "name": "Iterar Referencias Encontradas"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "referencias",
+        "limit": 1,
+        "filterType": "filter"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2020,
+        -360
+      ],
+      "id": "57439654-99e2-4175-b812-5eb715f81cd2",
+      "name": "Verificar Duplicado",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      },
+      "notes": "PLACEHOLDER: Necesita credenciales Supabase configuradas."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition_check_length",
+              "leftValue": "={{ $('Verificar Duplicado').all().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equal",
+                "name": "filter.operator.equal"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1840,
+        -360
+      ],
+      "id": "11717fbf-b9e7-4e91-85a1-d13ce91de818",
+      "name": "¿Es Nueva Referencia?"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Dada la URL y el tema, accede al contenido web, extrae 3-5 extractos literales clave relevantes y sugiere 3-7 etiquetas (tags) relevantes. Devuelve un JSON con 'extractos' (lista de strings), 'tags' (lista de strings) y 'tema_asociado'.\n\nURL: {{ $('Iterar Referencias Encontradas').item.json.url }}\nTema: {{ $('Definir Tema').first().json.tema_investigacion }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        -1620,
+        -460
+      ],
+      "id": "5e0ba229-16a4-4483-b98c-0712484d1878",
+      "name": "Preprocesador de Referencia",
+      "notes": "PLACEHOLDER: Necesita un modelo LLM conectado y herramientas/instrucciones para scraping web real. Conectar a la salida TRUE del IF."
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1300,
+        -460
+      ],
+      "id": "ceb33966-cb95-4129-99b4-d81211e08fb9",
+      "name": "Guardar Referencia Preprocesada",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      },
+      "notes": "PLACEHOLDER: Necesita credenciales Supabase configuradas. Conectar a la salida del Preprocesador."
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1620,
+        -180
+      ],
+      "id": "1d72bf0d-3ba7-4a8a-b32a-45c16a4eb606",
+      "name": "Ignorar Duplicado",
+      "notes": "Conectar a la salida FALSE del IF."
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-04-17",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        100
+      ],
+      "id": "240a2c07-9493-4771-afbe-03482f838766",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZiLOPcBqDcW6izVO",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Definir Tema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Definir Tema": {
+      "main": [
+        [
+          {
+            "node": "Buscador de Referencias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscador de Referencias": {
+      "main": [
+        [
+          {
+            "node": "Iterar Referencias Encontradas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iterar Referencias Encontradas": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Verificar Duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Duplicado": {
+      "main": [
+        [
+          {
+            "node": "¿Es Nueva Referencia?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es Nueva Referencia?": {
+      "main": [
+        [
+          {
+            "node": "Preprocesador de Referencia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ignorar Duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preprocesador de Referencia": {
+      "main": [
+        [
+          {
+            "node": "Guardar Referencia Preprocesada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Preprocesador de Referencia",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Buscador de Referencias",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8c09eea1-fd6b-4dec-866b-f90890a66f35",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5e33dba88246d1e281beb665c42a8df6b4eeade85f32b7ae9a4479565a113c95"
+  },
+  "id": "tqIOSWBQc8KUCqwX",
+  "tags": []
+}
