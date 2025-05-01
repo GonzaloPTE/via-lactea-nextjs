@@ -6,152 +6,180 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -3040,
-        -360
+        -5740,
+        -60
       ],
-      "id": "d0e6d88e-8980-4c38-8499-4a2fa2bbe2c7",
-      "name": "Manual Trigger"
+      "id": "aee9f7ec-a8db-4cdf-82a5-19b1c728363f",
+      "name": "Iniciar Manualmente"
     },
     {
       "parameters": {
+        "operation": "getAll",
+        "tableId": "references",
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "url",
+              "condition": "eq",
+              "keyValue": "={{ $json.link || \"\"}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -4180,
+        80
+      ],
+      "id": "f23a776d-8cca-49c2-8c78-df848baee435",
+      "name": "Verificar Duplicado (Supabase)",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $('Verificar Duplicado (Supabase)').first().json.isNotEmpty() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -3960,
+        80
+      ],
+      "id": "47b46929-c375-49ab-97f5-4a2e2a0992ad",
+      "name": "¿Es Nueva Referencia?"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Iterar por cada resultado').item.json.link }}",
+        "options": {
+          "response": {},
+          "timeout": 15000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -3680,
+        80
+      ],
+      "id": "a94c42bd-be1e-43a0-b7ac-d687581af4db",
+      "name": "Obtener Contenido Web",
+      "retryOnFail": true,
+      "retryCount": 1,
+      "retryDelay": 1000,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un asistente de investigación experto en sueño infantil y lactancia. Has recibido el contenido de una página web y una lista de temas/issues de investigación específicos. Tu tarea es analizar si el contenido es relevante para esos temas y extraer información clave.\n\n**Temas/Issues de Investigación Asociados (related_issues):**\n{{ $('Definir Temas').item.json.tema_investigacion.toJsonString() }}\n\n**URL de la Fuente (Opcional, para contexto):**\n{{ $('Iterar por cada resultado').item.json.link }}\n\n**Contenido de la Página Web:**\n```html\n{{ $json.data || 'Contenido no disponible' }}\n```\n\n**Instrucciones Detalladas:**\n\n1.  **Analiza el contenido:** Lee detenidamente el texto principal de la página web proporcionada.\n2.  **Determina la Relevancia (`is_relevant`):** Evalúa si el contenido de la página web aborda **directa y significativamente** al menos **uno** de los **Temas/Issues de Investigación Asociados**. Responde con `true` si es relevante, `false` si no lo es.\n3.  **Si es Relevante (`is_relevant: true`):**\n    *   **Extrae Fragmentos Clave (`extracts`):** Identifica y extrae **textualmente** entre 3 y 5 fragmentos (snippets) del contenido que sean más representativos o respondan directamente a los **Temas/Issues de Investigación Asociados**. Devuelve esto como un array de strings en formato JSON.\n    *   **Genera Etiquetas (`tags`):** Crea una lista de 3 a 7 etiquetas (palabras clave) **en español** que describan y clasifiquen con precisión el contenido específico de **esta página web**. Devuelve esto como un array de strings. Ejemplos: [\"rutinas de sueño\", \"lactancia nocturna\", \"colecho seguro\", \"bancos de leche\", \"regresión 4 meses\"].\n    *   **Crea un Resumen (`summary`):** Redacta un resumen conciso (aproximadamente 2-5 frases) **en español** que explique **cómo el contenido de esta página se relaciona específicamente con los Temas/Issues de Investigación Asociados**. Destaca los puntos clave o las respuestas que ofrece la página a dichos temas/issues. Debe ser un único string de texto.\n4.  **Si NO es Relevante (`is_relevant: false`):** Los campos `extracts` y `tags` deben ser arrays vacíos (`[]`), y el campo `summary` debe ser un string vacío (`\"\"`).\n\n**Formato de Salida Obligatorio:**\nDevuelve **únicamente** un objeto JSON válido y completo que contenga las cuatro claves (`is_relevant`, `extracts`, `tags`, `summary`) según las instrucciones. No incluyas ninguna explicación adicional fuera del JSON.\n\n**Ejemplo de Salida (Si es Relevante):**\n```json\n{\n  \"is_relevant\": true,\n  \"extracts\": [\n    \"El colecho seguro implica asegurar que no haya espacios entre el colchón y la pared...\",\n    \"Se recomienda una superficie firme y evitar almohadas o edredones voluminosos cerca del bebé...\",\n    \"Nunca practiques colecho si has consumido alcohol, drogas o medicamentos que provoquen somnolencia.\"\n  ],\n  \"tags\": [\"colecho\", \"sueño seguro\", \"recién nacido\", \"prevención SMSL\", \"habitación compartida\"],\n  \"summary\": \"El artículo detalla prácticas esenciales para el colecho seguro, respondiendo directamente a las preocupaciones sobre la seguridad del bebé en la cama familiar. Cubre la preparación del espacio, los factores de riesgo a evitar y las recomendaciones oficiales actualizadas.\"\n}\n```\n\n**Ejemplo de Salida (Si NO es Relevante):**\n```json\n{\n  \"is_relevant\": false,\n  \"extracts\": [],\n  \"tags\": [],\n  \"summary\": \"\"\n}\n```\n\n```\n\n**Consideraciones Adicionales:**\n\n*   **Ajuste de Nodos:** Reemplaza `Nodo_Fuente_Contenido`, `Nodo_Fuente_Temas`, y `Nodo_Fuente_URL` con los nombres correctos de los nodos en tu workflow de n8n que proporcionan esa información al nodo LLM. `related_issues` probablemente provenga del item que se está iterando o de un nodo anterior como \"Definir Temas\".\n*   **Manejo de Errores:** Considera qué hacer si el contenido web no está disponible (`|| 'Contenido no disponible'`) o si el LLM no puede generar un JSON válido. Podrías necesitar un nodo `Code` posterior para validar/limpiar la salida del LLM.\n*   **Token Limits:** Si el contenido web es muy largo, podría exceder el límite de tokens del LLM. Podrías necesitar pre-procesar el HTML para extraer solo el contenido principal antes de pasarlo al LLM.",
+        "messages": {
+          "messageValues": []
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        -3480,
+        80
+      ],
+      "id": "9ddae373-9623-4d2d-afd0-aead67fff9d3",
+      "name": "Preprocesador de Referencia (LLM)",
+      "onError": "continueRegularOutput",
+      "notes": "Este nodo puede fallar si el contenido web no se pudo obtener o si el LLM no puede procesarlo."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parsea la respuesta del LLM preprocesador\nlet responseText = $input.first().json.text || '{}';\nlet parsedData = { is_relevant: false };\ntry {\n  responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();\n  parsedData = JSON.parse(responseText);\n} catch (error) {\n  return [];\n}\n\n// Añade url y tema para el siguiente paso, si es relevante\nif (parsedData.is_relevant) {\n  return parsedData\n} else {\n  // Si no es is_relevant, retorna un item vacío para detener la rama\n  return {}; \n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3120,
+        80
+      ],
+      "id": "c7226ba9-1bbf-4d19-bf64-285ee947cfba",
+      "name": "Parsear Respuesta Preprocesador"
+    },
+    {
+      "parameters": {
+        "tableId": "references",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "url",
+              "fieldValue": "={{ $('Iterar por cada resultado').item.json.link }}"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ $('Iterar por cada resultado').item.json.title }}"
+            },
+            {
+              "fieldId": "related_issues",
+              "fieldValue": "={{ $('Definir Temas').item.json.tema_investigacion }}"
+            },
+            {
+              "fieldId": "is_relevant",
+              "fieldValue": "={{ $json.is_relevant }}"
+            },
+            {
+              "fieldId": "extracts",
+              "fieldValue": "={{ $json.extracts }}"
+            },
+            {
+              "fieldId": "tags",
+              "fieldValue": "={{ $json.tags }}"
+            },
+            {
+              "fieldId": "summary",
+              "fieldValue": "={{ $json.summary }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2900,
+        80
+      ],
+      "id": "b41a570b-9d31-4439-ad3a-6d66e9afb2e1",
+      "name": "Guardar Referencia Preprocesada (Supabase)",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"tema_investigacion\": [\n    \"¿Cómo se puede hacer co-lecho de forma segura con dos adultos en la cama?\",\n    \"Mi bebé de 10 meses solo duerme si la tengo en brazos y tarda 3 horas en dormirse, lo que me provoca privación severa de sueño, alucinaciones y afecta mi salud mental (APTA severa).\"\n  ]\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2820,
-        -360
+        -5540,
+        -60
       ],
-      "id": "a4bba1a2-7b36-4097-9142-910ef7535f64",
-      "name": "Definir Tema"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Encuentra 5-10 URLs de fuentes fiables (blogs de expertos, estudios, organizaciones reconocidas) sobre el siguiente tema. Devuelve una lista JSON de objetos, cada uno con 'url', 'title', y 'snippet_inicial'.\n\nTema: {{ $json.tema_investigacion }}"
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.6,
-      "position": [
-        -2600,
-        -360
-      ],
-      "id": "9f466de6-e7f5-45bf-93b3-0a3fe7c45622",
-      "name": "Buscador de Referencias",
-      "notes": "PLACEHOLDER: Necesita un modelo LLM conectado y potencialmente herramientas/instrucciones para búsqueda web real."
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3,
-      "position": [
-        -2240,
-        -360
-      ],
-      "id": "4284182c-cc89-4f88-8cd4-0d2a8d571ae2",
-      "name": "Iterar Referencias Encontradas"
-    },
-    {
-      "parameters": {
-        "operation": "getAll",
-        "tableId": "referencias",
-        "limit": 1,
-        "filterType": "filter"
-      },
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        -2020,
-        -360
-      ],
-      "id": "57439654-99e2-4175-b812-5eb715f81cd2",
-      "name": "Verificar Duplicado",
-      "credentials": {
-        "supabaseApi": {
-          "id": "Qq2bKGNqHTvZ3x02",
-          "name": "Vía Láctea - Supabase account"
-        }
-      },
-      "notes": "PLACEHOLDER: Necesita credenciales Supabase configuradas."
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "condition_check_length",
-              "leftValue": "={{ $('Verificar Duplicado').all().length }}",
-              "rightValue": 0,
-              "operator": {
-                "type": "number",
-                "operation": "equal",
-                "name": "filter.operator.equal"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -1840,
-        -360
-      ],
-      "id": "11717fbf-b9e7-4e91-85a1-d13ce91de818",
-      "name": "¿Es Nueva Referencia?"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Dada la URL y el tema, accede al contenido web, extrae 3-5 extractos literales clave relevantes y sugiere 3-7 etiquetas (tags) relevantes. Devuelve un JSON con 'extractos' (lista de strings), 'tags' (lista de strings) y 'tema_asociado'.\n\nURL: {{ $('Iterar Referencias Encontradas').item.json.url }}\nTema: {{ $('Definir Tema').first().json.tema_investigacion }}"
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.6,
-      "position": [
-        -1620,
-        -460
-      ],
-      "id": "5e0ba229-16a4-4483-b98c-0712484d1878",
-      "name": "Preprocesador de Referencia",
-      "notes": "PLACEHOLDER: Necesita un modelo LLM conectado y herramientas/instrucciones para scraping web real. Conectar a la salida TRUE del IF."
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        -1300,
-        -460
-      ],
-      "id": "ceb33966-cb95-4129-99b4-d81211e08fb9",
-      "name": "Guardar Referencia Preprocesada",
-      "credentials": {
-        "supabaseApi": {
-          "id": "Qq2bKGNqHTvZ3x02",
-          "name": "Vía Láctea - Supabase account"
-        }
-      },
-      "notes": "PLACEHOLDER: Necesita credenciales Supabase configuradas. Conectar a la salida del Preprocesador."
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        -1620,
-        -180
-      ],
-      "id": "1d72bf0d-3ba7-4a8a-b32a-45c16a4eb606",
-      "name": "Ignorar Duplicado",
-      "notes": "Conectar a la salida FALSE del IF."
+      "id": "40c45faf-ea1b-405b-9249-9255eadd0b54",
+      "name": "Definir Temas"
     },
     {
       "parameters": {
@@ -161,10 +189,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -2080,
-        100
+        -3960,
+        420
       ],
-      "id": "240a2c07-9493-4771-afbe-03482f838766",
+      "id": "aa726a27-276c-45c1-98a9-07b66a76c22c",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
@@ -172,56 +200,136 @@
           "name": "Google Gemini(PaLM) Api account"
         }
       }
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/customsearch/v1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "--Cambiar por la API Key--"
+            },
+            {
+              "name": "cx",
+              "value": "--Cambiar por el ID del Custom Search Engine--"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.queries[0] }}"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4780,
+        -60
+      ],
+      "id": "6fc83b0a-8d91-4ae9-bc27-627eb90eeefe",
+      "name": "Buscar en Google"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un asistente de investigación experto en sueño infantil y lactancia. Tu labor es crear términos de búsqueda relacionados con los temas que se proponen. Estos términos servirán a futuro para hacer búsquedas en Google optimizadas. Devuelves tu respuesta en formato JSON.\n\n**Temas:** {{ $json.tema_investigacion.toJsonString() }}\n\nDevuelve una lista de las 3 consultas más relevantes que razones.\n\n**Formato de salida:** Devuelve siempre un único objeto JSON con una clave \"queries\" que contenga una lista de consultas.\n\nEjemplo de respuesta:\n```json\n{\n  \"queries\": [\n    \"rutinas de sueño para bebés\",\n    \"cómo establecer horarios de siesta para bebés\",\n    \"regresión del sueño 4 meses soluciones\"\n  ]\n}\n```\n\nNo añadas más texto ni justificaciones a tu respuesta. Sólo el JSON.",
+        "messages": {
+          "messageValues": []
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        -5340,
+        -60
+      ],
+      "id": "b6baa43d-07d8-4189-b062-256ec2ec5ed1",
+      "name": "Generador de queries (LLM)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parsea la respuesta del LLM para extraer la lista de queries\nlet responseText = $input.first().json.text || '{}';\nlet parsedData = { queries: [] , complexQuery: \"\"};\ntry {\n  // Limpia el texto eliminando ```json y ```\n  responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();\n  parsedData = JSON.parse(responseText);\n} catch (error) {\n  // Retorna una estructura vacía para evitar errores posteriores\n  return []; \n}\n\nfunction construirQueryComplejaConORConParentesis(queries) {\n  if (!queries || queries.length === 0) {\n    return \"\";\n  }\n  const queriesConParentesis = queries.map(query => `(${query})`);\n  return queriesConParentesis.join(\" OR \");\n}\n\nconst queryCompleja = construirQueryComplejaConORConParentesis(parsedData.queries);\n\nparsedData.complexQuery = queryCompleja || \"\";\n\n\n// Asegura que el resultado sea una lista de objetos, cada uno con al menos la URL\nreturn parsedData;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4980,
+        -60
+      ],
+      "id": "34c8f333-209a-4cb6-a3d6-99a5f04767bd",
+      "name": "Parsear Respuesta Queries"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -4580,
+        -60
+      ],
+      "id": "07076f70-e60e-45b8-ac1f-e30c52bc874a",
+      "name": "Obtener resultados"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -4360,
+        -60
+      ],
+      "id": "ab3bf543-9c31-4bfa-91ae-b52029bfe317",
+      "name": "Iterar por cada resultado"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -4140,
+        -160
+      ],
+      "id": "779d0020-f1c9-479a-adcb-0ffdfedb0fa5",
+      "name": "No Operation, do nothing"
     }
   ],
   "pinData": {},
   "connections": {
-    "Manual Trigger": {
+    "Iniciar Manualmente": {
       "main": [
         [
           {
-            "node": "Definir Tema",
+            "node": "Definir Temas",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Definir Tema": {
+    "Definir Temas": {
       "main": [
         [
           {
-            "node": "Buscador de Referencias",
+            "node": "Generador de queries (LLM)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Buscador de Referencias": {
-      "main": [
-        [
-          {
-            "node": "Iterar Referencias Encontradas",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Iterar Referencias Encontradas": {
-      "main": [
-        [],
-        [
-          {
-            "node": "Verificar Duplicado",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Verificar Duplicado": {
+    "Verificar Duplicado (Supabase)": {
       "main": [
         [
           {
@@ -236,25 +344,58 @@
       "main": [
         [
           {
-            "node": "Preprocesador de Referencia",
+            "node": "Obtener Contenido Web",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Ignorar Duplicado",
+            "node": "Iterar por cada resultado",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Preprocesador de Referencia": {
+    "Obtener Contenido Web": {
       "main": [
         [
           {
-            "node": "Guardar Referencia Preprocesada",
+            "node": "Preprocesador de Referencia (LLM)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Referencia Preprocesada (Supabase)": {
+      "main": [
+        [
+          {
+            "node": "Iterar por cada resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preprocesador de Referencia (LLM)": {
+      "main": [
+        [
+          {
+            "node": "Parsear Respuesta Preprocesador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Respuesta Preprocesador": {
+      "main": [
+        [
+          {
+            "node": "Guardar Referencia Preprocesada (Supabase)",
             "type": "main",
             "index": 0
           }
@@ -265,13 +406,75 @@
       "ai_languageModel": [
         [
           {
-            "node": "Preprocesador de Referencia",
+            "node": "Preprocesador de Referencia (LLM)",
             "type": "ai_languageModel",
             "index": 0
           },
           {
-            "node": "Buscador de Referencias",
+            "node": "Generador de queries (LLM)",
             "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar en Google": {
+      "main": [
+        [
+          {
+            "node": "Obtener resultados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generador de queries (LLM)": {
+      "main": [
+        [
+          {
+            "node": "Parsear Respuesta Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Respuesta Queries": {
+      "main": [
+        [
+          {
+            "node": "Buscar en Google",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener resultados": {
+      "main": [
+        [
+          {
+            "node": "Iterar por cada resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iterar por cada resultado": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verificar Duplicado (Supabase)",
+            "type": "main",
             "index": 0
           }
         ]
@@ -282,11 +485,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8c09eea1-fd6b-4dec-866b-f90890a66f35",
+  "versionId": "0373b05b-d587-47c9-b07e-373fb96e5336",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "5e33dba88246d1e281beb665c42a8df6b4eeade85f32b7ae9a4479565a113c95"
   },
-  "id": "tqIOSWBQc8KUCqwX",
+  "id": "WRt9ay9RAeXapaRp",
   "tags": []
 }
