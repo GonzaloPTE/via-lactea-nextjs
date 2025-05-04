@@ -9,7 +9,7 @@ module.exports = {
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: "v8",
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  // setupFilesAfterEnv: ['./jest.setup.js'], // Uncomment if you need global setup file
+  setupFilesAfterEnv: ['./jest.setup.ts'], // Load env vars before tests
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     // Handle module aliases (if you have them in tsconfig.json)

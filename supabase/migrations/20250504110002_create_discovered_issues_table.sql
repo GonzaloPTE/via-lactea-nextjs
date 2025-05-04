@@ -45,3 +45,6 @@ FOR ALL
 TO service_role
 USING (true)
 WITH CHECK (true);
+
+-- Enable RLS for discovered_issues table
+ALTER TABLE public.discovered_issues ENABLE ROW LEVEL SECURITY;
