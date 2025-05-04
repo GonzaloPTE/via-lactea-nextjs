@@ -44,3 +44,9 @@ next-env.d.ts
 .backup
 backup-app-dirs.ps1
 remove-app-dirs.ps1
+
+# dev.vars
+.dev.vars
+.env
+.env.local
+.env.test
