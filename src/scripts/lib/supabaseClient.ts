@@ -13,12 +13,12 @@ export interface Issue {
 // Define the structure for Reference data to be saved
 export interface ReferenceData {
   url: string;
-  issue_id: string; // Foreign key to discovered_issues
+  discovered_issue_id: string | number; // Match the type of discovered_issues.id (assuming BIGINT -> string or number)
   is_relevant: boolean;
   extracts: string[];
   tags: string[];
   summary: string;
-  // Add provider, model info if needed later
+  // related_issues?: string[]; -- REMOVED
 }
 
 let supabase: SupabaseClient | null = null;
@@ -29,13 +29,17 @@ function getSupabaseClient(): SupabaseClient {
   }
 
   const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+  // Determine key based on environment (prefer service role if available)
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const keyType = process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Service Role' : 'Anon';
 
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase URL or Anon Key not found in environment variables.');
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error(`Supabase URL or Key (${keyType}) not found in environment variables.`);
   }
 
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
+  console.log(`Initializing Supabase client with ${keyType} key.`); // Log which key is used
+
+  supabase = createClient(supabaseUrl, supabaseKey);
   return supabase;
 }
 
@@ -48,13 +52,13 @@ function getSupabaseClient(): SupabaseClient {
  */
 export async function getPendingIssues(limit: number = 10): Promise<Issue[]> {
   const client = getSupabaseClient();
-  // TODO: Refine this query based on how 'pending' is defined.
-  // Example: Filter where a 'needs_research' flag is true,
-  // or perform a left join with 'references' and filter where no match exists.
+  // --- Applying status filter and deterministic sort ---
   const { data, error } = await client
     .from('discovered_issues')
     .select('id, issue_text') // Select only needed fields
-    .order('priority_score', { ascending: false }) // Example ordering
+    .eq('status', 'new') // <-- Filter for pending status
+    .order('priority_score', { ascending: false }) // Primary order
+    .order('id', { ascending: true }) // <-- Add secondary sort by ID for determinism
     .limit(limit);
 
   if (error) {
@@ -68,16 +72,16 @@ export async function getPendingIssues(limit: number = 10): Promise<Issue[]> {
 /**
  * Checks if a reference URL already exists for a specific issue_id in the 'references' table.
  * @param url The URL of the reference.
- * @param issueId The ID of the issue.
+ * @param discoveredIssueId The ID of the issue.
  * @returns Promise resolving to true if the reference exists, false otherwise.
  */
-export async function checkReferenceExistsForIssue(url: string, issueId: string): Promise<boolean> {
+export async function checkReferenceExistsForIssue(url: string, discoveredIssueId: string | number): Promise<boolean> {
     const client = getSupabaseClient();
-    const { data, error, count } = await client
+    const { error, count } = await client
         .from('references')
         .select('id', { count: 'exact', head: true }) // Efficiently check existence
         .eq('url', url)
-        .eq('issue_id', issueId);
+        .eq('discovered_issue_id', discoveredIssueId);
 
     if (error) {
         console.error('Error checking reference existence:', error);
@@ -102,11 +106,12 @@ export async function saveReference(data: ReferenceData): Promise<void> {
     .insert([
       {
         url: data.url,
-        issue_id: data.issue_id,
+        discovered_issue_id: data.discovered_issue_id,
         is_relevant: data.is_relevant,
         extracts: data.extracts,
         tags: data.tags,
         summary: data.summary,
+        // related_issues: data.related_issues -- REMOVED
         // Ensure column names here match your Supabase table exactly
       },
     ]);
@@ -116,5 +121,5 @@ export async function saveReference(data: ReferenceData): Promise<void> {
     throw error;
   }
 
-  console.log(`Reference saved for issue ${data.issue_id}: ${data.url}`);
+  console.log(`Reference saved for issue ${data.discovered_issue_id}: ${data.url}`);
 } 
