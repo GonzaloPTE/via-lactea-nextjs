@@ -9,14 +9,15 @@ import { scrapeWebPages } from './steps/02-step-05-scrape-content';
 import { analyzeScrapedContent } from './steps/02-step-06-analyze-content';
 import { saveRelevantReferences } from './steps/02-step-07-save-references';
 import { updateIssueStatuses } from './steps/02-step-08-update-status';
-// Assuming a type definition exists
+// Import necessary types
 import type { DiscoveredIssue } from '../types/supabase';
+import type { IssuesWithFilteredUrls, UrlToScrape } from './steps/02-step-04-filter-results';
 
 // Load .env.local for standalone execution
 dotenv.config({ path: '../../.env.local' });
 
 // --- Configuration ---
-const ISSUES_TO_FETCH = 5;      // How many pending issues to process per run
+const DEFAULT_ISSUES_TO_FETCH = 5; // Default value
 // Add other relevant configuration if needed, e.g.:
 // const MAX_QUERIES_PER_ISSUE = 3;
 // const MAX_SEARCH_RESULTS_PER_QUERY = 5;
@@ -25,24 +26,30 @@ const ISSUES_TO_FETCH = 5;      // How many pending issues to process per run
 
 // --- Main Workflow Orchestrator ---
 
-async function runWorkflow() {
-    console.log('--- Starting Reference Research Workflow (v2) ---');
+// Export the function to make it testable
+export async function runWorkflow(options?: { issuesToFetch?: number }) {
+    const issuesToFetch = options?.issuesToFetch ?? DEFAULT_ISSUES_TO_FETCH;
+    console.log(`--- Starting Reference Research Workflow (v2) --- (Fetching up to ${issuesToFetch} issues)`);
     let processedIssueIds: number[] = []; // Keep track of issues processed
+    let issuesToProcess: DiscoveredIssue[] = []; // Hold the fetched issues
 
     try {
         // Step 1: Fetch Pending Issues
-        console.log(`\n[Step 1/8] Fetching up to ${ISSUES_TO_FETCH} pending issues...`);
-        const issues: DiscoveredIssue[] | null = await fetchPendingIssues(ISSUES_TO_FETCH);
-        if (!issues || issues.length === 0) {
+        console.log(`\n[Step 1/8] Fetching up to ${issuesToFetch} pending issues...`);
+        const fetchedIssues: DiscoveredIssue[] | null = await fetchPendingIssues(issuesToFetch);
+        if (!fetchedIssues || fetchedIssues.length === 0) {
             console.log('  No pending issues found. Workflow finished early.');
-            return;
+            // Return empty processed IDs list
+            return { success: true, processedIssueIds: [] };
         }
-        processedIssueIds = issues.map((issue: DiscoveredIssue) => issue.id); // Store IDs for final status update
-        console.log(`  Fetched ${issues.length} issues.`);
+        issuesToProcess = fetchedIssues;
+        processedIssueIds = issuesToProcess.map((issue: DiscoveredIssue) => issue.id);
+        console.log(`  Fetched ${issuesToProcess.length} issues with IDs: ${processedIssueIds.join(', ')}`); // Log fetched IDs
 
         // Step 2: Generate Search Queries
         console.log('\n[Step 2/8] Generating search queries via LLM...');
-        const issuesWithQueries = await generateSearchQueriesForIssues(issues);
+        // Pass the correctly typed issuesToProcess
+        const issuesWithQueries = await generateSearchQueriesForIssues(issuesToProcess);
         console.log(`  Generated queries for ${issuesWithQueries.length} issues.`);
 
         // Step 3: Execute Google Search
@@ -52,15 +59,20 @@ async function runWorkflow() {
 
         // Step 4: Filter Search Results
         console.log('\n[Step 4/8] Filtering search results and preparing URLs...');
-        const issuesWithFilteredUrls = await filterAndPrepareUrls(issuesWithSearchResults);
-        // Correct logging for object map
-        const urlCount = Object.values(issuesWithFilteredUrls).reduce((acc, urls) => acc + urls.length, 0);
+        const issuesWithFilteredUrls: IssuesWithFilteredUrls = await filterAndPrepareUrls(issuesWithSearchResults);
+        // Correct logging for object map with explicit type
+        const urlCount = Object.values(issuesWithFilteredUrls).reduce((acc, urls: UrlToScrape[]) => acc + urls.length, 0);
         console.log(`  Prepared ${urlCount} total URLs for scraping across ${Object.keys(issuesWithFilteredUrls).length} issues.`);
 
         // Step 5: Scrape Web Content
         console.log('\n[Step 5/8] Scraping web content...');
-        const scrapedPagesData = await scrapeWebPages(issuesWithFilteredUrls);
-        console.log(`  Attempted scraping for ${scrapedPagesData.length} URLs.`); // Log based on attempts
+        // Note: Step 5 expects IssuesWithFilteredUrls and flattens internally
+        // const allUrlsToScrape: UrlToScrape[] = Object.values(issuesWithFilteredUrls).flat(); // Removed pre-flattening
+        const scrapedPagesData = await scrapeWebPages(issuesWithFilteredUrls); // Pass the map directly
+        // Log based on actual results returned by scrapeWebPages
+        const attemptCount = scrapedPagesData.length;
+        const successCount = scrapedPagesData.filter(p => p.htmlContent).length;
+        console.log(`  Finished scraping. Attempted: ${attemptCount}, Success: ${successCount}, Failures/Skipped: ${attemptCount - successCount}`);
 
         // Step 6: Analyze Content Relevance (LLM)
         console.log('\n[Step 6/8] Analyzing content relevance via LLM...');
@@ -74,9 +86,12 @@ async function runWorkflow() {
 
         // Step 8: Update Issue Status (Success)
         console.log('\n[Step 8/8] Updating status for processed issues...');
-        // Update status column to success value (e.g., 'ref_analysis_done')
         await updateIssueStatuses(processedIssueIds, 'ref_analysis_done');
         console.log(`  Marked ${processedIssueIds.length} issues as ref_analysis_done.`);
+
+        console.log('\n--- Reference Research Workflow (v2) Finished Successfully ---');
+        // Return success and the actual IDs processed
+        return { success: true, processedIssueIds: processedIssueIds };
 
     } catch (error: any) {
         console.error('\n--- Workflow failed ---', error);
@@ -89,12 +104,26 @@ async function runWorkflow() {
                 console.log(`  Marked ${processedIssueIds.length} issues as ref_analysis_error.`);
             } catch (updateError) {
                 console.error('  Failed to update issue statuses to ERROR:', updateError);
+                // Log this secondary error, but prioritize throwing the original workflow error
             }
         }
-        process.exit(1); // Exit with error code
+        // Instead of process.exit, throw the error so test runners can catch it
+        // process.exit(1);
+        throw error; // Re-throw the original error after attempting cleanup
     }
-    console.log('\n--- Reference Research Workflow (v2) Finished Successfully ---');
+    // This line is technically unreachable due to return/throw paths, but satisfies linters/compilers
+    // console.log('--- Reference Research Workflow (v2) Finished ---');
 }
 
-// Execute the workflow
-runWorkflow();
+// Execute the workflow only if the script is run directly
+if (require.main === module) {
+    runWorkflow()
+        .then(() => {
+            console.log("Workflow completed via direct execution.");
+            process.exit(0);
+        })
+        .catch((error) => {
+            console.error("Workflow failed during direct execution:", error);
+            process.exit(1);
+        });
+}
