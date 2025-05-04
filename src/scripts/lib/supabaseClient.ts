@@ -92,34 +92,40 @@ export async function checkReferenceExistsForIssue(url: string, discoveredIssueI
     return (count ?? 0) > 0;
 }
 
-
 /**
- * Saves reference data to the 'references' table in Supabase.
- * Assumes the table 'references' exists with columns matching ReferenceData keys.
- * @param data The ReferenceData object to save.
+ * Saves one or more reference data objects to the 'references' table in Supabase.
+ * @param data A single ReferenceData object or an array of ReferenceData objects.
  * @returns Promise resolving when the operation is complete.
  */
-export async function saveReference(data: ReferenceData): Promise<void> {
+export async function saveReference(data: ReferenceData | ReferenceData[]): Promise<void> {
   const client = getSupabaseClient();
+  const referencesToInsert = Array.isArray(data) ? data : [data];
+
+  if (referencesToInsert.length === 0) {
+    console.log('No references to save.');
+    return;
+  }
+
+  // Map data to ensure structure matches table columns exactly
+  const insertPayload = referencesToInsert.map(ref => ({
+    url: ref.url,
+    discovered_issue_id: ref.discovered_issue_id,
+    is_relevant: ref.is_relevant,
+    extracts: ref.extracts,
+    tags: ref.tags,
+    summary: ref.summary,
+    // created_at defaults in DB
+  }));
+
   const { error } = await client
     .from('references')
-    .insert([
-      {
-        url: data.url,
-        discovered_issue_id: data.discovered_issue_id,
-        is_relevant: data.is_relevant,
-        extracts: data.extracts,
-        tags: data.tags,
-        summary: data.summary,
-        // related_issues: data.related_issues -- REMOVED
-        // Ensure column names here match your Supabase table exactly
-      },
-    ]);
+    .insert(insertPayload);
 
   if (error) {
-    console.error('Error saving reference:', error);
+    console.error('Error saving references:', error);
+    // Consider more granular error handling for batch inserts if needed
     throw error;
   }
 
-  console.log(`Reference saved for issue ${data.discovered_issue_id}: ${data.url}`);
+  console.log(`Successfully saved ${insertPayload.length} reference(s). First URL: ${insertPayload[0].url}`);
 } 
