@@ -41,7 +41,8 @@ export async function runWorkflow(options: WorkflowOptions = {}): Promise<Workfl
     const { batchSize = DEFAULT_ISSUES_BATCH_SIZE, sourceType = null } = options;
     let totalProcessedIssues = 0;
     let totalPostsCreated = 0;
-    let allSucceeded = true;
+    let batchesProcessed = 0;
+    let totalErrors = 0;
 
     console.log("--- Starting Workflow 3: Issue Grouping & Blog Post Generation ---");
     console.log(`Processing in batches of up to ${batchSize} issues.`);
@@ -49,79 +50,99 @@ export async function runWorkflow(options: WorkflowOptions = {}): Promise<Workfl
         console.log(`Filtering by source_type: ${sourceType}`); // Log if filtering
     }
 
-    try {
-        // Step 1: Fetch issues ready for grouping
-        console.log("Step 1: Fetching issues...");
-        const issuesToGroup = await fetchIssuesForGrouping(batchSize, sourceType);
+    // Loop to process multiple batches
+    while (true) {
+        batchesProcessed++;
+        console.log(`\n--- Starting Batch ${batchesProcessed} ---`);
+        let currentBatchIssueCount = 0;
+        let currentBatchPostsCreated = 0;
 
-        if (!issuesToGroup || issuesToGroup.length === 0) {
-            console.log("No issues found with status 'ref_analysis_done'. Workflow finished.");
-            return { success: true, totalProcessedIssues, totalPostsCreated };
-        }
-        console.log(`  Fetched ${issuesToGroup.length} issues for this batch.`);
+        try {
+            // Step 1: Fetch issues ready for grouping
+            console.log("Step 1: Fetching issues...");
+            const issuesToGroup = await fetchIssuesForGrouping(batchSize, sourceType);
 
-        // Step 2: Group Issues into Posts (LLM)
-        console.log('\n[Step 2/6] Grouping issues into blog posts via LLM...');
-        const postGroups: PostGroupData[] = await groupIssuesIntoPosts(issuesToGroup);
-        console.log(`  LLM proposed ${postGroups.length} blog post groups.`);
-        if (postGroups.length === 0) {
-            console.log('  LLM did not group any issues, skipping batch.');
-            // TODO: Potentially mark issues as needing manual review or change status?
-            // For now, just continue to the next batch.
-            return { success: true, totalProcessedIssues, totalPostsCreated };
-        }
-
-        // Step 3: Save Post Drafts and Mark Issues as Assigned
-        console.log('\n[Step 3/6] Saving post drafts and updating issue statuses...');
-        const createdPostIds: number[] = await savePostsAndMarkIssues(postGroups);
-        console.log(`  Saved ${createdPostIds.length} post drafts to DB and marked associated issues.`);
-        totalPostsCreated += createdPostIds.length;
-
-        // Step 4-6: Generate Content for each new post
-        // Note: Running these sequentially per post for simplicity.
-        // Could be parallelized with Promise.allSettled for performance.
-        console.log(`\n[Steps 4-6/6] Generating content for ${createdPostIds.length} new posts...`);
-        for (const postId of createdPostIds) {
-            try {
-                console.log(`  -> Processing Post ID: ${postId}`);
-                // Step 4: Fetch data needed for generation
-                console.log(`    [Step 4/6] Fetching data for generation...`);
-                const postData: PostGenerationData | null = await fetchDataForPostGeneration(postId);
-                if (!postData) {
-                    console.warn(`    Skipping content generation for post ${postId} as data could not be fetched.`);
-                    continue; // Skip to next post
-                }
-                // Step 5: Generate content via LLM
-                console.log(`    [Step 5/6] Generating content via LLM...`);
-                const rawContent: string | null = await generateBlogPostContent(postData);
-                if (!rawContent) {
-                     console.warn(`    Skipping content update for post ${postId} as LLM generation failed.`);
-                    continue; // Skip to next post
-                }
-                // Step 6: Parse and update DB
-                console.log(`    [Step 6/6] Parsing and updating post with content...`);
-                await parseAndUpdatePostContent(postId, rawContent);
-                console.log(`  <- Successfully generated and saved content for Post ID: ${postId}`);
-            } catch (genError: any) {
-                console.error(`  Error during content generation pipeline for Post ID ${postId}:`, genError.message);
-                // Optionally update post status to 'generation_error'?
+            if (!issuesToGroup || issuesToGroup.length === 0) {
+                console.log("No more issues found with status 'ref_analysis_done'. Workflow finished.");
+                break; // Exit the while loop
             }
+            currentBatchIssueCount = issuesToGroup.length;
+            console.log(`  Fetched ${currentBatchIssueCount} issues for this batch.`);
+
+            // Step 2: Group Issues into Posts (LLM)
+            console.log('\n[Step 2/6] Grouping issues into blog posts via LLM...');
+            const postGroups: PostGroupData[] = await groupIssuesIntoPosts(issuesToGroup);
+            console.log(`  LLM proposed ${postGroups.length} blog post groups.`);
+            if (postGroups.length === 0) {
+                console.log('  LLM did not group any issues, skipping batch.');
+                // Decide how to handle - mark issues? For now, just log and continue.
+                totalProcessedIssues += currentBatchIssueCount; // Still count as processed
+                continue; // Move to next iteration of the while loop
+            }
+
+            // Step 3: Save Post Drafts and Mark Issues as Assigned
+            console.log('\n[Step 3/6] Saving post drafts and updating issue statuses...');
+            const createdPostIds: number[] = await savePostsAndMarkIssues(postGroups);
+            currentBatchPostsCreated = createdPostIds.length;
+            console.log(`  Saved ${currentBatchPostsCreated} post drafts to DB and marked associated issues.`);
+
+            // Step 4-6: Generate Content for each new post
+            console.log(`\n[Steps 4-6/6] Generating content for ${createdPostIds.length} new posts...`);
+            let generationErrorsInBatch = 0;
+            for (const postId of createdPostIds) {
+                try {
+                    console.log(`  -> Processing Post ID: ${postId}`);
+                    // Step 4: Fetch data needed for generation
+                    console.log(`    [Step 4/6] Fetching data for generation...`);
+                    const postData: PostGenerationData | null = await fetchDataForPostGeneration(postId);
+                    if (!postData) {
+                        console.warn(`    Skipping content generation for post ${postId} as data could not be fetched.`);
+                        generationErrorsInBatch++;
+                        continue; // Skip to next post
+                    }
+                    // Step 5: Generate content via LLM
+                    console.log(`    [Step 5/6] Generating content via LLM...`);
+                    const rawContent: string | null = await generateBlogPostContent(postData);
+                    if (!rawContent) {
+                        console.warn(`    Skipping content update for post ${postId} as LLM generation failed.`);
+                        generationErrorsInBatch++;
+                        continue; // Skip to next post
+                    }
+                    // Step 6: Parse and update DB
+                    console.log(`    [Step 6/6] Parsing and updating post with content...`);
+                    await parseAndUpdatePostContent(postId, rawContent);
+                    console.log(`  <- Successfully generated and saved content for Post ID: ${postId}`);
+                } catch (genError: any) {
+                    console.error(`  Error during content generation pipeline for Post ID ${postId}:`, genError.message);
+                    generationErrorsInBatch++;
+                    // Optionally update post status to 'generation_error'?
+                }
+            }
+            console.log(`  Finished content generation attempts for batch ${batchesProcessed}. Errors: ${generationErrorsInBatch}.`);
+
+            // Update totals for the batch
+            totalProcessedIssues += currentBatchIssueCount;
+            totalPostsCreated += currentBatchPostsCreated;
+
+        } catch (batchError: any) {
+            console.error(`\n--- Error processing Batch ${batchesProcessed} ---`, batchError);
+            totalErrors++;
+            // Decide whether to continue or stop on batch error
+            // For now, log the error and continue to the next batch
+            // Could add a threshold: if (totalErrors > MAX_CONSECUTIVE_ERRORS) break;
+            console.log('Attempting to continue with the next batch...');
         }
-        console.log('  Finished content generation attempts for the batch.');
-
-        totalProcessedIssues += issuesToGroup.length; // Count issues processed in this batch
-        // console.log('--- TEMPORARY BREAK ---'); break; // Keep commented out
-
-    } catch (error: any) {
-        console.error(`\n--- Error processing Batch ---`, error);
-        console.log('Stopping workflow due to error in batch processing.');
-        return { success: false, totalProcessedIssues, totalPostsCreated };
-    }
+    } // End while loop
 
     console.log(`\n--- Issue Grouping & Post Generation Workflow Finished ---`);
-    console.log(`Total issues processed batches: ${totalProcessedIssues}`);
+    console.log(`Total batches attempted: ${batchesProcessed - 1}`); // -1 because the last loop breaks on no issues
+    console.log(`Total issues processed: ${totalProcessedIssues}`);
     console.log(`Total blog posts created: ${totalPostsCreated}`);
-    return { success: true, totalProcessedIssues, totalPostsCreated };
+    console.log(`Total batch processing errors: ${totalErrors}`);
+
+    // Success is true if at least one batch ran without error, or if no issues were found initially.
+    const overallSuccess = totalErrors === 0 || (batchesProcessed > 1 && totalErrors < batchesProcessed -1);
+    return { success: overallSuccess, totalProcessedIssues, totalPostsCreated };
 }
 
 // Execute the workflow only if the script is run directly
