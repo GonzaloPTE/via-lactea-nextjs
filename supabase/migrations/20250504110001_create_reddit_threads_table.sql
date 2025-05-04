@@ -35,3 +35,6 @@ FOR ALL
 TO service_role
 USING (true)
 WITH CHECK (true);
+
+-- Enable RLS for reddit_discovered_threads table
+ALTER TABLE public.reddit_discovered_threads ENABLE ROW LEVEL SECURITY;
