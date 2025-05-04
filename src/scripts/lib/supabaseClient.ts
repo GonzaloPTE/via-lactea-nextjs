@@ -49,23 +49,30 @@ export function getSupabaseClient(): SupabaseClient {
 /**
  * Fetches issues from the 'discovered_issues' table that need reference analysis.
  * Filters by status = 'new' (assuming 'new' means pending reference analysis).
- * @param limit Max number of issues to fetch.
+ * @param limit Max number of issues to fetch, or null/undefined to fetch all.
  * @returns Promise resolving to an array of DiscoveredIssues.
  */
-export async function getPendingIssues(limit: number = 10): Promise<DiscoveredIssue[]> {
+export async function getPendingIssues(limit: number | null = 10): Promise<DiscoveredIssue[]> {
   const client = getSupabaseClient();
-  // Select all fields defined in the DiscoveredIssue type
   const selectFields = 'id, source_type, source_id, source_url, issue_text, sentiment, issue_type, tags, priority_score, extracted_at, status';
 
-  console.log(`Querying Supabase for ${limit} issues with status = new...`);
+  // Log based on limit
+  const limitLog = limit === null ? 'all' : limit;
+  console.log(`Querying Supabase for ${limitLog} issues with status = new...`);
 
-  const { data, error } = await client
+  let query = client
     .from('discovered_issues')
     .select(selectFields)
-    .eq('status', 'new') // <-- Filter by status = 'new'
-    .order('priority_score', { ascending: false, nullsFirst: false }) // Optional: Order by priority if desired
-    .order('id', { ascending: true }) // Ensure deterministic order
-    .limit(limit);
+    .eq('status', 'new')
+    .order('priority_score', { ascending: false, nullsFirst: false })
+    .order('id', { ascending: true });
+
+  // Conditionally apply limit
+  if (limit !== null) {
+    query = query.limit(limit);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching pending issues (status=new):', error);
@@ -73,7 +80,6 @@ export async function getPendingIssues(limit: number = 10): Promise<DiscoveredIs
   }
 
   console.log(`Supabase query returned ${data?.length ?? 0} issues.`);
-  // Cast the result to DiscoveredIssue[]
   return (data as DiscoveredIssue[]) || [];
 }
 

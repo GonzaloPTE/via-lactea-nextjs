@@ -3,13 +3,15 @@ import type { DiscoveredIssue } from '../../types/supabase';
 
 /**
  * Fetches a batch of discovered issues that are pending reference analysis.
- * @param limit The maximum number of issues to fetch.
+ * @param limit The maximum number of issues to fetch, or null to fetch all.
  * @returns An array of DiscoveredIssue objects or null if none are found.
  */
-export async function fetchPendingIssues(limit: number): Promise<DiscoveredIssue[] | null> {
-    console.log(`  Fetching up to ${limit} issues with reference_analysis_status = PENDING...`);
+export async function fetchPendingIssues(limit: number | null): Promise<DiscoveredIssue[] | null> {
+    // Log based on limit
+    const limitLog = limit === null ? 'all' : limit;
+    console.log(`  Fetching up to ${limitLog} issues with status = new...`);
     try {
-        // We assume getPendingIssues selects the necessary fields defined in DiscoveredIssue
+        // Pass the limit (which can be null) down to getPendingIssues
         const issues = await getPendingIssues(limit);
         if (!issues || issues.length === 0) {
             console.log("  No pending issues found for reference analysis.");

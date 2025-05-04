@@ -17,7 +17,8 @@ import type { IssuesWithFilteredUrls, UrlToScrape } from './steps/02-step-04-fil
 dotenv.config({ path: '../../.env.local' });
 
 // --- Configuration ---
-const DEFAULT_ISSUES_TO_FETCH = 5; // Default value
+// Set default to null to fetch all issues by default
+const DEFAULT_ISSUES_TO_FETCH = null;
 // Add other relevant configuration if needed, e.g.:
 // const MAX_QUERIES_PER_ISSUE = 3;
 // const MAX_SEARCH_RESULTS_PER_QUERY = 5;
@@ -26,21 +27,23 @@ const DEFAULT_ISSUES_TO_FETCH = 5; // Default value
 
 // --- Main Workflow Orchestrator ---
 
-// Export the function to make it testable
-export async function runWorkflow(options?: { issuesToFetch?: number }) {
-    const issuesToFetch = options?.issuesToFetch ?? DEFAULT_ISSUES_TO_FETCH;
-    console.log(`--- Starting Reference Research Workflow (v2) --- (Fetching up to ${issuesToFetch} issues)`);
-    let processedIssueIds: number[] = []; // Keep track of issues processed
-    let issuesToProcess: DiscoveredIssue[] = []; // Hold the fetched issues
+// Update options type to accept null
+export async function runWorkflow(options?: { issuesToFetch?: number | null }) {
+    // Use null propagation correctly; fetch all if options.issuesToFetch is undefined or explicitly null
+    const issuesToFetch = options?.issuesToFetch !== undefined ? options.issuesToFetch : DEFAULT_ISSUES_TO_FETCH;
+    const fetchLog = issuesToFetch === null ? 'all' : issuesToFetch;
+    console.log(`--- Starting Reference Research Workflow (v2) --- (Fetching up to ${fetchLog} issues)`);
+    let processedIssueIds: number[] = [];
+    let issuesToProcess: DiscoveredIssue[] = [];
 
     try {
         // Step 1: Fetch Pending Issues
-        console.log(`\n[Step 1/8] Fetching up to ${issuesToFetch} pending issues...`);
+        console.log(`\n[Step 1/8] Fetching up to ${fetchLog} pending issues...`);
+        // Pass the potentially null limit
         const fetchedIssues: DiscoveredIssue[] | null = await fetchPendingIssues(issuesToFetch);
         if (!fetchedIssues || fetchedIssues.length === 0) {
             console.log('  No pending issues found. Workflow finished early.');
-            // Return empty processed IDs list
-            return { success: true, processedIssueIds: [] };
+            return { success: true, processedIssueIds: [] }; 
         }
         issuesToProcess = fetchedIssues;
         processedIssueIds = issuesToProcess.map((issue: DiscoveredIssue) => issue.id);
