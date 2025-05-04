@@ -1,29 +1,32 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+// Import the refined type
+import type { DiscoveredIssue } from '../../types/supabase';
 
 dotenv.config();
 
-// Define the structure for an Issue retrieved from Supabase
+// Remove old Issue interface if no longer needed elsewhere, or keep if used
+/*
 export interface Issue {
-  id: string; // Assuming UUID
+  id: string; 
   issue_text: string;
-  // Add other relevant fields from discovered_issues if needed
 }
+*/
 
 // Define the structure for Reference data to be saved
 export interface ReferenceData {
   url: string;
-  discovered_issue_id: string | number; // Match the type of discovered_issues.id (assuming BIGINT -> string or number)
+  discovered_issue_id: number;
   is_relevant: boolean;
   extracts: string[];
   tags: string[];
   summary: string;
-  // related_issues?: string[]; -- REMOVED
 }
 
 let supabase: SupabaseClient | null = null;
 
-function getSupabaseClient(): SupabaseClient {
+// Export the function for test access
+export function getSupabaseClient(): SupabaseClient {
   if (supabase) {
     return supabase;
   }
@@ -44,38 +47,43 @@ function getSupabaseClient(): SupabaseClient {
 }
 
 /**
- * Fetches issues from the 'discovered_issues' table that need research.
- * TODO: Define the exact criteria for 'pending' (e.g., needs_research=true, or check if issue_id exists in references table).
- * For now, it fetches issues sorted by priority, limiting the result.
+ * Fetches issues from the 'discovered_issues' table that need reference analysis.
+ * Filters by status = 'new' (assuming 'new' means pending reference analysis).
  * @param limit Max number of issues to fetch.
- * @returns Promise resolving to an array of Issues.
+ * @returns Promise resolving to an array of DiscoveredIssues.
  */
-export async function getPendingIssues(limit: number = 10): Promise<Issue[]> {
+export async function getPendingIssues(limit: number = 10): Promise<DiscoveredIssue[]> {
   const client = getSupabaseClient();
-  // --- Applying status filter and deterministic sort ---
+  // Select all fields defined in the DiscoveredIssue type
+  const selectFields = 'id, source_type, source_id, source_url, issue_text, sentiment, issue_type, tags, priority_score, extracted_at, status';
+
+  console.log(`Querying Supabase for ${limit} issues with status = new...`);
+
   const { data, error } = await client
     .from('discovered_issues')
-    .select('id, issue_text') // Select only needed fields
-    .eq('status', 'new') // <-- Filter for pending status
-    .order('priority_score', { ascending: false }) // Primary order
-    .order('id', { ascending: true }) // <-- Add secondary sort by ID for determinism
+    .select(selectFields)
+    .eq('status', 'new') // <-- Filter by status = 'new'
+    .order('priority_score', { ascending: false, nullsFirst: false }) // Optional: Order by priority if desired
+    .order('id', { ascending: true }) // Ensure deterministic order
     .limit(limit);
 
   if (error) {
-    console.error('Error fetching pending issues:', error);
+    console.error('Error fetching pending issues (status=new):', error);
     throw error;
   }
 
-  return data || [];
+  console.log(`Supabase query returned ${data?.length ?? 0} issues.`);
+  // Cast the result to DiscoveredIssue[]
+  return (data as DiscoveredIssue[]) || [];
 }
 
 /**
  * Checks if a reference URL already exists for a specific issue_id in the 'references' table.
  * @param url The URL of the reference.
- * @param discoveredIssueId The ID of the issue.
+ * @param discoveredIssueId The ID of the issue (should be number).
  * @returns Promise resolving to true if the reference exists, false otherwise.
  */
-export async function checkReferenceExistsForIssue(url: string, discoveredIssueId: string | number): Promise<boolean> {
+export async function checkReferenceExistsForIssue(url: string, discoveredIssueId: number): Promise<boolean> {
     const client = getSupabaseClient();
     const { error, count } = await client
         .from('references')
