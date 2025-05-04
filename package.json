@@ -17,6 +17,7 @@
     "test": "jest",
     "test:integration": "jest src/scripts/lib/supabaseClient.integration.test.ts",
     "workflow:research": "npx tsx src/scripts/02-workflow-investigacion-referencias.tsx",
+    "workflow:group-write": "npx tsx src/scripts/03-workflow-agrupacion-redaccion.tsx",
     "supabase:generate-types": "npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > src/types/supabase.ts",
     "supabase:db-push": "npx supabase db push",
     "supabase:db-reset": "npx supabase db reset"
