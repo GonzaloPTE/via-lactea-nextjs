@@ -1,4 +1,4 @@
-# Workflow 3: Redacción del Borrador del Blog
+# Workflow 4: Redacción del Borrador del Blog
 
 **Objetivo:** Generar un borrador de blog post basado en un tema y las referencias previamente recopiladas en Supabase.
 

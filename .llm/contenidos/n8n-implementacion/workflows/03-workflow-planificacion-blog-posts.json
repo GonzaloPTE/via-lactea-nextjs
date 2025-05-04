@@ -1,0 +1,490 @@
+{
+  "name": "03-workflow-planificacion-blog-posts",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1000,
+        100
+      ],
+      "id": "trigger-manual",
+      "name": "Iniciar Manualmente"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "discovered_issues",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "new"
+            }
+          ]
+        },
+        "sorts": {
+          "sorts": [
+            {
+              "keyName": "priority_score",
+              "direction": "DESC"
+            },
+            {
+              "keyName": "sentiment",
+              "direction": "ASC"
+            }
+          ]
+        },
+        "options": {
+          "returnAll": true
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        100
+      ],
+      "id": "supabase-read-issues",
+      "name": "Leer Issues Priorizados",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "references",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "is_relevant",
+              "condition": "eq",
+              "keyValue": true
+            }
+          ]
+        },
+        "options": {
+          "returnAll": true
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        300
+      ],
+      "id": "supabase-read-references",
+      "name": "Leer Referencias Relevantes",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un asistente experto en organización de contenido sobre crianza.\n\n**Issues Disponibles:**\n{{ $('Leer Issues Priorizados').all().map(item => item.json).toJsonString() }}\n\n**Instrucciones:**\n1. Analiza la lista de issues (texto y tags).\n2. Agrupa los issues que traten temas muy relacionados o que puedan responderse conjuntamente en un artículo de blog.\n3. Basa la agrupación en la coherencia semántica de los tags y el texto.\n4. Devuelve **únicamente** un objeto JSON con una clave \"grupos\". El valor de \"grupos\" debe ser un array de arrays, donde cada array interno contiene los objetos JSON completos de los issues pertenecientes a ese grupo.\n\n**Ejemplo Salida:**\n```json\n{\n  \"grupos\": [\n    [ { \"id\": 1, \"issue_text\": \"...\", \"tags\": [\"sueño\", \"4 meses\"] }, { \"id\": 5, \"issue_text\": \"...\", \"tags\": [\"regresión sueño\", \"4 meses\"] } ],\n    [ { \"id\": 2, \"issue_text\": \"...\", \"tags\": [\"lactancia\", \"dolor\"] }, { \"id\": 3, \"issue_text\": \"...\", \"tags\": [\"lactancia\", \"agarre\"] } ]\n  ]\n}\n```",
+        "messages": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        -560,
+        100
+      ],
+      "id": "llm-group-issues",
+      "name": "Agrupar Issues por Tema",
+      "notes": "Necesita un modelo LLM conectado",
+      "credentials": {
+        "langchain": {
+          "id": "PLACEHOLDER_LLM_CREDENTIAL_ID",
+          "name": "Placeholder LLM Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let responseText = $input.first().json.text || '{}';\nlet parsedData = { grupos: [] };\ntry {\n  responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();\n  parsedData = JSON.parse(responseText);\n} catch (error) {\n  console.error('Error parsing LLM group response:', error, responseText);\n  return []; \n}\n\nreturn parsedData.grupos || [];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        100
+      ],
+      "id": "code-parse-groups",
+      "name": "Parsear y Preparar Grupos"
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -120,
+        100
+      ],
+      "id": "split-iterate-groups",
+      "name": "Iterar Grupos de Issues"
+    },
+    {
+      "parameters": {
+        "jsCode": "const currentGroupIssues = $input.item.json; \nconst allRelevantReferences = $('Leer Referencias Relevantes').all().map(item => item.json);\n\nconst groupTags = new Set();\nconst groupIssueTexts = new Set();\ncurrentGroupIssues.forEach(issue => {\n  (issue.tags || []).forEach(tag => groupTags.add(tag));\n  groupIssueTexts.add(issue.issue_text);\n});\n\nconst selectedReferences = allRelevantReferences.filter(ref => {\n  const relatedMatch = (ref.related_issues || []).some(related => groupIssueTexts.has(related));\n  if (relatedMatch) return true;\n\n  const tagMatch = (ref.tags || []).some(refTag => groupTags.has(refTag));\n  if (tagMatch) return true;\n  \n\n\n  return false;\n});\n\nreturn selectedReferences;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        100,
+        100
+      ],
+      "id": "code-select-references",
+      "name": "Seleccionar Referencias para Grupo"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=**Grupo de Issues:**\n{{ $('Iterar Grupos de Issues').item.json.toJsonString() }}\n\n**Referencias Seleccionadas:**\n{{ $('Seleccionar Referencias para Grupo').item.json.toJsonString() }}\n\n**Instrucciones:**\n1. Analiza los issues y las referencias proporcionadas.\n2. Considera la cantidad de referencias (idealmente 3-5) y la cantidad total de extractos (`extracts`) disponibles en ellas.\n3. Evalúa si las referencias cubren adecuadamente los puntos clave de los issues para escribir un post de blog coherente.\n4. Devuelve **únicamente** un objeto JSON con una clave \"decision\" y uno de los siguientes valores: \"Suficiente\", \"Insuficiente\", \"Demasiado Denso\".\n\n**Ejemplo Salida:**\n```json\n{\"decision\": \"Suficiente\"}\n```",
+        "messages": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        320,
+        100
+      ],
+      "id": "llm-evaluate-coverage",
+      "name": "Evaluar Cobertura",
+      "notes": "Necesita un modelo LLM conectado",
+      "credentials": {
+        "langchain": {
+          "id": "PLACEHOLDER_LLM_CREDENTIAL_ID",
+          "name": "Placeholder LLM Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let responseText = $input.first().json.text || '{}';\nlet parsedData = { decision: 'Insuficiente' }; \ntry {\n  responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();\n  parsedData = JSON.parse(responseText);\n} catch (error) {\n  console.error('Error parsing LLM coverage decision:', error, responseText);\n}\n\n$input.item.json.decision = parsedData.decision || 'Insuficiente';\nreturn $input.item;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        100
+      ],
+      "id": "code-parse-decision",
+      "name": "Parsear Decisión Cobertura"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.decision }}",
+              "operation": "equal",
+              "value2": "Suficiente"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        760,
+        100
+      ],
+      "id": "if-coverage-sufficient",
+      "name": "¿Cobertura Suficiente?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const currentGroupIssues = $('Iterar Grupos de Issues').item.json;\nconst selectedReferences = $('Seleccionar Referencias para Grupo').item.json;\n\nconst firstIssueText = currentGroupIssues[0]?.issue_text || 'Blog Post Planificado';\nconst tentativeTitle = `Sobre: ${firstIssueText.substring(0, 50)}...`;\n\nconst plan = {\n  planned_title: tentativeTitle,\n  status: 'planned',\n  issues: currentGroupIssues, \n  references: selectedReferences \n};\n\nreturn plan;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        0
+      ],
+      "id": "code-define-plan",
+      "name": "Definir Plan"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableId": "blog_post_plans",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "planned_title",
+              "fieldValue": "={{ $json.planned_title }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status }}"
+            },
+            {
+              "fieldId": "issues",
+              "fieldValue": "={{ $json.issues }}"
+            },
+            {
+              "fieldId": "references",
+              "fieldValue": "={{ $json.references }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "supabase-save-plan",
+      "name": "Guardar Plan",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "discovered_issues",
+        "filters": {
+           "operator": "AND",
+           "conditions": [
+             {
+               "keyName": "id",
+               "condition": "in",
+               "keyValue": "={{ $('code-define-plan').item.json.issues.map(issue => issue.id).join(',') }}"
+             }
+           ]
+         },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "planned"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        0
+      ],
+      "id": "supabase-update-issues",
+      "name": "Actualizar Estado Issues (Opcional)",
+      "notes": "Actualiza el estado de los issues usados a 'planned'",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Qq2bKGNqHTvZ3x02",
+          "name": "Vía Láctea - Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+         980,
+         200
+      ],
+      "id": "noop-coverage-false",
+      "name": "No Hacer Nada (Cobertura Insuficiente)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Iniciar Manualmente": {
+      "main": [
+        [
+          {
+            "node": "Leer Issues Priorizados",
+            "type": "main",
+            "index": 0
+          },
+           {
+            "node": "Leer Referencias Relevantes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Issues Priorizados": {
+      "main": [
+        [
+          {
+            "node": "Agrupar Issues por Tema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+     "Leer Referencias Relevantes": {
+       "main": [
+         [
+
+         ]
+       ]
+     },
+    "Agrupar Issues por Tema": {
+      "main": [
+        [
+          {
+            "node": "Parsear y Preparar Grupos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear y Preparar Grupos": {
+      "main": [
+        [
+          {
+            "node": "Iterar Grupos de Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iterar Grupos de Issues": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Seleccionar Referencias para Grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleccionar Referencias para Grupo": {
+      "main": [
+        [
+          {
+            "node": "Evaluar Cobertura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluar Cobertura": {
+      "main": [
+        [
+          {
+            "node": "Parsear Decisión Cobertura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Decisión Cobertura": {
+      "main": [
+        [
+          {
+            "node": "¿Cobertura Suficiente?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Cobertura Suficiente?": {
+      "main": [
+        [
+          {
+            "node": "Definir Plan",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+             "node": "No Hacer Nada (Cobertura Insuficiente)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Definir Plan": {
+      "main": [
+        [
+          {
+            "node": "Guardar Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Plan": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Estado Issues (Opcional)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Estado Issues (Opcional)": {
+      "main": [
+        [
+          {
+             "node": "Iterar Grupos de Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+     "No Hacer Nada (Cobertura Insuficiente)": {
+      "main": [
+        [
+          {
+             "node": "Iterar Grupos de Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "uuid-placeholder-version-id",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "placeholder-instance-id"
+  },
+  "id": "workflow-planificacion-id",
+  "tags": []
+}
