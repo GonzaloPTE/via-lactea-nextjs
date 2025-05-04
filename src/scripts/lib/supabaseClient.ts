@@ -1,27 +1,16 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-// Import the refined type
-import type { DiscoveredIssue } from '../../types/supabase';
+import type { Database } from '../../types/supabase'; // Import Database type
+
+// Define types locally
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
+type Reference = Database['public']['Tables']['references']['Row'];
+export type ReferenceData = Database['public']['Tables']['references']['Insert'];
+export type BlogPost = Database['public']['Tables']['blog_posts']['Row'];
+export type BlogPostInsert = Database['public']['Tables']['blog_posts']['Insert'];
+export type BlogPostUpdate = Database['public']['Tables']['blog_posts']['Update'];
 
 dotenv.config();
-
-// Remove old Issue interface if no longer needed elsewhere, or keep if used
-/*
-export interface Issue {
-  id: string; 
-  issue_text: string;
-}
-*/
-
-// Define the structure for Reference data to be saved
-export interface ReferenceData {
-  url: string;
-  discovered_issue_id: number;
-  is_relevant: boolean;
-  extracts: string[];
-  tags: string[];
-  summary: string;
-}
 
 let supabase: SupabaseClient | null = null;
 
@@ -142,4 +131,105 @@ export async function saveReference(data: ReferenceData | ReferenceData[]): Prom
   }
 
   console.log(`Successfully saved ${insertPayload.length} reference(s). First URL: ${insertPayload[0].url}`);
+}
+
+/**
+ * Fetches discovered issues based on their status.
+ * @param status The status to filter by.
+ * @param limit Optional limit on the number of issues to fetch.
+ * @param sourceType Optional source type to filter by.
+ * @returns An array of DiscoveredIssue objects or null if none found.
+ */
+export async function getIssuesByStatus(
+    status: string,
+    limit: number | null = null,
+    sourceType: string | null = null // Add optional parameter
+): Promise<DiscoveredIssue[] | null> {
+    const client = getSupabaseClient();
+    const limitLog = limit === null ? 'all available' : limit;
+    const sourceLog = sourceType ? ` and source_type = ${sourceType}` : ''; // Log if filtering by source
+    console.log(`  Querying Supabase for ${limitLog} issues with status = ${status}${sourceLog}...`);
+
+    try {
+        let query = client
+            .from('discovered_issues')
+            .select('*') // Select all columns for full issue data
+            .eq('status', status);
+
+        // Add source_type filter if provided
+        if (sourceType) {
+            query = query.eq('source_type', sourceType);
+        }
+
+        // Apply limit if provided (and not null)
+        if (limit !== null) {
+            query = query.limit(limit);
+        }
+
+        // Add ordering if needed, e.g., by priority or oldest first
+        query = query.order('priority_score', { ascending: false, nullsFirst: false })
+                     .order('extracted_at', { ascending: true });
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('  Error fetching issues by status from Supabase:', error);
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            console.log(`  Supabase query returned 0 issues with status = ${status}${sourceLog}.`);
+            return null;
+        }
+
+        console.log(`  Supabase query returned ${data.length} issues.`);
+        // Ensure the returned data matches the expected type
+        return data as DiscoveredIssue[];
+    } catch (error) {
+        console.error('  Caught error during getIssuesByStatus:', error);
+        throw new Error(`Failed to get issues by status: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+/**
+ * Fetches references for a list of issue IDs.
+ * If relevantOnly is true, only fetches references where is_relevant = true.
+ * @param relevantOnly If true, only fetches references where is_relevant = true.
+ * @returns An array of Reference objects or null if none found or on error.
+ */
+export async function getReferencesForIssues(
+    issueIds: number[],
+    relevantOnly: boolean = false
+): Promise<Reference[] | null> {
+    const client = getSupabaseClient();
+    console.log(`  Querying Supabase for references for ${issueIds.length} issues${relevantOnly ? ' (relevant only)' : ''}...`);
+
+    try {
+        let query = client
+            .from('references')
+            .select('*')
+            .in('discovered_issue_id', issueIds); // Use .in() for multiple IDs
+
+        if (relevantOnly) {
+            query = query.eq('is_relevant', true);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('  Error fetching references from Supabase:', error);
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            console.log(`  Supabase query returned 0 references for these issues${relevantOnly ? ' (relevant only)' : ''}.`);
+            return null;
+        }
+
+        console.log(`  Supabase query returned ${data.length} references.`);
+        return data as Reference[];
+    } catch (error) {
+        console.error('  Caught error during getReferencesForIssues:', error);
+        throw new Error(`Failed to get references for issues: ${error instanceof Error ? error.message : String(error)}`);
+    }
 } 

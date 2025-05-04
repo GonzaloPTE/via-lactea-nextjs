@@ -95,8 +95,11 @@ describe('03-workflow-agrupacion-redaccion Integration Test', () => {
     it('should run the full workflow, create posts, update issues, and generate content', async () => {
         const initialIssueIds = [...testIssueIds]; // Copy IDs created by setup
 
-        // Execute the workflow
-        const workflowResult = await runWorkflow3({ batchSize: 5 }); // Process in one batch
+        // Execute the workflow, passing the testSourceType
+        const workflowResult = await runWorkflow3({ 
+            batchSize: 5, // Process in one batch
+            sourceType: testSourceType // Pass the filter
+        }); 
 
         expect(workflowResult.success).toBe(true);
         expect(workflowResult.totalProcessedIssues).toBe(initialIssueIds.length);
@@ -109,13 +112,13 @@ describe('03-workflow-agrupacion-redaccion Integration Test', () => {
         // 1. Check Issue Statuses
         const { data: issuesAfter, error: issueFetchError } = await supabase
             .from('discovered_issues')
-            .select('id, status, slug:blog_posts(slug)') // Fetch slug via relationship if possible
+            .select('id, status') // Remove the problematic embedded select
             .in('id', initialIssueIds);
         expect(issueFetchError).toBeNull();
         expect(issuesAfter).toHaveLength(initialIssueIds.length);
         for (const issue of issuesAfter!) {
             expect(issue.status).toBe('blog_post_assigned');
-            // Check if issue is linked to a post (might require adjusting select/relationship)
+            // Cannot check slug directly here anymore
         }
 
         // 2. Check Blog Posts
