@@ -8,9 +8,20 @@ const SEARCH_ENGINE_ID = process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID;
 
 const SEARCH_URL = 'https://www.googleapis.com/customsearch/v1';
 
-interface GoogleSearchItem {
+// Define and Export the structure of a single search result item
+export interface GoogleSearchResult {
   link: string;
-  // Add other fields if needed (title, snippet, etc.)
+  title: string;
+  snippet: string;
+  // Add other fields from the API response if desired (e.g., displayLink, pagemap)
+}
+
+// Interface for the raw API response structure (internal use)
+interface GoogleSearchItem {
+  link?: string;
+  title?: string;
+  snippet?: string;
+  // Other potential fields from Google API
 }
 
 interface GoogleSearchResponse {
@@ -21,10 +32,10 @@ interface GoogleSearchResponse {
 /**
  * Performs a web search using the Google Custom Search API.
  * @param query The search query (e.g., the issue text).
- * @param numResults The number of search results to return (max 10 for free tier per query).
- * @returns Promise resolving to an array of result URLs.
+ * @param numResults The number of search results to return (max 10 per query).
+ * @returns Promise resolving to an array of GoogleSearchResult objects.
  */
-export async function searchWeb(query: string, numResults: number = 10): Promise<string[]> {
+export async function searchWeb(query: string, numResults: number = 10): Promise<GoogleSearchResult[]> {
   if (!GOOGLE_API_KEY || !SEARCH_ENGINE_ID) {
     throw new Error('Google Custom Search API Key or Search Engine ID not found in environment variables.');
   }
@@ -33,8 +44,12 @@ export async function searchWeb(query: string, numResults: number = 10): Promise
     console.warn('Google Custom Search API allows a maximum of 10 results per query. Requesting 10.');
     numResults = 10;
   }
+  if (numResults <= 0) {
+    return []; // No need to call API if 0 results requested
+  }
 
   try {
+    console.log(`  -> Google Search: Query="${query.substring(0, 50)}...", Num=${numResults}`);
     const response = await axios.get<GoogleSearchResponse>(SEARCH_URL, {
       params: {
         key: GOOGLE_API_KEY,
@@ -45,13 +60,26 @@ export async function searchWeb(query: string, numResults: number = 10): Promise
     });
 
     if (response.data && response.data.items) {
-      return response.data.items.map((item) => item.link).filter(link => !!link); // Extract links and filter out any potential undefined/empty links
+      // Map API response items to our exported GoogleSearchResult structure
+      const results = response.data.items
+        .map((item) => ({
+          link: item.link || '', // Provide default empty string if missing
+          title: item.title || '',
+          snippet: item.snippet || ''
+        }))
+        .filter(item => item.link); // Filter out items without a link
+        
+      console.log(`  <- Google Search: Found ${results.length} results for "${query.substring(0, 50)}..."`);
+      return results;
     }
 
+    console.log(`  <- Google Search: No results found for "${query.substring(0, 50)}..."`);
     return [];
-  } catch (error) {
-    console.error('Error calling Google Custom Search API:', error);
-    // Consider more specific error handling based on API response if needed
-    throw new Error(`Failed to perform Google search for query: "${query}"`);
+  } catch (error: any) {
+    // Log specific Axios error details if available
+    const errorDetails = error.response?.data || error.message || String(error);
+    console.error(`  <- Google Search: Error for query "${query.substring(0, 50)}...":`, errorDetails);
+    // Re-throw a more informative error
+    throw new Error(`Google Search API failed for query "${query.substring(0, 50)}...": ${errorDetails}`);
   }
 } 
