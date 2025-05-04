@@ -11,8 +11,8 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env.test') });
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('Supabase test environment variables are not set.');
 }
-if (!process.env.GOOGLE_CSE_ID || !process.env.GOOGLE_API_KEY || !process.env.GOOGLE_GEMINI_API_KEY) {
-    console.warn('Warning: External API keys (Google Search/Gemini) are not fully set in .env.test. Workflow test might be limited.');
+if (!process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID || !process.env.GOOGLE_CUSTOM_SEARCH_API_KEY || !process.env.GOOGLE_GEMINI_API_KEY) {
+    console.warn('Warning: External API keys (Google Custom Search / Gemini) are not fully set in .env.test. Workflow test might be limited.');
     // Consider mocking if keys are missing, but for true integration, they are needed.
 }
 
