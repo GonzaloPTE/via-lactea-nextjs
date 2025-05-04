@@ -1,5 +1,8 @@
 import { getPendingIssues } from '../lib/supabaseClient';
-import type { DiscoveredIssue } from '../../types/supabase';
+import type { Database } from '../../types/supabase';
+
+// Define type locally
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
 
 /**
  * Fetches a batch of discovered issues that are pending reference analysis.

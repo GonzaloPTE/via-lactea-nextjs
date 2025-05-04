@@ -32,7 +32,7 @@ export async function filterAndPrepareUrls(issues: IssueWithSearchResults[]): Pr
         const uniqueUrlsForThisIssue = new Map<string, UrlToScrape>();
         for (const result of issue.searchResults) {
             if (result.link && !uniqueUrlsForThisIssue.has(result.link)) {
-                if (result.link.toLowerCase().endsWith('.pdf')) {
+                if (result.link.toLowerCase().includes('.pdf')) {
                     continue;
                 }
                 const urlData: UrlToScrape = {

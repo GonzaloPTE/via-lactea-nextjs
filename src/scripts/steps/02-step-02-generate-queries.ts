@@ -1,5 +1,8 @@
-import type { DiscoveredIssue } from '../../types/supabase';
+import type { Database } from '../../types/supabase'; // Import Database
 import { generateSearchQueries } from '../components/llmClient'; // Import the actual LLM client function
+
+// Define DiscoveredIssue locally from Database
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
 
 // Input type is DiscoveredIssue now
 // Output type adds searchQueries

@@ -3,7 +3,10 @@ import path from 'path';
 import { saveRelevantReferences } from './02-step-07-save-references';
 import type { AnalyzedPageData } from './02-step-06-analyze-content';
 import { getSupabaseClient } from '../lib/supabaseClient';
-import type { DiscoveredIssue } from '../../types/supabase';
+import type { Database } from '../../types/supabase';
+
+// Define types locally
+type DiscoveredIssueInsert = Database['public']['Tables']['discovered_issues']['Insert'];
 
 // Load environment variables from .env.test
 dotenv.config({ path: path.resolve(__dirname, '../../../.env.test') });
@@ -18,7 +21,7 @@ let testIssueIds: number[] = [];
 
 async function setupTestData() {
     await cleanupTestData(); // Start clean
-    const issuesToInsert: Partial<DiscoveredIssue>[] = [
+    const issuesToInsert: DiscoveredIssueInsert[] = [
         { issue_text: 'Issue 201 text', status: 'new', source_type: testSourceType },
         { issue_text: 'Issue 202 text', status: 'new', source_type: testSourceType },
     ];

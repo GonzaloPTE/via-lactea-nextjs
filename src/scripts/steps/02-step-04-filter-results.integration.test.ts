@@ -3,7 +3,11 @@ import path from 'path';
 import { filterAndPrepareUrls, IssuesWithFilteredUrls } from './02-step-04-filter-results';
 import type { IssueWithSearchResults, SearchResultItem } from './02-step-03-execute-search';
 import { getSupabaseClient, saveReference, ReferenceData } from '../lib/supabaseClient';
-import type { DiscoveredIssue } from '../../types/supabase';
+import type { Database } from '../../types/supabase';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals';
+
+// Define types locally
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
 
 // Load environment variables from .env.test
 dotenv.config({ path: path.resolve(__dirname, '../../../.env.test') });
@@ -19,8 +23,8 @@ let testIssueIds: number[] = [];
 async function setupTestData() {
     await cleanupTestData(); // Start clean
     const issuesToInsert: Partial<DiscoveredIssue>[] = [
-        { issue_text: 'Issue 101 text', status: 'new', source_type: testSourceType },
-        { issue_text: 'Issue 102 text', status: 'new', source_type: testSourceType },
+        { issue_text: 'Issue 101 text', status: 'new', source_type: testSourceType, priority_score: 50, sentiment: 0 },
+        { issue_text: 'Issue 102 text', status: 'new', source_type: testSourceType, priority_score: 50, sentiment: 0 },
     ];
     const { data, error } = await supabase.from('discovered_issues').insert(issuesToInsert).select('id');
     if (error) throw new Error(`Setup failed: ${error.message}`);
@@ -47,6 +51,26 @@ async function cleanupTestData() {
     testIssueIds = [];
 }
 
+// Helper function to create mock IssueWithSearchResults
+function createMockIssue(id: number, text: string, results: SearchResultItem[]): IssueWithSearchResults {
+    // Provide default values for all non-optional fields expected by IssueWithSearchResults -> IssueWithQueries -> DiscoveredIssue
+    return {
+        id: id,
+        issue_text: text,
+        source_type: testSourceType,
+        status: 'new', // Match setup status initially
+        source_id: null,
+        source_url: null,
+        sentiment: null,
+        issue_type: null,
+        tags: null,
+        priority_score: null,
+        extracted_at: new Date().toISOString(), // Provide a valid string date
+        searchQueries: [`q-${id}`],
+        searchResults: results,
+    };
+}
+
 // --- Test Suite --- //
 describe('02-step-04-filter-results Integration Tests', () => {
     beforeAll(async () => {
@@ -59,32 +83,20 @@ describe('02-step-04-filter-results Integration Tests', () => {
 
     it('should filter duplicates, existing references, and apply limits', async () => {
         const mockInput: IssueWithSearchResults[] = [
-            {
-                // Issue 101
-                id: testIssueIds[0], issue_text: 'Issue 101 text', source_type: testSourceType,
-                status: 'new', source_id: null, source_url: null, sentiment: null, issue_type: null, tags: null, priority_score: null, extracted_at: null,
-                searchQueries: ['q1'],
-                searchResults: [
-                    { link: 'http://a.com', title: 'A', snippet: '...' }, // Keep
-                    { link: 'http://b.com', title: 'B', snippet: '...' }, // Keep
-                    { link: 'http://existing.com/page1', title: 'Exists', snippet: '...' }, // Filter (DB)
-                    { link: 'http://a.com', title: 'A Dup', snippet: '...' }, // Filter (Dup in issue)
-                    { link: 'http://c.com', title: 'C', snippet: '...' }, // Keep
-                    { link: 'http://d.com', title: 'D', snippet: '...' }, // Keep
-                    { link: 'http://e.com', title: 'E', snippet: '...' }, // Keep
-                    { link: 'http://f.com', title: 'F', snippet: '...' }, // Filter (Limit 5)
-                ]
-            },
-            {
-                // Issue 102
-                id: testIssueIds[1], issue_text: 'Issue 102 text', source_type: testSourceType,
-                status: 'new', source_id: null, source_url: null, sentiment: null, issue_type: null, tags: null, priority_score: null, extracted_at: null,
-                searchQueries: ['q2'],
-                searchResults: [
-                    { link: 'http://a.com', title: 'A Again', snippet: '...' }, // Filter (Dup global)
-                    { link: 'http://g.com', title: 'G', snippet: '...' }, // Keep
-                ]
-            },
+            createMockIssue(testIssueIds[0], 'Issue 101 text', [
+                { link: 'http://a.com', title: 'A', snippet: '...' }, // Keep
+                { link: 'http://b.com', title: 'B', snippet: '...' }, // Keep
+                { link: 'http://existing.com/page1', title: 'Exists', snippet: '...' }, // Filter (DB)
+                { link: 'http://a.com', title: 'A Dup', snippet: '...' }, // Filter (Dup in issue)
+                { link: 'http://c.com', title: 'C', snippet: '...' }, // Keep
+                { link: 'http://d.com', title: 'D', snippet: '...' }, // Keep
+                { link: 'http://e.com', title: 'E', snippet: '...' }, // Keep
+                { link: 'http://f.com', title: 'F', snippet: '...' }, // Filter (Limit 5)
+            ]),
+            createMockIssue(testIssueIds[1], 'Issue 102 text', [
+                { link: 'http://a.com', title: 'A Again', snippet: '...' }, // Filter (Dup global)
+                { link: 'http://g.com', title: 'G', snippet: '...' }, // Keep
+            ]),
         ];
 
         const result = await filterAndPrepareUrls(mockInput);
@@ -110,11 +122,7 @@ describe('02-step-04-filter-results Integration Tests', () => {
 
      it('should handle issues with no search results', async () => {
          const mockInput: IssueWithSearchResults[] = [
-            {
-                id: testIssueIds[0], issue_text: 'Issue 101 text', source_type: testSourceType,
-                status: 'new', source_id: null, source_url: null, sentiment: null, issue_type: null, tags: null, priority_score: null, extracted_at: null,
-                searchQueries: ['q1'], searchResults: []
-            },
+            createMockIssue(testIssueIds[0], 'Issue 101 text', [])
          ];
          const result = await filterAndPrepareUrls(mockInput);
          expect(result[testIssueIds[0]]).toBeDefined();
@@ -128,17 +136,12 @@ describe('02-step-04-filter-results Integration Tests', () => {
 
     it('should filter out PDF URLs', async () => {
         const mockInput: IssueWithSearchResults[] = [
-            {
-                id: testIssueIds[0], issue_text: 'Issue 101 PDF Test', source_type: testSourceType,
-                status: 'new', source_id: null, source_url: null, sentiment: null, issue_type: null, tags: null, priority_score: null, extracted_at: null,
-                searchQueries: ['pdf query'],
-                searchResults: [
-                    { link: 'http://normal.com/page', title: 'Normal Page', snippet: '...' }, // Keep
-                    { link: 'http://example.com/document.pdf', title: 'PDF Document', snippet: '...' }, // Filter
-                    { link: 'http://another.com/file.PDF', title: 'Uppercase PDF', snippet: '...' }, // Filter (case insensitive)
-                    { link: 'http://end.com/notpdf', title: 'Not PDF', snippet: '...' }, // Keep
-                ]
-            },
+            createMockIssue(testIssueIds[0], 'Issue 101 PDF Test', [
+                { link: 'http://normal.com/page', title: 'Normal Page', snippet: '...' }, // Keep
+                { link: 'http://example.com/document.pdf', title: 'PDF Document', snippet: '...' }, // Filter
+                { link: 'http://another.com/file.PDF', title: 'Uppercase PDF', snippet: '...' }, // Filter (case insensitive)
+                { link: 'http://end.com/notpdf', title: 'Not PDF', snippet: '...' }, // Keep
+            ])
         ];
 
         // Mock DB check to assume no references exist for simplicity

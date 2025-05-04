@@ -2,7 +2,11 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fetchPendingIssues } from './02-step-01-fetch-issues'; // Import the function to test
 import { getSupabaseClient } from '../lib/supabaseClient'; // Need direct access for setup/teardown
-import { DiscoveredIssue } from '../../types/supabase';
+import type { Database } from '../../types/supabase'; // Import Database type
+
+// Define types locally
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
+type DiscoveredIssueInsert = Database['public']['Tables']['discovered_issues']['Insert'];
 
 // Load environment variables from .env.test at the project root
 dotenv.config({ path: path.resolve(__dirname, '../../../.env.test') });
@@ -17,7 +21,7 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
 const supabase = getSupabaseClient(); // Initialize client for test setup
 
 // Helper function to insert test data
-async function insertTestData(issues: Partial<DiscoveredIssue>[]) {
+async function insertTestData(issues: DiscoveredIssueInsert[]) {
     const { error } = await supabase.from('discovered_issues').insert(issues);
     if (error) {
         console.error('Error inserting test data:', error);
@@ -47,7 +51,7 @@ describe('02-step-01-fetch-issues Integration Tests', () => {
         await deleteTestDataBySourceType(testSourceType);
 
         // Add the unique source_type field for targeted cleanup
-        const issuesToInsert: Partial<DiscoveredIssue>[] = [
+        const issuesToInsert: DiscoveredIssueInsert[] = [
             { issue_text: 'Issue Text 1', status: 'new', source_type: testSourceType },
             { issue_text: 'Issue Text 2', status: 'new', source_type: testSourceType },
             { issue_text: 'Issue Text 3', status: 'ref_analysis_done', source_type: testSourceType },
@@ -114,7 +118,7 @@ describe('02-step-01-fetch-issues Integration Tests', () => {
         expect(testIssues.length).toBeLessThanOrEqual(expectedMaxCount);
 
         // Verify that any test issues that WERE fetched have the correct properties
-        testIssues.forEach(issue => {
+        testIssues.forEach((issue: DiscoveredIssue) => {
             expect(issue.status).toBe('new');
             expect(issue.source_type).toBe(testSourceType);
             expect(issue).toHaveProperty('id');
