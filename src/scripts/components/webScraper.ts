@@ -13,9 +13,9 @@ const axiosConfig = {
 };
 
 /**
- * Fetches the HTML content of a URL and parses its main textual content.
+ * Fetches the HTML content of a URL and parses its main textual content after cleaning.
  * @param url The URL to scrape.
- * @returns Promise resolving to the extracted text content, or null if an error occurs.
+ * @returns Promise resolving to the cleaned text content, or null if an error occurs.
  */
 export async function fetchAndParseContent(url: string): Promise<string | null> {
     try {
@@ -23,26 +23,45 @@ export async function fetchAndParseContent(url: string): Promise<string | null> 
         const html = response.data;
         const $ = cheerio.load(html);
 
-        // Remove script, style, nav, header, footer elements to reduce noise
-        $('script, style, noscript, nav, header, footer, aside, form').remove();
+        // --- Start Enhanced Cleaning ---
+
+        // 1. Remove unwanted tags and their content
+        const tagsToRemove = 'script, style, noscript, svg, iframe, header, footer, nav, aside, form, canvas, audio, video, meta, link';
+        $(tagsToRemove).remove();
+
+        // 2. Remove all attributes EXCEPT for a defined keep-list
+        const attributesToKeep = ['href', 'src', 'alt']; // Keep essential attributes
+
+        $(' * ').each((index, element) => {
+            const elementNode = $(element);
+            const attributes = { ...elementNode.attr() }; // Get all attributes as an object
+
+            if (attributes) {
+                Object.keys(attributes).forEach(attrName => {
+                    if (!attributesToKeep.includes(attrName.toLowerCase())) {
+                        elementNode.removeAttr(attrName);
+                    }
+                });
+            }
+        });
+
+        // --- End Enhanced Cleaning ---
 
         // Attempt to find common main content containers first
-        let mainContent = $('article').text() || $('main').text();
+        let mainContentText = $('article').text() || $('main').text();
 
         // If specific containers aren't found or are empty, fall back to body
-        if (!mainContent || mainContent.trim().length < 100) { // Check for minimal length
-            mainContent = $('body').text();
+        if (!mainContentText || mainContentText.trim().length < 50) { // Reduced length check after cleaning
+            mainContentText = $('body').text();
         }
 
-        if (!mainContent) {
-            console.warn(`Could not extract meaningful content from ${url}`);
+        if (!mainContentText) {
+            console.warn(`Could not extract meaningful content from ${url} after cleaning.`);
             return null;
         }
 
-        // Basic cleanup: replace multiple spaces/newlines with single ones
-        const cleanedText = mainContent.replace(/\s\s+/g, ' ').trim();
-
-        // Optional: Add more sophisticated cleaning (remove boilerplate, ads etc.) if needed
+        // 3. Normalize whitespace on the extracted text
+        const cleanedText = mainContentText.replace(/\s\s+/g, ' ').trim();
 
         return cleanedText;
 
