@@ -7,8 +7,31 @@ const PROMPTS_DIR = path.resolve(__dirname, '../../../.llm/contenidos/prompts');
 const PROMPT_FILE_MAP = {
     queryGeneration: path.join(PROMPTS_DIR, 'generador-queries.md'),
     referenceAnalysis: path.join(PROMPTS_DIR, 'investigacion-referencias.md'),
+    issueGrouping: path.join(PROMPTS_DIR, 'agrupador-issues-en-blog-posts.md'),
+    blogPostGeneration: path.join(PROMPTS_DIR, 'redactor-blog-posts.md'),
 };
 const MAX_CONTENT_LENGTH = 15000; // Max characters for web content in prompts
+
+// --- Types for Formatting ---
+interface IssueInputForGrouping {
+    id: number;
+    issue_text: string;
+    tags: string[] | null;
+}
+
+// Type for blog post generation input (can be refined)
+interface BlogPostIssueInput {
+    id: number;
+    issue_text: string;
+    tags: string[] | null;
+    // Add any other issue fields needed by the prompt
+}
+interface BlogPostReferenceInput {
+    url: string;
+    title: string | null;
+    summary: string | null;
+    extracts: string[] | null;
+}
 
 // --- Public Functions ---
 
@@ -83,4 +106,63 @@ export function formatQueryGenerationPrompt(template: string, topic: string): Co
      const separator = template.endsWith('\n') ? '' : '\n';
      const fullPrompt = template + separator + topic;
     return [{ role: "user", parts: [{ text: fullPrompt }] }];
+}
+
+/**
+ * Formats the prompt for issue grouping into blog posts.
+ * @param template The raw prompt template.
+ * @param issues The list of issues (id, text, tags) to include.
+ * @returns Formatted prompt content for the API.
+ */
+export function formatIssueGroupingPrompt(template: string, issues: IssueInputForGrouping[]): Content[] {
+    // Format issues as a simple list or JSON string for the prompt
+    // Using JSON string representation here for simplicity
+    const issuesJsonString = JSON.stringify(
+        issues.map(i => ({ id: i.id, texto: i.issue_text, tags: i.tags })), // Map to Spanish keys if needed by prompt
+        null,
+        2
+    );
+
+    let formattedPrompt = template;
+    const placeholder = '{{ AQUÍ SE INCLUIRÁ EL LOTE DE ISSUES (ID, TEXTO Y TAGS) QUE SE AGREGAREN AL BLOG POST. }}';
+
+    // Replace the placeholder
+    while (formattedPrompt.includes(placeholder)) {
+         formattedPrompt = formattedPrompt.replace(placeholder, issuesJsonString);
+    }
+
+    return [{ role: "user", parts: [{ text: formattedPrompt }] }];
+}
+
+/**
+ * Formats the prompt for generating a full blog post.
+ */
+export function formatBlogPostGenerationPrompt(
+    template: string,
+    title: string,
+    issues: BlogPostIssueInput[],
+    references: BlogPostReferenceInput[]
+): Content[] {
+    // Format issues and references as readable strings for the prompt
+    const issuesString = issues.map(i =>
+        `- Issue ID: ${i.id}\n  Texto: ${i.issue_text}\n  Tags: ${i.tags?.join(', ') || 'N/A'}`
+    ).join('\n\n');
+
+    const refsString = references.map(r =>
+        `- URL: ${r.url}\n  Título: ${r.title || 'N/A'}\n  Resumen: ${r.summary || 'N/A'}\n  Extractos: \n${r.extracts?.map(e => `    - ${e}`).join('\n') || '    N/A'}`
+    ).join('\n\n');
+
+    let formattedPrompt = template;
+    const replacements = {
+        '{{ AQUÍ SE INCLUIRÁ EL TÍTULO DEL BLOG POST. }}': title,
+        '{{ AQUÍ SE INCLUIRÁN LOS ISSUES (ID, TEXTO Y TAGS) QUE SE AGREGAREN AL BLOG POST. }}': issuesString,
+        '{{ AQUÍ SE INCLUIRÁN LAS REFERENCIAS COMPLETAS CON SUS RESUMENES LLM Y EXTRACTOS DISPONIBLES. }}': refsString,
+    };
+
+    for (const placeholder in replacements) {
+        while (formattedPrompt.includes(placeholder)) {
+            formattedPrompt = formattedPrompt.replace(placeholder, replacements[placeholder as keyof typeof replacements]);
+        }
+    }
+    return [{ role: "user", parts: [{ text: formattedPrompt }] }];
 } 

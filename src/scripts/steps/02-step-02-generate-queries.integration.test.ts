@@ -1,7 +1,10 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { generateSearchQueriesForIssues, IssueWithQueries } from './02-step-02-generate-queries';
-import type { DiscoveredIssue } from '../../types/supabase';
+import type { Database } from '../../types/supabase';
+
+// Define types locally
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
 
 // Load environment variables from .env.test at the project root
 // This assumes GOOGLE_GEMINI_API_KEY is defined there for the llmClient
@@ -26,17 +29,24 @@ describe('02-step-02-generate-queries Integration Tests', () => {
             {
                 id: 1,
                 issue_text: 'How to improve baby sleep without sleep training?',
-                // Add other required fields from DiscoveredIssue with dummy values
-                source_type: 'test', source_id: null, source_url: null,
-                sentiment: null, issue_type: null, tags: null,
-                priority_score: null, extracted_at: null, status: 'new'
+                source_type: 'test', source_id: null, source_url: '',
+                sentiment: 0, // Use a number for sentiment
+                issue_type: 'Type A', // Use a string for issue_type
+                tags: null,
+                priority_score: null, // priority_score can be null
+                extracted_at: new Date().toISOString(), // Use a valid date string
+                status: 'new'
             },
             {
                 id: 2,
                 issue_text: 'Sudden bottle refusal breastfed baby',
-                source_type: 'test', source_id: null, source_url: null,
-                sentiment: null, issue_type: null, tags: null,
-                priority_score: null, extracted_at: null, status: 'new'
+                source_type: 'test', source_id: null, source_url: '',
+                sentiment: -1, // Use a number for sentiment
+                issue_type: 'Type B', // Use a string for issue_type
+                tags: null,
+                priority_score: null,
+                extracted_at: new Date().toISOString(),
+                status: 'new'
             },
         ];
 
@@ -59,17 +69,25 @@ describe('02-step-02-generate-queries Integration Tests', () => {
             {
                 id: 1,
                 issue_text: '', // Empty issue text
-                source_type: 'test', source_id: null, source_url: null,
-                sentiment: null, issue_type: null, tags: null,
-                priority_score: null, extracted_at: null, status: 'new'
+                source_type: 'test', source_id: null, source_url: '',
+                sentiment: null, // Sentiment can be null
+                issue_type: null, // issue_type can be null
+                tags: null,
+                priority_score: null,
+                extracted_at: new Date().toISOString(),
+                status: 'new'
             },
             {
                 id: 2,
-                // @ts-ignore - Simulate null issue text
+                // @ts-ignore - Simulate null issue text, still provide other required fields
                 issue_text: null,
-                source_type: 'test', source_id: null, source_url: null,
-                sentiment: null, issue_type: null, tags: null,
-                priority_score: null, extracted_at: null, status: 'new'
+                source_type: 'test', source_id: null, source_url: '',
+                sentiment: null, // Sentiment can be null
+                issue_type: null, // issue_type can be null
+                tags: null,
+                priority_score: null,
+                extracted_at: new Date().toISOString(),
+                status: 'new'
             },
         ];
 

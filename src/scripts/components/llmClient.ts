@@ -2,10 +2,13 @@ import axios from 'axios';
 import {
     formatReferenceAnalysisPrompt,
     formatQueryGenerationPrompt,
+    formatIssueGroupingPrompt,
+    formatBlogPostGenerationPrompt,
     loadPromptTemplate
 } from '../lib/promptUtils';
 import { retryAsyncOperation } from '../lib/retryUtils';
 import { Content } from '@google/generative-ai';
+import { z } from 'zod';
 
 // --- Interfaces --- //
 
@@ -18,6 +21,36 @@ export interface LLMAnalysisResult {
 
 export interface LLMQueryGenerationResult {
     queries: string[];
+}
+
+// Schema for Issue Grouping (matches expected JSON output from prompt)
+const PostGroupSchema = z.object({
+    titulo: z.string().min(1),
+    slug: z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    issuesIds: z.array(z.number().int().positive()).min(1),
+});
+export const PostGroupArraySchema = z.array(PostGroupSchema);
+export type PostGroupData = z.infer<typeof PostGroupSchema>;
+
+// Input type for the grouping function
+interface IssueInputForGrouping {
+    id: number;
+    issue_text: string;
+    tags: string[] | null;
+}
+
+// Input types for blog post generation
+interface BlogPostIssueInput {
+    id: number;
+    issue_text: string;
+    tags: string[] | null;
+    // Add any other issue fields needed by the prompt
+}
+interface BlogPostReferenceInput {
+    url: string;
+    title: string | null;
+    summary: string | null;
+    extracts: string[] | null;
 }
 
 // --- Helper Functions --- //
@@ -52,33 +85,40 @@ function parseAndValidateJsonResponse<T>(
     }
 }
 
-async function callGeminiAPI(promptContents: Content[], contextForLogging: string): Promise<string | null> {
+async function callGeminiAPI(
+    promptContents: Content[],
+    contextForLogging: string,
+    expectJson: boolean = true // Default to expecting JSON
+): Promise<string | null> {
     const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
     if (!apiKey) {
         throw new Error('GOOGLE_GEMINI_API_KEY environment variable is not set.');
     }
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-    
+
+    const generationConfig: { responseMimeType?: string } = {};
+    if (expectJson) {
+        generationConfig.responseMimeType = "application/json";
+    }
+
     const requestBody = {
         contents: promptContents,
-        generationConfig: {
-            responseMimeType: "application/json",
-        },
+        generationConfig: generationConfig, // Use potentially modified config
     };
 
-    console.log(`  -> LLM: ${contextForLogging}`);
+    console.log(`  -> LLM: ${contextForLogging} (Expecting ${expectJson ? 'JSON' : 'Text'})`);
 
     try {
         const response = await retryAsyncOperation(
             async () => {
                 return await axios.post(apiUrl, requestBody, {
                     headers: { 'Content-Type': 'application/json' },
-                    timeout: 60000
+                    timeout: 90000 // Increased timeout for potentially longer blog post generation
                 });
             },
             {
                 retries: 3,
-                initialDelayMs: 1500,
+                initialDelayMs: 2000, // Increased initial delay
                 backoffFactor: 2,
                 onRetry: (error, attempt) => {
                     let status = 'unknown';
@@ -173,4 +213,62 @@ export async function analyzeContent(
         console.warn(`  <- LLM: Failed to get valid analysis for URL: ${url}`);
     }
     return parsedResult;
+}
+
+export async function groupIssuesWithLLM(
+    issues: IssueInputForGrouping[]
+): Promise<PostGroupData[]> {
+    const promptTemplate = await loadPromptTemplate('issueGrouping');
+    if (!promptTemplate) return [];
+
+    const promptContents = formatIssueGroupingPrompt(promptTemplate, issues);
+    const context = `Grouping ${issues.length} issues into blog posts`;
+    const rawResponse = await callGeminiAPI(promptContents, context);
+
+    // Use a specialized parse function or adapt the generic one
+    if (!rawResponse) {
+        console.error(`LLM returned empty response for ${context}`);
+        return [];
+    }
+    const cleanedJsonString = rawResponse.trim().replace(/^```json\n?|\n?```$/g, '');
+
+    try {
+        const parsedJson = JSON.parse(cleanedJsonString);
+        const validationResult = PostGroupArraySchema.safeParse(parsedJson);
+        if (validationResult.success) {
+            console.log(`  <- LLM: Grouping successful. Found ${validationResult.data.length} groups.`);
+            return validationResult.data;
+        } else {
+            console.error(`LLM response validation failed for ${context}:`, validationResult.error.errors);
+            // console.log("  Raw response text was:", rawResponse); // Optional: log raw for debug
+            return [];
+        }
+    } catch (parseError: any) {
+        console.error(`Failed to parse LLM JSON response for ${context}:`, parseError.message);
+        console.error("  Raw response text was:", rawResponse);
+        return [];
+    }
+}
+
+export async function generateBlogPostWithLLM(
+    title: string,
+    issues: BlogPostIssueInput[],
+    references: BlogPostReferenceInput[]
+): Promise<string | null> {
+    const promptTemplate = await loadPromptTemplate('blogPostGeneration');
+    if (!promptTemplate) return null;
+
+    const promptContents = formatBlogPostGenerationPrompt(promptTemplate, title, issues, references);
+    const context = `Generating blog post content for title: "${title.substring(0, 50)}..."`;
+
+    // Call API expecting text response
+    const rawResponse = await callGeminiAPI(promptContents, context, false);
+
+    if (rawResponse) {
+        console.log(`  <- LLM: Blog post generation successful for "${title.substring(0, 50)}..."`);
+    } else {
+         console.error(`  <- LLM: Blog post generation failed for "${title.substring(0, 50)}..."`);
+    }
+
+    return rawResponse;
 } 

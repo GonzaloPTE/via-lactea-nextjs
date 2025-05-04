@@ -1,9 +1,10 @@
 import { getSupabaseClient } from '../lib/supabaseClient';
-import type { DiscoveredIssue } from '../../types/supabase'; // Import type for select
+import type { Database } from '../../types/supabase'; // Import Database type
 
-// Define allowed status values for the 'status' column in discovered_issues
-// These should match the actual meaningful values used in your table/workflows
-type DiscoveredIssueStatus = 'new' | 'ref_analysis_processing' | 'ref_analysis_done' | 'ref_analysis_error' | string; // Add other statuses like 'theme_assigned' etc. if needed
+// Define types locally
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
+type DiscoveredIssueStatus = Database['public']['Tables']['discovered_issues']['Row']['status']; // More specific
+// type DiscoveredIssueStatus = 'new' | 'ref_analysis_processing' | 'ref_analysis_done' | 'ref_analysis_error' | string; // Less strict
 
 /**
  * Updates the status column for a list of discovered issues.

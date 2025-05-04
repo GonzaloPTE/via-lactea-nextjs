@@ -10,8 +10,11 @@ import { analyzeScrapedContent } from './steps/02-step-06-analyze-content';
 import { saveRelevantReferences } from './steps/02-step-07-save-references';
 import { updateIssueStatuses } from './steps/02-step-08-update-status';
 // Import necessary types
-import type { DiscoveredIssue } from '../types/supabase';
+import type { Database } from '../types/supabase'; // Import Database type
 import type { IssuesWithFilteredUrls, UrlToScrape } from './steps/02-step-04-filter-results';
+
+// Define DiscoveredIssue locally
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
 
 // Load .env.local for standalone execution
 dotenv.config({ path: '../../.env.local' });

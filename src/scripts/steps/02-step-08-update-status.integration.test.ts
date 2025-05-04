@@ -2,7 +2,11 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { updateIssueStatuses } from './02-step-08-update-status';
 import { getSupabaseClient } from '../lib/supabaseClient';
-import type { DiscoveredIssue } from '../../types/supabase';
+import type { Database } from '../../types/supabase';
+
+// Define types locally
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
+type DiscoveredIssueInsert = Database['public']['Tables']['discovered_issues']['Insert'];
 
 // Load environment variables from .env.test
 dotenv.config({ path: path.resolve(__dirname, '../../../.env.test') });
@@ -17,7 +21,7 @@ let testIssueIds: number[] = [];
 
 async function setupTestData() {
     await cleanupTestData(); // Start clean
-    const issuesToInsert: Partial<DiscoveredIssue>[] = [
+    const issuesToInsert: DiscoveredIssueInsert[] = [
         { issue_text: 'Issue 301 text', status: 'new', source_type: testSourceType },
         { issue_text: 'Issue 302 text', status: 'new', source_type: testSourceType },
         { issue_text: 'Issue 303 text', status: 'ref_analysis_done', source_type: testSourceType }, // Different initial status

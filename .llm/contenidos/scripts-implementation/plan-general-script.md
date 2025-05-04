@@ -76,9 +76,9 @@ Este script automatizará el proceso de encontrar y analizar referencias web par
         *   (Opcional) Marcar el `issue` como procesado en `discovered_issues`.
     *   Implementar logging detallado del progreso y errores.
 
-**Workflow 2: Elicitación de Temas (Script Futuro: `01-workflow-elicitacion-temas.tsx`)**
+**Fase 3: Agrupación de temas y Redacción de Blog Posts (Script `03-workflow-agrupacion-redaccion.tsx`)**
 
-*   (Plan por definir, similar al Workflow 1 de n8n: Monitorizar fuentes -> LLM para extraer -> Guardar en `discovered_issues`).
+*   (Plan por definir).
 
 **Consideraciones Adicionales:**
 
