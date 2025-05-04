@@ -125,4 +125,34 @@ describe('02-step-04-filter-results Integration Tests', () => {
          const result = await filterAndPrepareUrls([]);
          expect(result).toEqual({});
      });
+
+    it('should filter out PDF URLs', async () => {
+        const mockInput: IssueWithSearchResults[] = [
+            {
+                id: testIssueIds[0], issue_text: 'Issue 101 PDF Test', source_type: testSourceType,
+                status: 'new', source_id: null, source_url: null, sentiment: null, issue_type: null, tags: null, priority_score: null, extracted_at: null,
+                searchQueries: ['pdf query'],
+                searchResults: [
+                    { link: 'http://normal.com/page', title: 'Normal Page', snippet: '...' }, // Keep
+                    { link: 'http://example.com/document.pdf', title: 'PDF Document', snippet: '...' }, // Filter
+                    { link: 'http://another.com/file.PDF', title: 'Uppercase PDF', snippet: '...' }, // Filter (case insensitive)
+                    { link: 'http://end.com/notpdf', title: 'Not PDF', snippet: '...' }, // Keep
+                ]
+            },
+        ];
+
+        // Mock DB check to assume no references exist for simplicity
+        const mockCheck = jest.spyOn(require('../lib/supabaseClient'), 'checkReferenceExistsForIssue');
+        mockCheck.mockResolvedValue(false);
+
+        const result = await filterAndPrepareUrls(mockInput);
+
+        expect(result[testIssueIds[0]]).toBeDefined();
+        const urls = result[testIssueIds[0]];
+        expect(urls).toHaveLength(2); // Only normal.com and end.com should remain
+        expect(urls.map(u => u.url)).toEqual(['http://normal.com/page', 'http://end.com/notpdf']);
+        expect(urls.every(u => !u.url.toLowerCase().endsWith('.pdf'))).toBe(true);
+
+        mockCheck.mockRestore(); // Clean up the mock
+    });
 }); 
