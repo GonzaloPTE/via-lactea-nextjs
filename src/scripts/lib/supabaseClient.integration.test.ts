@@ -1,6 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import {
-    Issue,
+    // Issue, // Removed import - define locally if needed
     ReferenceData,
     getPendingIssues,
     checkReferenceExistsForIssue,
@@ -11,10 +11,14 @@ import {
 const TEST_ISSUE_TEXT_PREFIX = '__TEST_ISSUE__';
 const MAX_TEST_WAIT_TIME = 20000; // 20 seconds
 
-// Re-define interface locally for clarity in test file, matching the updated one
-interface TestReferenceData {
+// Define needed types locally
+interface Issue { // Simple local definition
+    id: number;
+    issue_text: string;
+}
+interface TestReferenceData { // Use local interface
     url: string;
-    discovered_issue_id: string | number; // Use the updated field name
+    discovered_issue_id: number; // Corrected type to number
     is_relevant: boolean;
     extracts: string[];
     tags: string[];
