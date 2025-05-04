@@ -2,7 +2,7 @@
 
 Una vez que los workflows 1 y 2 estén operativos y se haya generado una base de contenido en el blog, se puede abordar la reutilización y otras mejoras.
 
-**Workflow 5 (Esbozo): Reutilización para Guías/Módulos**
+**Workflow 6 (Esbozo): Reutilización para Guías/Módulos**
 
 *   **Objetivo:** Analizar posts de blog existentes y proponer estructuras para contenido más largo (guías, módulos).
 *   **Disparador:** `Schedule Trigger` (ej. mensual).

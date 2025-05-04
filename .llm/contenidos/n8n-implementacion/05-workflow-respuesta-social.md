@@ -1,4 +1,4 @@
-# Workflow 4: Generación de Borrador de Respuesta Social
+# Workflow 5: Generación de Borrador de Respuesta Social
 
 **Objetivo:** Generar un borrador de respuesta para un foro/red social, basado en un blog post publicado, para revisión y publicación manual.
 
