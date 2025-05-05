@@ -96,7 +96,7 @@ export default function Pagination({
               >
                 {page}
               </Link>
-            </li>
+          </li>
           )
         ))}
 

@@ -1,12 +1,10 @@
 import { Fragment } from "react";
-import { Suspense } from "react";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
 // Updated imports: Removed Carousel, BlogCard4. Added BlogCard3, Pagination.
 import { BlogCard3 } from "components/reuseable/blog-cards"; 
 import PaginationClientWrapper from "components/reuseable/PaginationClientWrapper"; // Use the wrapper again
 import BlogSidebar from "components/reuseable/BlogSidebar"; 
-import Link from 'next/link'; // Import Link component
 import BlogHero from "components/blocks/hero/BlogHero"; // Import BlogHero
 // Utils
 import { format } from 'date-fns'; 
@@ -17,6 +15,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { Database } from '../../types/supabase'; 
 import { SupabaseClient } from '@supabase/supabase-js';
+import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
 
 // --- Define IBlogPost (restore or import) ---
 export interface IBlogPost {
@@ -30,23 +29,6 @@ export interface IBlogPost {
   created_at: string; 
   published_at: string | null | undefined; 
 }
-
-// --- Define BlogPostCard (restore or import) ---
-const BlogPostCard = ({ post }: { post: IBlogPost }) => (
-  <div className="border rounded p-4 mb-4 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
-    <h2 className="text-xl font-semibold mb-2 text-primary hover:text-primary-dark">
-      <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-    </h2>
-    {post.meta_description && <p className="text-gray-700 mb-3">{post.meta_description}</p>}
-    <div className="flex justify-between items-center text-sm text-gray-500">
-      <span>
-        Publicado: {post.published_at 
-          ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: es }) 
-          : 'Pendiente'} { /* Or use created_at if needed */}
-      </span>
-    </div>
-  </div>
-);
 
 // --- Define Page Props ---
 interface BlogPageProps {
@@ -114,15 +96,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) { // Mak
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      cookies: {
-        get(name: string): string | undefined {
-          return cookieStore.get(name)?.value;
+      cookies: { 
+        getAll() {
+          return cookieStore.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: '', ...options });
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
         }
       },
     }
@@ -197,14 +176,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) { // Mak
               </aside>
             </div> {/* End row */}
           </div> {/* End container */}
-        </section>
+            </section>
 
         {/* ========== Optional: Add CTA or other sections if needed ========== */}
-        {/* 
-            <section className="wrapper bg-soft-primary pb-15">
-              <ResourcesSubscriptionCTA />
-            </section>
-        */}
+        <ViaLacteaFooter />
 
       </main>
     </Fragment>
