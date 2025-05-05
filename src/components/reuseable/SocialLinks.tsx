@@ -4,7 +4,7 @@ type SocialLinksProps = { className?: string };
 
 const links = [
   { id: 1, icon: "uil uil-instagram", url: "https://www.instagram.com/vialacteasuenoylactancia/" },
-  { id: 2, icon: "uil uil-facebook-f", url: "https://facebook.com/vialactea.suenoylactancia/" }
+  { id: 2, icon: "uil uil-facebook-f", url: "https://www.facebook.com/profile.php?id=61575517253913" }
 ];
 
 export default function SocialLinks({ className = "nav social social-white mt-4" }: SocialLinksProps) {

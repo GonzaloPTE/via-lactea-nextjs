@@ -1,53 +1,50 @@
 const popularPosts = [
   {
     id: 1,
-    comment: 3,
-    date: '26 Mar 2022',
-    image: '/img/photos/a1.jpg',
-    title: 'Magna Mollis Ultricies'
+    date: '15 May 2024',
+    image: '/img/photos/b4.jpg',
+    title: 'Entendiendo las Regresiones del Sueño'
   },
   {
     id: 2,
-    comment: 6,
-    date: '16 Feb 2022',
-    image: '/img/photos/a2.jpg',
-    title: 'Ornare Nullam Risus'
+    date: '10 May 2024',
+    image: '/img/photos/b5.jpg',
+    title: 'Mitos Comunes sobre la Lactancia Materna'
   },
   {
     id: 3,
-    comment: 5,
-    date: '8 Jan 2022',
-    image: '/img/photos/a3.jpg',
-    title: 'Euismod Nullam Fusce'
+    date: '20 May 2024',
+    image: '/img/photos/b6.jpg',
+    title: 'La Importancia del Tummy Time'
   }
 ];
 
 const categories = [
-  { id: 1, post: 21, title: 'Teamwork', url: '#' },
-  { id: 2, post: 19, title: 'Ideas', url: '#' },
-  { id: 3, post: 16, title: 'Workspace', url: '#' },
-  { id: 4, post: 7, title: 'Coding', url: '#' },
-  { id: 5, post: 12, title: 'Meeting', url: '#' },
-  { id: 6, post: 14, title: 'Business Tips', url: '#' }
+  { id: 1, post: 15, title: 'Lactancia Materna', url: '#' },
+  { id: 2, post: 12, title: 'Sueño Infantil', url: '#' },
+  { id: 3, post: 8, title: 'Desarrollo del Bebé', url: '#' },
+  { id: 4, post: 5, title: 'Alimentación Complementaria', url: '#' },
+  { id: 5, post: 9, title: 'Crianza Respetuosa', url: '#' },
+  { id: 6, post: 6, title: 'Consejos para Padres', url: '#' }
 ];
 
 const tags = [
-  { id: 1, title: 'Still Life', url: '#' },
-  { id: 2, title: 'Urban', url: '#' },
-  { id: 3, title: 'Nature', url: '#' },
-  { id: 4, title: 'Landscape', url: '#' },
-  { id: 5, title: 'Macro', url: '#' },
-  { id: 6, title: 'Fun', url: '#' },
-  { id: 7, title: 'Workshop', url: '#' },
-  { id: 8, title: 'Photography', url: '#' }
+  { id: 1, title: 'Recién Nacido', url: '#' },
+  { id: 2, title: 'Banco de Leche', url: '#' },
+  { id: 3, title: 'Colecho', url: '#' },
+  { id: 4, title: 'Porteo', url: '#' },
+  { id: 5, title: 'BLW', url: '#' },
+  { id: 6, title: 'Hitos del Desarrollo', url: '#' },
+  { id: 7, title: 'Salud Infantil', url: '#' },
+  { id: 8, title: 'Bienestar Familiar', url: '#' }
 ];
 
 const archieve = [
-  { id: 1, title: 'February 2019', url: '#' },
-  { id: 2, title: 'January 2019', url: '#' },
-  { id: 3, title: 'December 2018', url: '#' },
-  { id: 4, title: 'November 2018', url: '#' },
-  { id: 5, title: 'October 2018', url: '#' }
+  { id: 1, title: 'Mayo 2024', url: '#' },
+  { id: 2, title: 'Abril 2024', url: '#' },
+  { id: 3, title: 'Marzo 2024', url: '#' },
+  { id: 4, title: 'Febrero 2024', url: '#' },
+  { id: 5, title: 'Enero 2024', url: '#' }
 ];
 
 export default { popularPosts, tags, archieve, categories };

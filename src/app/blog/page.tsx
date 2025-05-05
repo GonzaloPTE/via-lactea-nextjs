@@ -1,0 +1,212 @@
+import { Fragment } from "react";
+import { Suspense } from "react";
+import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
+import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
+// Updated imports: Removed Carousel, BlogCard4. Added BlogCard3, Pagination.
+import { BlogCard3 } from "components/reuseable/blog-cards"; 
+import PaginationClientWrapper from "components/reuseable/PaginationClientWrapper"; // Use the wrapper again
+import BlogSidebar from "components/reuseable/BlogSidebar"; 
+import Link from 'next/link'; // Import Link component
+import BlogHero from "components/blocks/hero/BlogHero"; // Import BlogHero
+// Utils
+import { format } from 'date-fns'; 
+import { es } from 'date-fns/locale'; 
+
+// Supabase
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { Database } from '../../types/supabase'; 
+import { SupabaseClient } from '@supabase/supabase-js';
+
+// --- Define IBlogPost (restore or import) ---
+export interface IBlogPost {
+  id: number;
+  title: string;
+  slug: string;
+  issue_ids: number[];
+  content?: string; 
+  meta_description: string | null | undefined; 
+  status: string; 
+  created_at: string; 
+  published_at: string | null | undefined; 
+}
+
+// --- Define BlogPostCard (restore or import) ---
+const BlogPostCard = ({ post }: { post: IBlogPost }) => (
+  <div className="border rounded p-4 mb-4 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white">
+    <h2 className="text-xl font-semibold mb-2 text-primary hover:text-primary-dark">
+      <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+    </h2>
+    {post.meta_description && <p className="text-gray-700 mb-3">{post.meta_description}</p>}
+    <div className="flex justify-between items-center text-sm text-gray-500">
+      <span>
+        Publicado: {post.published_at 
+          ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: es }) 
+          : 'Pendiente'} { /* Or use created_at if needed */}
+      </span>
+    </div>
+  </div>
+);
+
+// --- Define Page Props ---
+interface BlogPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+// --- Restore Helper Function for Data Fetching ---
+async function getBlogData(
+  supabase: SupabaseClient<Database>,
+  searchParams: BlogPageProps['searchParams']
+) {
+  // Read params inside the function - this is where the error occurred before
+  const awaitedSearchParams = await searchParams;
+  const sortParam = awaitedSearchParams['ordenar']; 
+  const pageParam = awaitedSearchParams['pagina'];  
+  const sortOption = sortParam === 'oldest' ? 'oldest' : 'newest';
+  const currentPage = parseInt(typeof pageParam === 'string' ? pageParam : '1', 10);
+  const pageSize = 6;
+
+  // Fetch count
+  const { count: totalCount, error: countError } = await supabase
+    .from('blog_posts')
+    .select('', { count: 'exact', head: true })
+    // .eq('status', 'published'); // Temporarily commented out to show all posts
+
+  if (countError) {
+    console.error('Error fetching post count:', countError);
+  }
+
+  const totalPages = Math.ceil((totalCount || 0) / pageSize);
+
+  const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages || 1));
+  const offset = (validCurrentPage - 1) * pageSize;
+
+  // Fetch posts
+  const query = supabase
+    .from('blog_posts')
+    .select('id, title, slug, meta_description, created_at, published_at, issue_ids, status') // Restore full select
+    // .eq('status', 'published'); // Keep commented out for now
+    .range(offset, offset + pageSize - 1); // Restore range
+
+  // Restore ordering
+  if (sortOption === 'oldest') {
+    query.order('published_at', { ascending: true, nullsFirst: false }).order('created_at', { ascending: true });
+  } else {
+    query.order('published_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
+  }
+
+  const { data: posts, error } = await query;
+
+  if (error) {
+    console.error('Error fetching posts:', error);
+  }
+
+  const blogPosts: IBlogPost[] = posts || []; // Remove cast
+
+  return { blogPosts, totalPages, currentPage: validCurrentPage };
+}
+
+// --- Main Page Component (Server Component) ---
+export default async function BlogPage({ searchParams }: BlogPageProps) { // Make async again, accept searchParams
+  // Setup server client
+  const cookieStore = await cookies()
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string): string | undefined {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options });
+        }
+      },
+    }
+  )
+
+  // Fetch data using the helper
+  const { blogPosts, totalPages, currentPage } = await getBlogData(supabase, searchParams);
+
+  return (
+    <Fragment>
+      {/* ========== Header ========== */}
+      <header className="wrapper bg-soft-transparent"> { /* Match ResourcesHero? */}
+        <ViaLacteaNavbar button={<CalendlyButton />} whiteBackground={true} />
+      </header>
+
+      <main className="content-wrapper">
+        {/* ========== Blog Hero Section ========== */}
+        <BlogHero />
+
+        {/* ========== Blog Posts Section with Sidebar ========== */}
+        <section className="wrapper bg-light"> {/* Or bg-soft-primary like resources? */} 
+          <div className="container py-10 py-md-12">
+            {/* Render content directly */}
+            <div className="row gx-lg-8 gx-xl-12">
+              {/* Main Content Column */}
+              <div className="col-lg-8">
+                {blogPosts.length > 0 ? (
+                  <div className="position-relative">
+                    <div className="blog grid grid-view">
+                      <div className="row isotope gx-md-8 gy-8 mb-8">
+                        {blogPosts.map((item) => {
+                          // Map IBlogPost to BlogCard3 props
+                          const cardProps = {
+                            id: item.id,
+                            link: `/blog/${item.slug}`,
+                            image: '/img/photos/b4.jpg', // Use default image
+                            title: item.title,
+                            category: "Consejos", // Use default category
+                            description: item.meta_description || '', // Use meta_description
+                            date: item.published_at 
+                              ? format(new Date(item.published_at), 'dd MMM yyyy', { locale: es })
+                              : format(new Date(item.created_at), 'dd MMM yyyy', { locale: es })
+                          };
+                          return (
+                            <BlogCard3 {...cardProps} key={item.id} />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Message if no posts found
+                  <div className="text-center py-10">
+                    <p className="text-lg text-gray-600">No hay artículos disponibles por el momento.</p>
+                    <p className="text-gray-500">Vuelve pronto para encontrar nuevo contenido.</p>
+                  </div>
+                )}
+
+                {/* Pagination - Needs props eventually for real data */}
+                {blogPosts.length > 0 && (
+                  <PaginationClientWrapper 
+                    className="justify-content-start" 
+                    altStyle 
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                  />
+                )}
+              </div>
+              {/* Sidebar Column */}
+              <aside className="col-lg-4 sidebar mt-8 mt-lg-0">
+                <BlogSidebar />
+              </aside>
+            </div> {/* End row */}
+          </div> {/* End container */}
+        </section>
+
+        {/* ========== Optional: Add CTA or other sections if needed ========== */}
+        {/* 
+            <section className="wrapper bg-soft-primary pb-15">
+              <ResourcesSubscriptionCTA />
+            </section>
+        */}
+
+      </main>
+    </Fragment>
+  );
+} 
