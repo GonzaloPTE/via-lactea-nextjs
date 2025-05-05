@@ -16,15 +16,14 @@ export default function BlogSidebar({ thumbnail }: BlogSidebarProps) {
   return (
     <Fragment>
       <div className="widget">
-        <h4 className="widget-title mb-3">About Us</h4>
+        <h4 className="widget-title mb-3">Sobre Via Láctea</h4>
         {thumbnail && (
           <figure className="rounded mb-4">
             <img className="img-fluid" src={thumbnail} alt="" />
           </figure>
         )}
         <p>
-          Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum. Nulla vitae elit
-          libero, a pharetra augue. Donec id elit non mi porta gravida at eget metus.
+          Somos expertas en lactancia y sueño infantil. Te acompañamos con información y apoyo práctico para que disfrutes la crianza de tu bebé.
         </p>
 
         <SocialLinks className="nav social" />
@@ -32,7 +31,7 @@ export default function BlogSidebar({ thumbnail }: BlogSidebarProps) {
 
       {/* ========== popular posts section ========== */}
       <div className="widget">
-        <h4 className="widget-title mb-3">Popular Posts</h4>
+        <h4 className="widget-title mb-3">Artículos Populares</h4>
 
         <ul className="image-list">
           {data.popularPosts.map(({ id, title, image, comment, date }) => (
@@ -49,12 +48,6 @@ export default function BlogSidebar({ thumbnail }: BlogSidebarProps) {
                     <i className="uil uil-calendar-alt" />
                     <span>{dayjs(date).format("DD MMM YYYY")}</span>
                   </li>
-
-                  <li className="post-comments">
-                    <Link href="#">
-                      <i className="uil uil-comment" /> {comment}
-                    </Link>
-                  </li>
                 </ul>
               </div>
             </li>
@@ -64,7 +57,7 @@ export default function BlogSidebar({ thumbnail }: BlogSidebarProps) {
 
       {/* ========== categories section ========== */}
       <div className="widget">
-        <h4 className="widget-title mb-3">Categories</h4>
+        <h4 className="widget-title mb-3">Categorías</h4>
 
         <ul className="unordered-list bullet-primary text-reset">
           {data.categories.map(({ id, title, post, url }) => (
@@ -77,7 +70,7 @@ export default function BlogSidebar({ thumbnail }: BlogSidebarProps) {
 
       {/* ========== tags section ========== */}
       <div className="widget">
-        <h4 className="widget-title mb-3">Tags</h4>
+        <h4 className="widget-title mb-3">Etiquetas</h4>
 
         <ul className="list-unstyled tag-list">
           {data.tags.map(({ id, title, url }) => (
@@ -90,7 +83,7 @@ export default function BlogSidebar({ thumbnail }: BlogSidebarProps) {
 
       {/* ========== archieve section ========== */}
       <div className="widget">
-        <h4 className="widget-title mb-3">Archive</h4>
+        <h4 className="widget-title mb-3">Archivo</h4>
 
         <ul className="unordered-list bullet-primary text-reset">
           {data.archieve.map(({ id, title, url }) => (

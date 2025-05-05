@@ -39,5 +39,12 @@ TO service_role
 USING (true)
 WITH CHECK (true);
 
+CREATE POLICY "anon role can read"
+ON "public"."blog_posts"
+AS PERMISSIVE
+FOR SELECT
+TO anon
+USING (true);
+
 -- Enable RLS
 ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY; 
