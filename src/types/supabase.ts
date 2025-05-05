@@ -16,6 +16,7 @@ export type Database = {
           id: number
           issue_ids: number[]
           meta_description: string | null
+          published_at: string | null
           slug: string
           status: string
           title: string
@@ -26,6 +27,7 @@ export type Database = {
           id?: number
           issue_ids: number[]
           meta_description?: string | null
+          published_at?: string | null
           slug: string
           status?: string
           title: string
@@ -36,6 +38,7 @@ export type Database = {
           id?: number
           issue_ids?: number[]
           meta_description?: string | null
+          published_at?: string | null
           slug?: string
           status?: string
           title?: string

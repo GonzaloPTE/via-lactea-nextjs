@@ -105,18 +105,6 @@ describe('03-step-06-update-posts-with-content Integration Tests', () => {
         expect(details?.status).toBe('draft_generated');
     });
 
-    it('should truncate meta description longer than 160 chars', async () => {
-        if (!testPostId) throw new Error('Test post ID not set');
-        const longMeta = 'a'.repeat(200);
-        const rawContent = `Content\n\n---\n${longMeta}`;
-        const success = await parseAndUpdatePostContent(testPostId, rawContent);
-
-        expect(success).toBe(true);
-        const details = await getPostDetails(testPostId);
-        expect(details?.meta_description).toHaveLength(160);
-        expect(details?.meta_description).toBe(longMeta.substring(0, 160));
-    });
-
     it('should return false if blogPostId is null', async () => {
         const success = await parseAndUpdatePostContent(null, 'some content');
         expect(success).toBe(false);

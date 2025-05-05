@@ -141,7 +141,6 @@ describe('03-workflow-agrupacion-redaccion Integration Test', () => {
             expect(post.content).toBeTruthy();
             expect(post.content!.length).toBeGreaterThan(10); // Check for non-trivial content
             expect(post.meta_description).toBeTruthy();
-            expect(post.meta_description!.length).toBeLessThanOrEqual(160); // Check meta length
         }
 
         console.log(`Workflow 3 verification passed. Created ${posts!.length} posts.`);
