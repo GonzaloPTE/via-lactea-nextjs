@@ -36,12 +36,6 @@ export async function parseAndUpdatePostContent(blogPostId: number | null, rawCo
         // Keep all trimmed rawContent as content, metaDescription remains null
     }
 
-    // Limit meta description length (example: 160 chars)
-    if (metaDescription && metaDescription.length > 160) {
-        console.warn(`    - Meta description exceeds 160 chars. Truncating.`);
-        metaDescription = metaDescription.substring(0, 160);
-    }
-
     // 2. Update Database
     const supabase = getSupabaseClient();
     try {

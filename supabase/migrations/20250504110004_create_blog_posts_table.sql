@@ -8,13 +8,15 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
     content TEXT, -- Contenido Markdown generado por LLM (inicialmente NULL)
     meta_description TEXT, -- Meta descripción para SEO (extraída del contenido generado)
     status TEXT DEFAULT 'draft' NOT NULL, -- ej., draft, published, error
-    created_at TIMESTAMPTZ DEFAULT now() NOT NULL
+    created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+    published_at TIMESTAMPTZ -- Fecha de publicación (inicialmente NULL)
 );
 
 -- Índices
 CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON public.blog_posts (slug);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON public.blog_posts (status);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_created_at ON public.blog_posts (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_published_at ON public.blog_posts (published_at DESC NULLS LAST); -- Índice para ordenar por publicación
 -- Índice GIN para buscar dentro del array issue_ids si es necesario
 CREATE INDEX IF NOT EXISTS idx_blog_posts_issue_ids ON public.blog_posts USING GIN (issue_ids);
 
@@ -26,6 +28,7 @@ COMMENT ON COLUMN public.blog_posts.issue_ids IS 'Array de IDs de la tabla disco
 COMMENT ON COLUMN public.blog_posts.content IS 'El contenido completo en Markdown del post del blog generado por el LLM.';
 COMMENT ON COLUMN public.blog_posts.meta_description IS 'Meta descripción concisa para SEO, extraída de la generación del LLM.';
 COMMENT ON COLUMN public.blog_posts.status IS 'Estado actual del post del blog (draft, published, error).';
+COMMENT ON COLUMN public.blog_posts.published_at IS 'Timestamp de cuando el post fue publicado (NULL si es borrador).';
 
 -- RLS Policies (Example: Service role has full access)
 CREATE POLICY "service role is admin"
