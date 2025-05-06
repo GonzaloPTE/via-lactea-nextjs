@@ -65,18 +65,69 @@ async function setupTestData(count: number = 3) {
 
 async function cleanupTestData() {
     console.log('Cleaning up test data for Workflow 3...');
-    // Delete created blog posts (if slugs were tracked)
-    if (testBlogPostSlugs.length > 0) {
-        await supabase.from('blog_posts').delete().in('slug', testBlogPostSlugs);
-        console.log(`  Deleted ${testBlogPostSlugs.length} blog posts.`);
+
+    // Specific deletion for known problematic slugs from previous test patterns
+    const knownProblematicSlugs = ['workflow-3-test-issues', 'problemas-con-el-workflow-3'];
+    const { data: deletedProblemSlugs, error: problemSlugsDeleteError } = await supabase
+        .from('blog_posts')
+        .delete()
+        .in('slug', knownProblematicSlugs)
+        .select('id');
+    if (problemSlugsDeleteError) {
+        console.error('Cleanup: Error deleting known problematic slugs:', problemSlugsDeleteError.message);
+    } else if (deletedProblemSlugs && deletedProblemSlugs.length > 0) {
+        console.log(`  Deleted ${deletedProblemSlugs.length} known problematic posts by slug.`);
     }
-    // Delete issues (references cascade)
-    await supabase.from('discovered_issues').delete().eq('source_type', testSourceType);
-    console.log('  Deleted test issues.');
+
+    // 1. Find issues marked with the testSourceType
+    const { data: testIssuesForCleanup, error: fetchIssuesError } = await supabase
+        .from('discovered_issues')
+        .select('id')
+        .eq('source_type', testSourceType);
+
+    if (fetchIssuesError) {
+        console.error('Cleanup: Error fetching test issues for post deletion:', fetchIssuesError.message);
+    } else if (testIssuesForCleanup && testIssuesForCleanup.length > 0) {
+        const issueIdsForTestCleanup = testIssuesForCleanup.map(issue => issue.id);
+
+        // 2. Delete blog posts that contain any of these issue IDs
+        const { error: postDeleteByIssueIdsError } = await supabase
+            .from('blog_posts')
+            .delete()
+            .contains('issue_ids', issueIdsForTestCleanup);
+
+        if (postDeleteByIssueIdsError) {
+            console.error('Cleanup: Error deleting blog posts linked to test issues:', postDeleteByIssueIdsError.message);
+        } else {
+            console.log(`  Attempted deletion of blog posts linked to ${issueIdsForTestCleanup.length} test issues.`);
+        }
+    }
+
+    // Delete posts by tracked slugs (as a fallback or for posts not linked via current testSourceType issues)
+    if (testBlogPostSlugs.length > 0) {
+        const { data: deletedPostsBySlug, error: slugDeleteError } = await supabase
+            .from('blog_posts')
+            .delete()
+            .in('slug', testBlogPostSlugs)
+            .select('id'); // Select to confirm how many were deleted
+        if (slugDeleteError) {
+            console.error('Cleanup: Error deleting blog posts by tracked slug:', slugDeleteError.message);
+        } else if (deletedPostsBySlug) {
+            console.log(`  Deleted ${deletedPostsBySlug.length} blog posts by tracked slug.`);
+        }
+    }
+
+    // Delete issues (references should cascade)
+    const { error: issueDeleteError } = await supabase.from('discovered_issues').delete().eq('source_type', testSourceType);
+    if (issueDeleteError) {
+        console.error('Cleanup: Error deleting test issues by source_type:', issueDeleteError.message);
+    } else {
+        console.log('  Deleted test issues by source_type.');
+    }
 
     console.log('Test data cleanup complete.');
-    testIssueIds = [];
-    testBlogPostSlugs = [];
+    testIssueIds = []; // Reset global tracker
+    testBlogPostSlugs = []; // Reset global tracker
 }
 
 // --- Test Suite --- //
@@ -124,9 +175,9 @@ describe('03-workflow-agrupacion-redaccion Integration Test', () => {
         // 2. Check Blog Posts
         // Need a way to identify posts created by this run. Using issue IDs:
         const { data: posts, error: postFetchError } = await supabase
-            .from('blog_posts')
-            .select('id, title, slug, issue_ids, content, meta_description, status')
-            .contains('issue_ids', initialIssueIds); // Fetch posts containing any of the test issue IDs
+             .from('blog_posts')
+             .select('id, title, slug, issue_ids, content, meta_description, status, category, content_html, is_featured, tags') // Added new fields
+             .contains('issue_ids', initialIssueIds); // Fetch posts containing any of the test issue IDs
         expect(postFetchError).toBeNull();
         expect(posts).toBeDefined();
         expect(posts!.length).toBeGreaterThan(0);
@@ -135,12 +186,20 @@ describe('03-workflow-agrupacion-redaccion Integration Test', () => {
         for (const post of posts!) {
             expect(post.title).toBeTruthy();
             expect(post.slug).toBeTruthy();
-            expect(post.issue_ids).toBeInstanceOf(Array);
-            expect(post.issue_ids.length).toBeGreaterThan(0);
             expect(post.status).toBe('draft_generated'); // Final status after content generation
             expect(post.content).toBeTruthy();
             expect(post.content!.length).toBeGreaterThan(10); // Check for non-trivial content
             expect(post.meta_description).toBeTruthy();
+
+            // Check new fields
+            expect(post.issue_ids).toBeInstanceOf(Array);
+            expect(post.issue_ids.length).toBeGreaterThan(0);
+            expect(post.category).toBeDefined(); // Check if category exists (can be null or string)
+            expect(post.content_html).toBeDefined(); // Check if HTML exists (can be null or string)
+            expect(post.is_featured).toBe(false); // Should default to false
+            expect(post.tags).toBeInstanceOf(Array); // Check if tags is an array (can be null or string[])
+            // If source issues have tags, we might expect the post tags array to be non-empty
+            // expect(post.tags?.length).toBeGreaterThan(0); 
         }
 
         console.log(`Workflow 3 verification passed. Created ${posts!.length} posts.`);

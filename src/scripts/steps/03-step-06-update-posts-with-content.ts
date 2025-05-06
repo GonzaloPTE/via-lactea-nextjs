@@ -1,60 +1,76 @@
 import { getSupabaseClient } from '../lib/supabaseClient';
-
-// --- Constants ---
-const SEPARATOR = '---';
+import { convertMarkdownToHtmlWithLLM } from '../components/llmClient';
+import type { BlogContentOutput } from './03-step-05-generate-content';
 
 // --- Function ---
-
-/**
- * Parses the raw LLM output and updates the blog post record in the database.
- * @param blogPostId The ID of the blog post to update.
- * @param rawContent The raw string output from the LLM (Step 5).
- * @returns True if update was successful, false otherwise.
- */
-export async function parseAndUpdatePostContent(blogPostId: number | null, rawContent: string | null): Promise<boolean> {
-    if (blogPostId === null || rawContent === null || typeof rawContent !== 'string') {
-        console.warn(`  Skipping post update due to invalid input. PostID: ${blogPostId}, Content Type: ${typeof rawContent}`);
+export async function processAndSaveGeneratedContent(
+    blogPostId: number | null,
+    generatedContent: BlogContentOutput | null
+): Promise<boolean> {
+    if (blogPostId === null || !generatedContent) {
+        console.warn(`  Skipping post update due to invalid input. PostID: ${blogPostId}, Generated Content: ${generatedContent === null ? 'null' : 'present'}`);
         return false;
     }
 
-    console.log(`  Parsing content and updating post ID: ${blogPostId}`);
+    const { markdownContent, metaDescription } = generatedContent;
 
-    // 1. Parse content and meta description
-    let content = rawContent.trim(); // Start with trimmed raw content
-    let metaDescription: string | null = null; // Default to null
+    if (typeof markdownContent !== 'string' || typeof metaDescription !== 'string') {
+         console.warn(`  Skipping post update for PostID ${blogPostId} due to invalid content types. Markdown: ${typeof markdownContent}, Meta: ${typeof metaDescription}`);
+        return false;
+    }
+    
+    console.log(`  Processing generated content and updating post ID: ${blogPostId}`);
 
-    const separatorIndex = content.lastIndexOf(`\n${SEPARATOR}\n`); // Look for separator surrounded by newlines
+    let htmlContent: string | null = null;
+    let conversionOk = true; // Flag to track success
 
-    if (separatorIndex !== -1) {
-        // Extract meta description (text after the last separator)
-        metaDescription = content.substring(separatorIndex + SEPARATOR.length + 2).trim(); // +2 for \n\n
-        // Extract content (text before the last separator)
-        content = content.substring(0, separatorIndex).trim();
-        console.log(`    - Separator found. Content length: ${content.length}, Meta description length: ${metaDescription.length}`);
+    // 1. Attempt Markdown to HTML conversion
+    if (markdownContent.trim().length > 0) {
+        console.log(`    - Converting Markdown to HTML for post ${blogPostId}...`);
+        try {
+            htmlContent = await convertMarkdownToHtmlWithLLM(markdownContent);
+            if (htmlContent === null) { // Check specifically for null return from LLM function
+                console.error(`    - LLM conversion returned null for post ${blogPostId}. Proceeding without HTML.`);
+                // Still treat as conversionOk=true, but htmlContent is null
+            }
+        } catch (error: any) {
+            console.error(`    - Error during Markdown to HTML conversion for post ${blogPostId}: ${error.message}`);
+            conversionOk = false; // Mark conversion as failed due to exception
+        }
     } else {
-        console.warn(`  Separator "\n${SEPARATOR}\n" not found in raw content for post ${blogPostId}. Storing all as content, meta description will be null.`);
-        // Keep all trimmed rawContent as content, metaDescription remains null
+        console.log(`    - Skipping HTML conversion for post ${blogPostId} due to empty Markdown content.`);
+        htmlContent = ''; // Set HTML to empty string if Markdown is empty
     }
 
-    // 2. Update Database
-    const supabase = getSupabaseClient();
-    try {
-        console.log(`    - Updating post ${blogPostId} in DB...`);
-        const { error } = await supabase
-            .from('blog_posts')
-            .update({
-                content: content,
-                meta_description: metaDescription,
-                status: 'draft_generated', // Update status to indicate content is present
-            })
-            .eq('id', blogPostId);
+    // 2. Decide whether to update DB based on conversionOk flag
+    if (!conversionOk) {
+        console.log(`!!! Conversion failed, skipping DB update for post ${blogPostId} !!!`);
+        return false; // Return false if conversion failed
+    } else {
+        // *** Proceed to Update Database ONLY if conversion was OK ***
+        const supabase = getSupabaseClient();
+        try {
+            console.log(`    - Updating post ${blogPostId} in DB with content, meta description, HTML, and status...`);
+            const { error } = await supabase
+                .from('blog_posts')
+                .update({
+                    content: markdownContent,
+                    meta_description: metaDescription,
+                    content_html: htmlContent, // Use result (null if failed but allowed, '' if skipped)
+                    status: 'draft_generated',
+                })
+                .eq('id', blogPostId);
 
-        if (error) throw error;
-
-        console.log(`    - Update successful for post ${blogPostId}.`);
-        return true;
-    } catch (error: any) {
-        console.error(`  Error updating post ${blogPostId} in DB: ${error.message}`);
-        return false;
+            if (error) {
+                 console.error(`  Database update error for post ${blogPostId}:`, error);
+                 throw error; // Let the catch block below handle DB errors
+            }
+            console.log(`    - Update successful for post ${blogPostId}.`);
+            return true;
+        } catch (error: any) {
+            // Log the specific DB error before returning false
+            console.error(`  Caught error during DB update for post ${blogPostId}: ${error.message}`);
+            return false;
+        }
     }
-} 
+}

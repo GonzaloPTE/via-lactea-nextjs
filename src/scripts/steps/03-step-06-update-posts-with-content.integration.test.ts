@@ -1,9 +1,11 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { parseAndUpdatePostContent } from './03-step-06-update-posts-with-content';
+import { processAndSaveGeneratedContent } from './03-step-06-update-posts-with-content';
+import type { BlogContentOutput } from './03-step-05-generate-content';
+import * as llmClient from '../components/llmClient'; // To mock the HTML conversion
 import { getSupabaseClient } from '../lib/supabaseClient';
 import type { Database } from '../../types/supabase';
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll, jest, beforeEach } from '@jest/globals';
 
 // Define types locally
 type BlogPostInsert = Database['public']['Tables']['blog_posts']['Insert'];
@@ -18,122 +20,201 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
 }
 const supabase = getSupabaseClient();
 let testPostId: number | null = null;
-const testSlugBase = 'test-post-step-6';
+const testPostSlug = `test-post-step-06-${Date.now()}`;
 
-async function setupTestData(): Promise<number> {
-    // Create a clean post draft
-    const slug = `${testSlugBase}-${Date.now()}`;
-    const postToInsert: BlogPostInsert = {
-        title: 'Test Post for Update',
-        slug: slug,
-        issue_ids: [999], // Dummy issue ID
-        status: 'draft',
-        content: null,
+// --- Mocking --- //
+const mockConvertMarkdownToHtmlWithLLM = jest.spyOn(llmClient, 'convertMarkdownToHtmlWithLLM');
+
+async function setupTestData() {
+    await cleanupTestData(); // Ensure a clean slate
+
+    // Create a Blog Post record to be updated
+    const blogPostToInsert: BlogPostInsert = {
+        title: 'Test Blog Post for Step 06',
+        slug: testPostSlug,
+        issue_ids: [99999], // Placeholder, not relevant for this step's test
+        category: 'Test Category Step 06',
+        tags: ['test', 'step06'],
+        status: 'draft_grouped', // The status before this step runs
+        content: null, // Ensure fields to be updated start as null
         meta_description: null,
+        content_html: null,
     };
-    const { data, error } = await supabase.from('blog_posts').insert(postToInsert).select('id').single();
-    if (error) throw new Error(`Setup failed inserting post: ${error.message}`);
-    if (!data?.id) throw new Error('Failed to retrieve post ID after insertion');
-    console.log(`Placeholder: Test data setup - created post ID ${data.id}`);
-    return data.id;
+    const { data: postData, error: postError } = await supabase
+        .from('blog_posts')
+        .insert(blogPostToInsert)
+        .select('id')
+        .single();
+    if (postError) throw new Error(`Setup: Failed to insert blog post: ${postError.message}`);
+    if (!postData || !postData.id) throw new Error('Setup: Did not get blog post ID back.');
+    testPostId = postData.id;
+    console.log(`Setup complete: Created BlogPost ID ${testPostId}`);
 }
 
 async function cleanupTestData() {
-    // Delete posts created by setup (using slug base)
-    console.log(`Placeholder: Test data cleanup - deleting posts like ${testSlugBase}-%`);
-    await supabase.from('blog_posts').delete().like('slug', `${testSlugBase}-%`);
+    console.log('Cleanup: Starting test data deletion...');
+    if (testPostId) {
+        const { error } = await supabase.from('blog_posts').delete().eq('id', testPostId);
+        if (error) console.error('Cleanup: Error deleting test blog post:', error.message);
+    }
+    // Also delete by slug in case ID wasn't captured
+    const { error: slugError } = await supabase.from('blog_posts').delete().eq('slug', testPostSlug);
+    if (slugError && slugError.code !== 'PGRST116') { // Ignore "No rows found" error
+         console.error('Cleanup: Error deleting test blog post by slug:', slugError.message);
+    }
+    console.log('Cleanup: Test data deletion attempt complete.');
     testPostId = null;
 }
 
-// Helper to fetch post content/meta
-async function getPostDetails(postId: number): Promise<BlogPost | null> {
-    const { data, error } = await supabase.from('blog_posts').select('*').eq('id', postId).single();
-    if (error) {
-        console.error(`Error fetching post details for ID ${postId}:`, error.message);
-        return null;
-    }
-    return data;
-}
-
-// --- Test Suite ---
 describe('03-step-06-update-posts-with-content Integration Tests', () => {
-    jest.setTimeout(20000);
+    jest.setTimeout(20000); // Timeout for DB ops and potential mock delays
 
-    // Cleanup before and after all tests in the suite
-    beforeAll(async () => await cleanupTestData());
-    afterAll(async () => await cleanupTestData());
+    beforeAll(async () => {
+        await setupTestData();
+    });
 
-    // Setup a new post before each test
+    afterAll(async () => {
+        await cleanupTestData();
+    });
+
     beforeEach(async () => {
-        testPostId = await setupTestData();
+        mockConvertMarkdownToHtmlWithLLM.mockClear();
+        
+        // Reset the test post to its initial state before each test
+        if (testPostId) {
+            const { error: resetError } = await supabase
+                .from('blog_posts')
+                .update({
+                    status: 'draft_grouped',
+                    content: null,
+                    meta_description: null,
+                    content_html: null,
+                })
+                .eq('id', testPostId);
+            if (resetError) {
+                console.error('beforeEach: Failed to reset test post state:', resetError.message);
+                // Optionally throw an error to halt tests if reset is critical
+                // throw new Error(`beforeEach: Failed to reset test post state: ${resetError.message}`);
+            }
+        }
     });
 
-    it('should correctly parse content and meta description and update DB', async () => {
-        if (!testPostId) throw new Error('Test post ID not set');
-        const rawContent = '## Title\n\nMain body.\n\n---\nThis is the meta description.';
-        const success = await parseAndUpdatePostContent(testPostId, rawContent);
+    it('should update post with content, meta, HTML, and status on success', async () => {
+        if (!testPostId) throw new Error('Setup failed: testPostId is null');
+
+        const mockInput: BlogContentOutput = {
+            markdownContent: '# Title\n\nParagraph.',
+            metaDescription: 'Test meta description.'
+        };
+        const mockHtmlOutput = '<h1>Title</h1><p>Paragraph.</p>';
+
+        mockConvertMarkdownToHtmlWithLLM.mockResolvedValue(mockHtmlOutput);
+
+        const success = await processAndSaveGeneratedContent(testPostId, mockInput);
 
         expect(success).toBe(true);
-        const details = await getPostDetails(testPostId);
-        expect(details).not.toBeNull();
-        expect(details?.content).toBe('## Title\n\nMain body.');
-        expect(details?.meta_description).toBe('This is the meta description.');
-        expect(details?.status).toBe('draft_generated');
+        expect(mockConvertMarkdownToHtmlWithLLM).toHaveBeenCalledTimes(1);
+        expect(mockConvertMarkdownToHtmlWithLLM).toHaveBeenCalledWith(mockInput.markdownContent);
+
+        // Verify DB state
+        const { data: dbPost, error } = await supabase
+            .from('blog_posts')
+            .select('content, meta_description, content_html, status')
+            .eq('id', testPostId)
+            .single();
+        
+        expect(error).toBeNull();
+        expect(dbPost).not.toBeNull();
+        expect(dbPost?.content).toBe(mockInput.markdownContent);
+        expect(dbPost?.meta_description).toBe(mockInput.metaDescription);
+        expect(dbPost?.content_html).toBe(mockHtmlOutput);
+        expect(dbPost?.status).toBe('draft_generated');
     });
 
-    it('should store all text as content if separator is missing', async () => {
-        if (!testPostId) throw new Error('Test post ID not set');
-        const rawContent = '## Title\n\nMain body without separator.';
-        const success = await parseAndUpdatePostContent(testPostId, rawContent);
+    it('should update post correctly even if HTML conversion fails (null HTML)', async () => {
+        if (!testPostId) throw new Error('Setup failed: testPostId is null');
+
+        const mockInput: BlogContentOutput = {
+            markdownContent: 'Some markdown.',
+            metaDescription: 'Meta when HTML fails.'
+        };
+        mockConvertMarkdownToHtmlWithLLM.mockResolvedValue(null); // Simulate LLM failure
+
+        const success = await processAndSaveGeneratedContent(testPostId, mockInput);
+
+        expect(success).toBe(true); // Function should still succeed in updating DB
+
+        // Verify DB state
+        const { data: dbPost, error } = await supabase
+            .from('blog_posts')
+            .select('content, meta_description, content_html, status')
+            .eq('id', testPostId)
+            .single();
+        
+        expect(error).toBeNull();
+        expect(dbPost?.content).toBe(mockInput.markdownContent);
+        expect(dbPost?.meta_description).toBe(mockInput.metaDescription);
+        expect(dbPost?.content_html).toBeNull(); // HTML should be null
+        expect(dbPost?.status).toBe('draft_generated');
+    });
+
+    it('should skip HTML conversion and save empty HTML if markdown is empty', async () => {
+        if (!testPostId) throw new Error('Setup failed: testPostId is null');
+
+        const mockInput: BlogContentOutput = {
+            markdownContent: ' ', // Empty/whitespace markdown
+            metaDescription: 'Meta with empty markdown.'
+        };
+        // LLM mock should not be called
+
+        const success = await processAndSaveGeneratedContent(testPostId, mockInput);
 
         expect(success).toBe(true);
-        const details = await getPostDetails(testPostId);
-        expect(details?.content).toBe(rawContent.trim()); // Function now trims input
-        expect(details?.meta_description).toBeNull(); // Should be null if separator missing
-        expect(details?.status).toBe('draft_generated');
+        expect(mockConvertMarkdownToHtmlWithLLM).not.toHaveBeenCalled();
+
+        // Verify DB state
+        const { data: dbPost, error } = await supabase
+            .from('blog_posts')
+            .select('content, meta_description, content_html, status')
+            .eq('id', testPostId)
+            .single();
+        
+        expect(error).toBeNull();
+        expect(dbPost?.content).toBe(' '); // Original whitespace markdown saved
+        expect(dbPost?.meta_description).toBe(mockInput.metaDescription);
+        expect(dbPost?.content_html).toBe(''); // HTML should be empty string
+        expect(dbPost?.status).toBe('draft_generated');
     });
 
-    it('should handle empty raw content string', async () => {
-        if (!testPostId) throw new Error('Test post ID not set');
-        const rawContent = '';
-        const success = await parseAndUpdatePostContent(testPostId, rawContent);
-
-        expect(success).toBe(true);
-        const details = await getPostDetails(testPostId);
-        expect(details?.content).toBe('');
-        expect(details?.meta_description).toBeNull(); // Should be null for empty content
-        expect(details?.status).toBe('draft_generated');
-    });
-
-    it('should return false if blogPostId is null', async () => {
-        const success = await parseAndUpdatePostContent(null, 'some content');
+    it('should return false if input blogPostId is null', async () => {
+        const success = await processAndSaveGeneratedContent(null, { markdownContent: 'md', metaDescription: 'meta' });
         expect(success).toBe(false);
     });
 
-    it('should return false if rawContent is null', async () => {
-        if (!testPostId) throw new Error('Test post ID not set');
-        const success = await parseAndUpdatePostContent(testPostId, null);
+    it('should return false if input generatedContent is null', async () => {
+        const success = await processAndSaveGeneratedContent(testPostId, null);
         expect(success).toBe(false);
     });
 
-    it('should return false and not update DB if update fails', async () => {
-        if (!testPostId) throw new Error('Test post ID not set');
-        // Simulate DB error by trying to update a non-existent post ID inside the function call
-        // (This requires modifying the function or mocking Supabase client)
-        // Alternative: Test the catch block more directly if possible, or rely on logs
+    it('should return false if database update fails or LLM conversion fails', async () => {
+        if (!testPostId) throw new Error('Setup failed: testPostId is null');
 
-        // For now, we just check the return value when input is valid but assume DB fails
-        // This isn't a true integration test of the failure path without deeper mocking/setup
-        const supabaseMock = jest.spyOn(supabase, 'from');
-        supabaseMock.mockImplementationOnce(() => ({
-            update: jest.fn().mockReturnThis(),
-            eq: jest.fn().mockResolvedValue({ data: null, error: new Error('Simulated DB Error') })
-        }) as any);
+        // Mock the LLM conversion to throw an error
+        mockConvertMarkdownToHtmlWithLLM.mockRejectedValue(new Error('Simulated LLM Error'));
 
-        const success = await parseAndUpdatePostContent(testPostId, 'Valid Content\n\n---\nValid Meta');
+        const mockInput: BlogContentOutput = { markdownContent: 'md', metaDescription: 'meta' };
+
+        // Call the function - it should catch the error from the LLM call
+        const success = await processAndSaveGeneratedContent(testPostId, mockInput);
         expect(success).toBe(false);
 
-        supabaseMock.mockRestore();
+        // Ensure DB wasn't updated (status should still be the initial one)
+        const { data: dbPost, error } = await supabase
+            .from('blog_posts')
+            .select('status')
+            .eq('id', testPostId)
+            .single();
+        expect(error).toBeNull();
+        expect(dbPost?.status).toBe('draft_grouped'); // Or whatever the initial status was
     });
-
 }); 

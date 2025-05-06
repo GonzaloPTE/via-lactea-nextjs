@@ -4,11 +4,13 @@ import {
     formatQueryGenerationPrompt,
     formatIssueGroupingPrompt,
     formatBlogPostGenerationPrompt,
-    loadPromptTemplate
+    loadPromptTemplate,
+    formatMarkdownToHtmlPrompt
 } from '../lib/promptUtils';
 import { retryAsyncOperation } from '../lib/retryUtils';
 import { Content } from '@google/generative-ai';
 import { z } from 'zod';
+import type { PostGenerationData } from '../steps/03-step-04-fetch-data-for-generation'; // Import for type usage
 
 // --- Interfaces --- //
 
@@ -27,6 +29,8 @@ export interface LLMQueryGenerationResult {
 const PostGroupSchema = z.object({
     titulo: z.string().min(1),
     slug: z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    category: z.string().min(1),
+    tags: z.array(z.string()).min(1),
     issuesIds: z.array(z.number().int().positive()).min(1),
 });
 export const PostGroupArraySchema = z.array(PostGroupSchema);
@@ -39,19 +43,8 @@ interface IssueInputForGrouping {
     tags: string[] | null;
 }
 
-// Input types for blog post generation
-interface BlogPostIssueInput {
-    id: number;
-    issue_text: string;
-    tags: string[] | null;
-    // Add any other issue fields needed by the prompt
-}
-interface BlogPostReferenceInput {
-    url: string;
-    title: string | null;
-    summary: string | null;
-    extracts: string[] | null;
-}
+// Input types for blog post generation - using relevant parts from PostGenerationData
+// No longer need BlogPostIssueInput or BlogPostReferenceInput here as PostGenerationData is more complete
 
 // --- Helper Functions --- //
 
@@ -216,13 +209,14 @@ export async function analyzeContent(
 }
 
 export async function groupIssuesWithLLM(
-    issues: IssueInputForGrouping[]
+    issues: IssueInputForGrouping[],
+    validCategories: string[]
 ): Promise<PostGroupData[]> {
     const promptTemplate = await loadPromptTemplate('issueGrouping');
     if (!promptTemplate) return [];
 
-    const promptContents = formatIssueGroupingPrompt(promptTemplate, issues);
-    const context = `Grouping ${issues.length} issues into blog posts`;
+    const promptContents = formatIssueGroupingPrompt(promptTemplate, issues, validCategories);
+    const context = `Grouping ${issues.length} issues into blog posts (with categories)`;
     const rawResponse = await callGeminiAPI(promptContents, context);
 
     // Use a specialized parse function or adapt the generic one
@@ -251,24 +245,59 @@ export async function groupIssuesWithLLM(
 }
 
 export async function generateBlogPostWithLLM(
-    title: string,
-    issues: BlogPostIssueInput[],
-    references: BlogPostReferenceInput[]
+    postGenData: PostGenerationData // Changed to accept the full PostGenerationData object
 ): Promise<string | null> {
     const promptTemplate = await loadPromptTemplate('blogPostGeneration');
     if (!promptTemplate) return null;
 
-    const promptContents = formatBlogPostGenerationPrompt(promptTemplate, title, issues, references);
-    const context = `Generating blog post content for title: "${title.substring(0, 50)}..."`;
+    // Pass all necessary fields from postGenData to the formatting function
+    const promptContents = formatBlogPostGenerationPrompt(
+        promptTemplate,
+        postGenData.blogPostTitle,
+        postGenData.slug,
+        postGenData.category,
+        postGenData.tags,
+        postGenData.issues,
+        postGenData.references
+    );
+    const context = `Generating blog post content for title: "${postGenData.blogPostTitle.substring(0, 50)}..."`;
 
     // Call API expecting text response
     const rawResponse = await callGeminiAPI(promptContents, context, false);
 
     if (rawResponse) {
-        console.log(`  <- LLM: Blog post generation successful for "${title.substring(0, 50)}..."`);
+        console.log(`  <- LLM: Blog post generation successful for "${postGenData.blogPostTitle.substring(0, 50)}..."`);
     } else {
-         console.error(`  <- LLM: Blog post generation failed for "${title.substring(0, 50)}..."`);
+         console.error(`  <- LLM: Blog post generation failed for "${postGenData.blogPostTitle.substring(0, 50)}..."`);
     }
 
+    return rawResponse;
+}
+
+export async function convertMarkdownToHtmlWithLLM(
+    markdownContent: string
+): Promise<string | null> {
+    const promptTemplate = await loadPromptTemplate('markdownToHtml');
+    if (!promptTemplate) return null;
+
+    const promptContents = formatMarkdownToHtmlPrompt(promptTemplate, markdownContent);
+    const context = `Converting Markdown to HTML (length: ${markdownContent.length})`;
+
+    // Call API expecting text response
+    const rawResponse = await callGeminiAPI(promptContents, context, false); // Expecting text/html, not JSON
+
+    if (rawResponse) {
+        console.log(`  <- LLM: Markdown to HTML conversion successful.`);
+        // Basic check: Does it look like HTML?
+        if (!rawResponse.trim().startsWith('<')) {
+            console.warn(`  LLM response for HTML conversion doesn't look like HTML:`, rawResponse.substring(0, 100));
+            // Decide whether to return potentially incorrect response or null
+            // For now, return it and let the caller decide/handle potential issues.
+        }
+    } else {
+         console.error(`  <- LLM: Markdown to HTML conversion failed.`);
+    }
+
+    // Return the raw response, assuming it's the HTML fragment
     return rawResponse;
 } 
