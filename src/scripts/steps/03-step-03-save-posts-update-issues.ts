@@ -17,8 +17,16 @@ export async function savePostsAndMarkIssues(postGroups: PostGroupData[]): Promi
 
     for (const group of postGroups) {
         // Validate group data (basic check)
-        if (!group || !group.titulo || !group.slug || !group.issuesIds || group.issuesIds.length === 0) {
-            console.warn('  Skipping invalid post group:', group);
+        if (!group || 
+            !group.title || // Changed from titulo to match PostGroupData from 03-step-02
+            !group.slug || 
+            !group.issue_ids || // Changed from issuesIds to match PostGroupData
+            group.issue_ids.length === 0 ||
+            !group.category || // Added validation for category
+            !group.tags || // Added validation for tags
+            group.tags.length === 0
+        ) {
+            console.warn('  Skipping invalid post group (missing title, slug, issue_ids, category, or tags):', group);
             continue;
         }
 
@@ -26,15 +34,18 @@ export async function savePostsAndMarkIssues(postGroups: PostGroupData[]): Promi
             // Ideally, use a transaction (pg function) for atomicity, but for simplicity:
 
             // 1. Insert into blog_posts
-            console.log(`    - Inserting post draft: "${group.titulo}" for issues [${group.issuesIds.join(', ')}]`);
+            console.log(`    - Inserting post draft: "${group.title}" for issues [${group.issue_ids.join(', ')}]`);
             const { data: postData, error: postError } = await supabase
                 .from('blog_posts')
                 .insert({
-                    title: group.titulo,
+                    title: group.title,
                     slug: group.slug,
-                    issue_ids: group.issuesIds,
-                    status: 'draft', // Initial status
-                    // content and meta_description are null by default
+                    issue_ids: group.issue_ids,
+                    category: group.category, // Added category
+                    tags: group.tags, // Added tags
+                    status: 'draft_grouped', // Updated status as per plan
+                    // content, meta_description, content_html are null by default
+                    // is_featured is false by default in DB
                 })
                 .select('id')
                 .single(); // Expecting only one row back
@@ -57,20 +68,20 @@ export async function savePostsAndMarkIssues(postGroups: PostGroupData[]): Promi
             createdPostIds.push(newPostId);
 
             // 2. Update discovered_issues status
-            console.log(`    - Updating status to 'blog_post_assigned' for issues [${group.issuesIds.join(', ')}]`);
+            console.log(`    - Updating status to 'blog_post_assigned' for issues [${group.issue_ids.join(', ')}]`);
             const { error: issueError } = await supabase
                 .from('discovered_issues')
                 .update({ status: 'blog_post_assigned' })
-                .in('id', group.issuesIds);
+                .in('id', group.issue_ids);
 
             if (issueError) {
                 // Log the error but maybe don't stop? Or should we try to rollback the post insert?
                 // For now, log and continue, the post is created but issues aren't marked.
-                console.error(`    - Failed to update status for issues [${group.issuesIds.join(', ')}]: ${issueError.message}`);
+                console.error(`    - Failed to update status for issues [${group.issue_ids.join(', ')}]: ${issueError.message}`);
             }
 
         } catch (error: any) {
-            console.error(`  Error processing group "${group.titulo}": ${error.message}`);
+            console.error(`  Error processing group "${group.title}": ${error.message}`);
             // Log and continue with the next group
         }
     }

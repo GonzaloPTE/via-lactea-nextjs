@@ -13,8 +13,8 @@ import {
     fetchDataForPostGeneration,
     PostGenerationData,
 } from './steps/03-step-04-fetch-data-for-generation';
-import { generateBlogPostContent } from './steps/03-step-05-generate-content';
-import { parseAndUpdatePostContent } from './steps/03-step-06-update-posts-with-content';
+import { generateBlogPostContent, BlogContentOutput } from './steps/03-step-05-generate-content';
+import { processAndSaveGeneratedContent as parseAndUpdatePostContent } from './steps/03-step-06-update-posts-with-content';
 import { fetchIssuesForGrouping } from './steps/03-step-01-fetch-issues';
 
 // Load .env.local for standalone execution
@@ -74,9 +74,7 @@ export async function runWorkflow(options: WorkflowOptions = {}): Promise<Workfl
             const postGroups: PostGroupData[] = await groupIssuesIntoPosts(issuesToGroup);
             console.log(`  LLM proposed ${postGroups.length} blog post groups.`);
             if (postGroups.length === 0) {
-                console.log('  LLM did not group any issues, skipping batch.');
-                // Decide how to handle - mark issues? For now, just log and continue.
-                totalProcessedIssues += currentBatchIssueCount; // Still count as processed
+                console.log('  LLM did not group any issues, skipping batch. These issues may be re-fetched if their status has not changed.');
                 continue; // Move to next iteration of the while loop
             }
 
@@ -102,16 +100,21 @@ export async function runWorkflow(options: WorkflowOptions = {}): Promise<Workfl
                     }
                     // Step 5: Generate content via LLM
                     console.log(`    [Step 5/6] Generating content via LLM...`);
-                    const rawContent: string | null = await generateBlogPostContent(postData);
-                    if (!rawContent) {
+                    const generatedBlogOutput: BlogContentOutput | null = await generateBlogPostContent(postData);
+                    if (!generatedBlogOutput) {
                         console.warn(`    Skipping content update for post ${postId} as LLM generation failed.`);
                         generationErrorsInBatch++;
                         continue; // Skip to next post
                     }
                     // Step 6: Parse and update DB
                     console.log(`    [Step 6/6] Parsing and updating post with content...`);
-                    await parseAndUpdatePostContent(postId, rawContent);
-                    console.log(`  <- Successfully generated and saved content for Post ID: ${postId}`);
+                    const updateSuccess = await parseAndUpdatePostContent(postId, generatedBlogOutput);
+                    if (updateSuccess) {
+                        console.log(`  <- Successfully generated and saved content for Post ID: ${postId}`);
+                    } else {
+                        console.warn(`  <- Failed to save content for Post ID: ${postId} (update step returned false).`);
+                        generationErrorsInBatch++; // Consider if this should also count as a generation error
+                    }
                 } catch (genError: any) {
                     console.error(`  Error during content generation pipeline for Post ID ${postId}:`, genError.message);
                     generationErrorsInBatch++;
@@ -121,7 +124,10 @@ export async function runWorkflow(options: WorkflowOptions = {}): Promise<Workfl
             console.log(`  Finished content generation attempts for batch ${batchesProcessed}. Errors: ${generationErrorsInBatch}.`);
 
             // Update totals for the batch
-            totalProcessedIssues += currentBatchIssueCount;
+            if (currentBatchPostsCreated > 0) {
+                // Only count issues as processed for this batch if posts (and thus issue status updates) actually occurred.
+                totalProcessedIssues += currentBatchIssueCount;
+            }
             totalPostsCreated += currentBatchPostsCreated;
 
         } catch (batchError: any) {

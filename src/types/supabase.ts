@@ -11,36 +11,48 @@ export type Database = {
     Tables: {
       blog_posts: {
         Row: {
+          category: string | null
           content: string | null
+          content_html: string | null
           created_at: string
           id: number
+          is_featured: boolean
           issue_ids: number[]
           meta_description: string | null
           published_at: string | null
           slug: string
           status: string
+          tags: string[] | null
           title: string
         }
         Insert: {
+          category?: string | null
           content?: string | null
+          content_html?: string | null
           created_at?: string
           id?: number
+          is_featured?: boolean
           issue_ids: number[]
           meta_description?: string | null
           published_at?: string | null
           slug: string
           status?: string
+          tags?: string[] | null
           title: string
         }
         Update: {
+          category?: string | null
           content?: string | null
+          content_html?: string | null
           created_at?: string
           id?: number
+          is_featured?: boolean
           issue_ids?: number[]
           meta_description?: string | null
           published_at?: string | null
           slug?: string
           status?: string
+          tags?: string[] | null
           title?: string
         }
         Relationships: []

@@ -1,6 +1,18 @@
 import fs from 'fs';
 import path from 'path';
 import { Content } from '@google/generative-ai';
+import type { Database } from '../../types/supabase'; // For DiscoveredIssue type
+
+// Explicitly define types from Supabase schema if not already imported broadly
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
+
+// Define the specific subset of Reference needed for the prompt (as used in PostGenerationData)
+interface ReferenceForPrompt {
+    url: string;
+    title: string | null;
+    summary: string | null;
+    extracts: string[] | null;
+}
 
 // --- Constants ---
 const PROMPTS_DIR = path.resolve(__dirname, '../../../.llm/contenidos/prompts');
@@ -9,6 +21,7 @@ const PROMPT_FILE_MAP = {
     referenceAnalysis: path.join(PROMPTS_DIR, 'investigacion-referencias.md'),
     issueGrouping: path.join(PROMPTS_DIR, 'agrupador-issues-en-blog-posts.md'),
     blogPostGeneration: path.join(PROMPTS_DIR, 'redactor-blog-posts.md'),
+    markdownToHtml: path.join(PROMPTS_DIR, 'markdown-a-html.md'),
 };
 const MAX_CONTENT_LENGTH = 15000; // Max characters for web content in prompts
 
@@ -20,18 +33,9 @@ interface IssueInputForGrouping {
 }
 
 // Type for blog post generation input (can be refined)
-interface BlogPostIssueInput {
-    id: number;
-    issue_text: string;
-    tags: string[] | null;
-    // Add any other issue fields needed by the prompt
-}
-interface BlogPostReferenceInput {
-    url: string;
-    title: string | null;
-    summary: string | null;
-    extracts: string[] | null;
-}
+// These are no longer needed here as we use DiscoveredIssue and ReferenceForPrompt directly
+// interface BlogPostIssueInput { ... }
+// interface BlogPostReferenceInput { ... }
 
 // --- Public Functions ---
 
@@ -112,9 +116,10 @@ export function formatQueryGenerationPrompt(template: string, topic: string): Co
  * Formats the prompt for issue grouping into blog posts.
  * @param template The raw prompt template.
  * @param issues The list of issues (id, text, tags) to include.
+ * @param validCategories The list of valid categories for the issues.
  * @returns Formatted prompt content for the API.
  */
-export function formatIssueGroupingPrompt(template: string, issues: IssueInputForGrouping[]): Content[] {
+export function formatIssueGroupingPrompt(template: string, issues: IssueInputForGrouping[], validCategories: string[]): Content[] {
     // Format issues as a simple list or JSON string for the prompt
     // Using JSON string representation here for simplicity
     const issuesJsonString = JSON.stringify(
@@ -123,12 +128,19 @@ export function formatIssueGroupingPrompt(template: string, issues: IssueInputFo
         2
     );
 
-    let formattedPrompt = template;
-    const placeholder = '{{ AQUÍ SE INCLUIRÁ EL LOTE DE ISSUES (ID, TEXTO Y TAGS) QUE SE AGREGAREN AL BLOG POST. }}';
+    // Format valid categories into a numbered list string
+    const categoriesString = validCategories.map((category, index) => `${index + 1}. ${category}`).join('\n');
 
-    // Replace the placeholder
-    while (formattedPrompt.includes(placeholder)) {
-         formattedPrompt = formattedPrompt.replace(placeholder, issuesJsonString);
+    let formattedPrompt = template;
+    const issuesPlaceholder = '{{ AQUÍ SE INCLUIRÁ EL LOTE DE ISSUES (ID, TEXTO Y TAGS) QUE SE AGREGAREN AL BLOG POST. }}';
+    const categoriesPlaceholder = '{{ AQUI SE INCLUIRAN LAS CATEGORIAS VALIDAS }}';
+
+    // Replace the placeholders
+    while (formattedPrompt.includes(issuesPlaceholder)) {
+         formattedPrompt = formattedPrompt.replace(issuesPlaceholder, issuesJsonString);
+    }
+    while (formattedPrompt.includes(categoriesPlaceholder)) {
+        formattedPrompt = formattedPrompt.replace(categoriesPlaceholder, categoriesString);
     }
 
     return [{ role: "user", parts: [{ text: formattedPrompt }] }];
@@ -140,8 +152,11 @@ export function formatIssueGroupingPrompt(template: string, issues: IssueInputFo
 export function formatBlogPostGenerationPrompt(
     template: string,
     title: string,
-    issues: BlogPostIssueInput[],
-    references: BlogPostReferenceInput[]
+    slug: string,
+    category: string | null,
+    tags: string[] | null,
+    issues: DiscoveredIssue[],
+    references: ReferenceForPrompt[]
 ): Content[] {
     // Format issues and references as readable strings for the prompt
     const issuesString = issues.map(i =>
@@ -155,6 +170,9 @@ export function formatBlogPostGenerationPrompt(
     let formattedPrompt = template;
     const replacements = {
         '{{ AQUÍ SE INCLUIRÁ EL TÍTULO DEL BLOG POST. }}': title,
+        '{{ AQUÍ SE INCLUIRÁ EL SLUG DEL BLOG POST. }}': slug,
+        '{{ AQUÍ SE INCLUIRÁ LA CATEGORÍA DEL BLOG POST. }}': category || 'N/A',
+        '{{ AQUÍ SE INCLUIRÁN LOS TAGS DEL BLOG POST. }}': tags?.join(', ') || 'N/A',
         '{{ AQUÍ SE INCLUIRÁN LOS ISSUES (ID, TEXTO Y TAGS) QUE SE AGREGAREN AL BLOG POST. }}': issuesString,
         '{{ AQUÍ SE INCLUIRÁN LAS REFERENCIAS COMPLETAS CON SUS RESUMENES LLM Y EXTRACTOS DISPONIBLES. }}': refsString,
     };
@@ -164,5 +182,26 @@ export function formatBlogPostGenerationPrompt(
             formattedPrompt = formattedPrompt.replace(placeholder, replacements[placeholder as keyof typeof replacements]);
         }
     }
+    return [{ role: "user", parts: [{ text: formattedPrompt }] }];
+}
+
+/**
+ * Formats the prompt for converting Markdown to HTML.
+ */
+export function formatMarkdownToHtmlPrompt(template: string, markdownContent: string): Content[] {
+    let formattedPrompt = template;
+    const placeholder = '{{ AQUI SE INCLUIRÁ EL CONTENIDO MARKDOWN }}';
+
+    // Replace the placeholder, ensuring no infinite loop if placeholder is missing
+    // Limit replacement just in case, although while loop is common practice here
+    let safety = 0;
+    while (formattedPrompt.includes(placeholder) && safety < 5) {
+         formattedPrompt = formattedPrompt.replace(placeholder, markdownContent);
+         safety++;
+    }
+    if (safety >= 5) {
+        console.warn('[formatMarkdownToHtmlPrompt] Placeholder replacement limit reached. Check template or content.');
+    }
+
     return [{ role: "user", parts: [{ text: formattedPrompt }] }];
 } 
