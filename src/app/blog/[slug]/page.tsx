@@ -1,329 +1,227 @@
-"use client";
+import { Fragment } from 'react';
+import { notFound } from 'next/navigation';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { Database } from '../../../types/supabase'; // Corrected path
+import { IBlogPost } from '../../../types/blog';   // Corrected path
+import { getPostBySlug } from '../../../lib/supabase/blog'; // Corrected path
 
-import { Fragment, useEffect, useState, use } from "react";
-import { useRouter } from "next/navigation";
-// GLOBAL CUSTOM COMPONENTS
-import ThumbsCarousel from "components/reuseable/ThumbsCarousel";
-// LOCAL CUSTOM COMPONENTS
-import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
-// CUSTOM DATA
-import { productList, getProductBySlug, ProductItem } from "../../../data/product-data";
-// Importar el componente ResourceDetailActions
-import ResourceDetailActions from "components/reuseable/products/ResourceDetailActions";
+// Import Components
+import ViaLacteaNavbar from '../../../components/blocks/navbar/via-lactea/ViaLacteaNavbar'; // Corrected path
+import CalendlyButton from '../../../components/blocks/navbar/components/CalendlyButton'; // Corrected path
+import BlogPostHero from '../../../components/blocks/hero/BlogPostHero'; // Corrected path
+import BlogSidebar from '../../../components/reuseable/BlogSidebar'; // Corrected path
+import SocialShareButtons from '../../../components/reuseable/SocialShareButtons'; // Corrected path
+import RelatedArticles from '../../../components/reuseable/RelatedArticles'; // Corrected path
+import ViaLacteaFooter from '../../../components/blocks/footer/ViaLacteaFooter'; // Corrected path
+import Link from 'next/link';
 
-// Tipado para params como Promise
-interface ResourceDetailParams {
-  params: Promise<{ slug: string }>;
+// Utils for date formatting
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { slugify } from '../../../lib/utils'; // Import slugify
+
+// TODO: Define the image pool
+const DUMMY_IMAGE_POOL = [
+  '/img/photos/b1.jpg',
+  '/img/photos/b2.jpg',
+  '/img/photos/b3.jpg',
+  '/img/photos/b4.jpg',
+  // Add more image paths as needed (target 30-50)
+];
+
+interface BlogPostPageProps {
+  params: Promise<{
+    slug: string;
+  }>;
 }
 
-// Componente para mostrar los beneficios como sección independiente
-const ProductBenefits = ({ benefits }: { benefits: any[] }) => {
-  return (
-    <div className="row mt-8">
-      <div className="col-12 text-center">
-        <h3 className="mb-4 text-center">Beneficios</h3>
-        <div className="row gx-lg-8 gx-xl-12 gy-6 process-wrapper justify-content-center">
-          {benefits.map((benefit: any) => {
-            const Icon = benefit.icon;
-            return (
-              <div className="col-md-6 col-lg-3" key={benefit.id}>
-                <div className="d-flex flex-column h-100 align-items-center text-center">
-                    <Icon className="icon-svg mx-0 my-4" />
-                  <h4 className="mb-3">{benefit.title}</h4>
-                  <p className="mb-0">{benefit.description}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-};
+// Function to get Supabase client
+const getSupabaseClient = async () => {
+  const cookieStore = await cookies(); // from next/headers
 
-// Componente para mostrar el autor con nombre y apellido separados
-const ProductAuthor = ({ author }: { author: any }) => {
-  if (!author) return null;
-  
-  const firstName = author.name?.split(' ')[0] || '';
-  const lastName = author.name?.split(' ').slice(1).join(' ') || '';
-  
-  return (
-    <div className="row mt-8">
-      <div className="col-12">
-        <h3 className="mb-4">Acerca del autor</h3>
-        <div className="card">
-          <div className="card-body d-flex flex-row">
-            <div className="col-md-2 text-center">
-              <img src={author.imageUrl} alt={author.name} className="rounded-circle w-20 mb-4" />
-            </div>
-            <div className="col-md-10 ps-md-3">
-              <div className="d-flex flex-wrap mb-2">
-                <h4 className="mb-0 me-2">{firstName}</h4>
-                <h4 className="mb-0">{lastName}</h4>
-              </div>
-              <h6 className="mb-3">{author.role}</h6>
-              <p>{author.bio}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Componente reutilizable para la sección de detalles
-const ProductDetails = ({ product }: { product: ProductItem }) => {
-  return (
-    <div className="mt-12">
-      <ul className="nav nav-tabs nav-tabs-basic">
-        <li className="nav-item">
-          <a 
-            className="nav-link active"
-            style={{ cursor: "pointer" }}
-          >
-            Detalles
-          </a>
-        </li>
-      </ul>
-      
-      <div className="tab-content mt-0 mt-md-5">
-        <div className="tab-pane fade show active">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="table-responsive">
-                <table className="table table-striped">
-                  <tbody>
-                    {product.formatDetails?.find(fd => fd.format === product.primaryFormat) && (
-                      <>
-                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.pageCount && (
-                          <tr>
-                            <td className="w-25"><strong>Número de páginas</strong></td>
-                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.pageCount}</td>
-                          </tr>
-                        )}
-                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileSize && (
-                          <tr>
-                            <td><strong>Tamaño del archivo</strong></td>
-                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileSize}</td>
-                          </tr>
-                        )}
-                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileFormat && (
-                          <tr>
-                            <td><strong>Formato</strong></td>
-                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.fileFormat}</td>
-                          </tr>
-                        )}
-                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.duration && (
-                          <tr>
-                            <td><strong>Duración</strong></td>
-                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.duration}</td>
-                          </tr>
-                        )}
-                        {product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.lessonCount && (
-                          <tr>
-                            <td><strong>Número de lecciones</strong></td>
-                            <td>{product.formatDetails.find(fd => fd.format === product.primaryFormat)?.details.lessonCount}</td>
-                          </tr>
-                        )}
-                      </>
-                    )}
-                    <tr>
-                      <td className="w-25"><strong>Fecha de publicación</strong></td>
-                      <td>{new Date(product.publishDate).toLocaleDateString('es-ES', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                      })}</td>
-                    </tr>
-                    {product.lastUpdated && (
-                      <tr>
-                        <td><strong>Última actualización</strong></td>
-                        <td>{new Date(product.lastUpdated).toLocaleDateString('es-ES', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric'
-                        })}</td>
-                      </tr>
-                    )}
-                    {product.topic && (
-                      <tr>
-                        <td><strong>Categoría</strong></td>
-                        <td>{product.topic}</td>
-                      </tr>
-                    )}
-                    {product.tags && product.tags.length > 0 && (
-                      <tr>
-                        <td><strong>Etiquetas</strong></td>
-                        <td>{product.tags.join(', ')}</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default function ResourceDetailPage({ params }: ResourceDetailParams) {
-  const router = useRouter();
-  const resolvedParams = use(params);
-  const { slug } = resolvedParams;
-  const [product, setProduct] = useState<ProductItem | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<ProductItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!slug) return;
-    
-    // Obtener el producto actual por slug
-    const productData = getProductBySlug(slug);
-    
-    if (productData) {
-      setProduct(productData);
-      
-      // Obtener productos relacionados
-      if (productData.relatedProductIds) {
-        const related = productData.relatedProductIds
-          .map(relId => productList.find(p => p.id === relId))
-          .filter(Boolean) as ProductItem[];
-        setRelatedProducts(related);
-      }
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: { 
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          // Note: Server Components traditionally cannot set cookies directly.
+          // This implementation allows the Supabase client to attempt to queue cookie changes.
+          // Actual cookie setting relies on Next.js mechanisms (e.g., in middleware or Server Actions responding to client requests).
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              // Check if cookieStore has a 'set' method before calling it
+              if (typeof (cookieStore as any).set === 'function') {
+                (cookieStore as any).set(name, value, options);
+              }
+            });
+          } catch (error) {
+            // console.error("Error setting cookies in Server Component context:", error);
+          }
+        }
+      },
     }
-    
-    setLoading(false);
-  }, [slug]);
+  );
+};
 
-  // Manejar la redirección si el producto no existe
-  useEffect(() => {
-    if (!loading && !product) {
-      router.push('/recursos');
-    }
-  }, [loading, product, router]);
+// SEO Metadata Generation
+export async function generateMetadata({ params }: BlogPostPageProps) {
+  const awaitedParams = await params;
+  const supabase = await getSupabaseClient();
+  const post = await getPostBySlug(supabase, awaitedParams.slug);
 
-  // Si está cargando o no hay producto, mostrar pantalla de carga
-  if (loading || !product) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
-        </div>
-      </div>
-    );
+  if (!post) {
+    return {
+      title: 'Artículo no encontrado',
+      description: 'El artículo que buscas no existe o ha sido movido.',
+    };
   }
 
-  // Determinar precio basado en el formato principal
-  const priceInfo = product.prices.find(p => p.format === product.primaryFormat);
-  const price = priceInfo ? priceInfo.price : 0;
-  const isFree = product.isFree || price === 0;
+  return {
+    title: post.title,
+    description: post.meta_description,
+    // openGraph: { // Optional: Add OpenGraph tags for better social sharing
+    //   title: post.title,
+    //   description: post.meta_description,
+    //   images: [post.imageUrl || DUMMY_IMAGE_POOL[0]], // Use actual image if available
+    //   url: `https://vialacteasuenoylactancia.com/blog/${post.slug}`,
+    //   type: 'article',
+    //   publishedTime: post.published_at,
+    //   authors: ['Miriam Rubio'], // Or link to author page
+    //   tags: post.tags,
+    // },
+  };
+}
+
+// Schema.org JSON-LD Generation
+const generateBlogPostingJsonLd = (post: IBlogPost, imageUrl: string, canonicalUrl: string) => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+    headline: post.title,
+    description: post.meta_description,
+    image: imageUrl, // Use the selected image for the hero
+    author: {
+      '@type': 'Person',
+      // TODO: Use @id for Miriam Rubio once available in schema-org.md and Person schema is updated
+      name: 'Miriam Rubio', 
+      // "@id": "https://vialacteasuenoylactancia.com/#person-miriam-rubio"
+    },
+    publisher: {
+      '@type': 'Organization',
+      '@id': 'https://vialacteasuenoylactancia.com/#organization', // From schema-org.md
+    },
+    datePublished: post.published_at ? new Date(post.published_at).toISOString() : new Date(post.created_at).toISOString(),
+    dateModified: post.published_at ? new Date(post.published_at).toISOString() : new Date(post.created_at).toISOString(), // Placeholder, use updated_at if available
+  };
+};
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const supabase = await getSupabaseClient();
+  const awaitedParams = await params;
+  const post = await getPostBySlug(supabase, awaitedParams.slug);
+
+  if (!post) {
+    notFound(); // Triggers Next.js 404 page
+  }
+
+  // Image selection logic (modulo based)
+  const selectedImage = DUMMY_IMAGE_POOL[post.id % DUMMY_IMAGE_POOL.length];
+
+  // Format dates for display
+  const displayDate = post.published_at
+    ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: es })
+    : format(new Date(post.created_at), 'dd MMM yyyy', { locale: es });
+  
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vialacteasuenoylactancia.com';
+  const canonicalUrl = `${siteUrl}/blog/${post.slug}`;
+  const heroImageUrl = `${siteUrl}${selectedImage}`;
+
+  const jsonLd = generateBlogPostingJsonLd(post, heroImageUrl, canonicalUrl);
+
+  // Define Instagram profile URL (should ideally come from env or config)
+  const VIA_LACTEA_INSTAGRAM_URL = "https://www.instagram.com/vialacteasuenoylactancia/";
 
   return (
     <Fragment>
-      {/* ========== Header with Navbar ========== */}
       <header className="wrapper bg-soft-primary">
-        <ViaLacteaNavbar 
-          fancy
-          logoAlt="via-lactea-logo"
-        />
+        <ViaLacteaNavbar button={<CalendlyButton />}/>
       </header>
 
-      {/* ========== product info section ========== */}
-      <section className="wrapper bg-soft-primary">
-        <div className="container py-2 py-md-4">
-          <div className="row gx-md-8 gx-xl-12 gy-8">
-            <div className="col-lg-6">
-              {product.thumbnailUrl ? (
-                <figure className="rounded">
-                  <img 
-                    src={product.thumbnailUrl}
-                    alt={product.title} 
-                    className="img-fluid" 
-                  />
-                </figure>
-              ) : (
-                <ThumbsCarousel />
-              )}
-            </div>
+      <main className="content-wrapper">
+        <BlogPostHero 
+          title={post.title} 
+          category={post.category}
+          publishedDate={displayDate} 
+          imageUrl={selectedImage} 
+        />
 
-            {/* ========== product actions section ========== */}
-            <div className="col-lg-6">
-              <ResourceDetailActions product={product} />
-            </div>
-          </div>
-        </div>
-        <figure>
-          <img src="/img/photos/clouds.png" alt="Clouds" />
-        </figure>
-      </section>
-
-      {/* ========== beneficios section ========== */}
-      {product.benefits && product.benefits.length > 0 && (
         <section className="wrapper bg-light">
-          <div className="container py-2 py-md-4">
-            <ProductBenefits benefits={product.benefits} />
+          <div className="container py-10 py-md-12">
+            <div className="row gx-lg-8 gx-xl-12">
+              <div className="col-lg-8">
+                {/* Post Content */}
+                {post.content_html ? (
+                  <div
+                    className="blog-content" 
+                    dangerouslySetInnerHTML={{ __html: post.content_html }}
+                  />
+                ) : (
+                  <p>Contenido no disponible.</p>
+                )}
+
+                {/* Tags */}
+                {post.tags && post.tags.length > 0 && (
+                  <div className="post-tags mt-6 mb-3">
+                    {post.tags.map((tag, index) => (
+                      <Link 
+                        href={`/blog/tag/${slugify(tag)}`} 
+                        key={tag} 
+                        className="text-primary me-2 hover-underline"
+                      >
+                        #{tag}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                
+                <SocialShareButtons 
+                  url={canonicalUrl} 
+                  title={post.title} 
+                  instagramProfileUrl={VIA_LACTEA_INSTAGRAM_URL}
+                />
+              </div>
+
+              <aside className="col-lg-4 sidebar mt-8 mt-lg-0">
+                <BlogSidebar tags={post.tags} />
+              </aside>
+            </div>
           </div>
         </section>
-      )}
+        <RelatedArticles 
+          currentPostId={post.id} 
+          category={post.category}
+          tags={post.tags}
+        />
+      </main>
+
       
-      {/* ========== details section ========== */}
-      <section className="wrapper bg-light">
-        <div className="container py-2 py-md-4">
-          <ProductDetails product={product} />
-        </div>
-        <figure className="bg-soft-primary">
-          <img src="/img/photos/clouds.png" alt="Clouds" style={{ transform: 'scaleY(-1)' }} />
-        </figure>
-      </section>
+      
+      <ViaLacteaFooter />
 
-      {/* ========== related products section ========== */}
-      {relatedProducts.length > 0 && (
-      <section className="wrapper bg-gray">
-        <div className="container py-2 py-md-4">
-            <h3 className="h2 mb-6 text-center">Recursos relacionados</h3>
-
-            <div className="row gy-6">
-              {relatedProducts.map((item) => (
-                item && (
-                  <div className="col-md-4" key={item.id}>
-                    <div className="card">
-                      <figure className="card-img-top">
-                        <img src={item.thumbnailUrl} alt={item.title} className="img-fluid" />
-                      </figure>
-                      <div className="card-body">
-                        <div className="d-flex flex-row align-items-center justify-content-between mb-2">
-                          <div className="post-header">
-                            <h2 className="post-title h3 fs-22">
-                              <a href={`/recursos/${item.slug}`} className="link-dark">
-                                {item.title}
-                              </a>
-                            </h2>
-                          </div>
-                        </div>
-                        <p className="mb-6">{item.shortDescription}</p>
-                        <div className="d-flex justify-content-between">
-                          <span className="price fs-18">
-                            {item.isFree 
-                              ? <span className="amount text-primary">Gratis</span>
-                              : <span className="amount">{item.prices?.[0]?.price.toFixed(2)}€</span>
-                            }
-                          </span>
-                          <a href={`/recursos/${item.slug}`} className="btn btn-sm btn-primary rounded-pill">
-                            Ver más
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )
-              ))}
-          </div>
-        </div>
-      </section>
-      )}
+      {/* Schema.org JSON-LD Script */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     </Fragment>
   );
 }

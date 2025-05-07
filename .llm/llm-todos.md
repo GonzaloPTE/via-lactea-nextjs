@@ -1,6 +1,8 @@
 # Lista de Tareas
 
-Última actualización: 2023-10-07 15:30 (Actualizado: 2024-07-19)
+Vía Láctea es una empresa de asesoría en Sueño Infantil y Lactancia. Este proyecto es un sitio web NextJS para su empresa.
+La asesora Miriam Rubio es una experta en Sueño Infantil y Lactancia, con más de 15 años de experiencia y formación en el campo.
+Este es el plan de trabajo para el desarrollo del sitio web.
 
 ## Tareas
 

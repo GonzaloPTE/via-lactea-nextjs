@@ -11,15 +11,16 @@ interface BlogCard3Props {
   category: string;
   description: string;
   date: string;
+  disableDefaultColClass?: boolean;
 }
 // ========================================================
 
-export default function BlogCard3({ title, category, description, link, image, date }: BlogCard3Props) {
+export default function BlogCard3({ title, category, description, link, image, date, disableDefaultColClass }: BlogCard3Props) {
   return (
-    <article className="item post col-md-6">
+    <article className={`item post ${disableDefaultColClass ? '' : 'col-md-6'}`.trim()}>
       <div className="card">
         <figure className="card-img-top overlay overlay-1 hover-scale">
-          <Link href="#">
+          <Link href={link}>
             <FigureImage width={560} height={350} src={image} />
             <span className="bg" />
           </Link>
