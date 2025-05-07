@@ -16,19 +16,7 @@ import { cookies } from 'next/headers'
 import { Database } from '../../types/supabase'; 
 import { SupabaseClient } from '@supabase/supabase-js';
 import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
-
-// --- Define IBlogPost (restore or import) ---
-export interface IBlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  issue_ids: number[];
-  content?: string; 
-  meta_description: string | null | undefined; 
-  status: string; 
-  created_at: string; 
-  published_at: string | null | undefined; 
-}
+import { IBlogPost } from "../../types/blog"; // Import IBlogPost
 
 // --- Define Page Props ---
 interface BlogPageProps {
@@ -66,7 +54,7 @@ async function getBlogData(
   // Fetch posts
   const query = supabase
     .from('blog_posts')
-    .select('id, title, slug, meta_description, created_at, published_at, issue_ids, status') // Restore full select
+    .select('id, title, slug, meta_description, created_at, published_at, issue_ids, status, category, tags, is_featured, content_html') // Added content_html
     // .eq('status', 'published'); // Keep commented out for now
     .range(offset, offset + pageSize - 1); // Restore range
 
@@ -113,8 +101,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) { // Mak
   return (
     <Fragment>
       {/* ========== Header ========== */}
-      <header className="wrapper bg-soft-transparent"> { /* Match ResourcesHero? */}
-        <ViaLacteaNavbar button={<CalendlyButton />} whiteBackground={true} />
+      <header className="wrapper bg-soft-primary"> { /* Match ResourcesHero? */}
+        <ViaLacteaNavbar button={<CalendlyButton />}/>
       </header>
 
       <main className="content-wrapper">
