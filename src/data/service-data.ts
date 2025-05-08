@@ -177,7 +177,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     stripePaymentLink: 'https://buy.stripe.com/14k8yC5OW8Ae9448wE',
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/asesoria-big-bang?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/asesoria-big-bang?hide_gdpr_banner=1&primary_color=605dba',
     calendlyDescription: `✨ ¡Bienvenida a los primeros meses! ✨
 
 ¿Dudas sobre lactancia 🤱, sueño 😴, alimentación 🥕 o rutinas ⏰?
@@ -276,7 +276,7 @@ export const serviceList: ServiceItem[] = [
       ]
     },
     stripePaymentLink: 'https://buy.stripe.com/6oE9CGcdk2bQfssdQX',
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/asesoria-lactancia?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/asesoria-lactancia?hide_gdpr_banner=1&primary_color=605dba',
     calendlyDescription: `🤱 ¿La lactancia no está siendo como esperabas? 🤱
 
 ¿Dolor? ¿Dudas sobre el agarre? ¿Poca ganancia de peso? ¿Quieres preparar la vuelta al trabajo?
@@ -339,7 +339,7 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     calendlyDescription: `¿Qué haremos?
 
 🔎 Estudiaré vuestro caso detenidamente y veremos las posibles opciones durante la videollamada.
@@ -420,7 +420,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/videollamada-sos?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/videollamada-sos?hide_gdpr_banner=1&primary_color=605dba',
     calendlyDescription: `🚨 ¿Tienes alguna urgencia puntual? 🚨 
 
 ¿Te vas de vacaciones 🚢 o tienes una mudanza 🚚 y tu bebé vuelve a dormir mal?
@@ -513,7 +513,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'violet',
     process: {
       title: 'Plan Luna paso a paso',
@@ -593,7 +593,7 @@ export const serviceList: ServiceItem[] = [
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'sky',
     process: {
       title: 'Plan Enana Blanca paso a paso',
@@ -692,7 +692,7 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'yellow',
     process: {
       title: 'Plan Sol paso a paso',
@@ -807,7 +807,7 @@ export const serviceList: ServiceItem[] = [
     ],
     highlighted: true,
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'orange',
     process: {
       title: 'Plan Gigante Roja paso a paso',
@@ -909,7 +909,7 @@ export const serviceList: ServiceItem[] = [
     requiresCalendly: true,
     color: 'violet',
     stripePaymentLink: 'https://buy.stripe.com/5kA2ae3GOdUyfss002',
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/semana-seguimiento?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/semana-seguimiento?hide_gdpr_banner=1&primary_color=605dba',
     calendlyDescription: `📈 ¿Necesitas un ajuste en el plan? 📈
 
 Esta Semana de Seguimiento es EXCLUSIVA para familias que ya habéis hecho un plan conmigo.
@@ -975,7 +975,7 @@ Esta Semana de Seguimiento es EXCLUSIVA para familias que ya habéis hecho un pl
       }
     ],
     requiresCalendly: true,
-    calendlyUrl: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
+    calendlyUrl: 'https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba',
     color: 'pink',
     process: {
       title: 'Asesorías grupales paso a paso',

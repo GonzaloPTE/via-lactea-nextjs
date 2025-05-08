@@ -73,7 +73,7 @@ export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Pr
                 text="Te llamo"
                 icon="uil uil-whatsapp"
                 className={`btn btn-${tailwindColor} rounded-pill`}
-                calendlyUrl="https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba"
+                calendlyUrl="https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba"
               />
             </div>
           </div>
