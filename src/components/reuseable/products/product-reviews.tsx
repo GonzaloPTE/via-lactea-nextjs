@@ -29,7 +29,7 @@ export default function ProductReviews() {
       </div>
 
       {/* ========== pagination section ========== */}
-      <Pagination className="mt-10" />
+      <Pagination className="mt-10" totalPages={1} currentPage={1} />
     </div>
   );
 }
