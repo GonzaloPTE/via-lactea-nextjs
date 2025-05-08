@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { executeGoogleSearchForQueries, IssueWithSearchResults } from './02-step-03-execute-search';
+import { executeGoogleSearchForQueries } from './02-step-03-execute-search';
 import type { IssueWithQueries } from './02-step-02-generate-queries';
 
 // Load environment variables from .env.test at the project root

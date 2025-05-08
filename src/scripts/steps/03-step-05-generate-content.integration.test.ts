@@ -1,4 +1,4 @@
-import { generateBlogPostContent, BlogContentOutput } from './03-step-05-generate-content';
+import { generateBlogPostContent } from './03-step-05-generate-content';
 import type { PostGenerationData } from './03-step-04-fetch-data-for-generation';
 // Updated imports for mocking
 import * as llmClient from '../components/llmClient';

@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { generateSearchQueriesForIssues, IssueWithQueries } from './02-step-02-generate-queries';
+import { generateSearchQueriesForIssues } from './02-step-02-generate-queries';
 import type { Database } from '../../types/supabase';
 
 // Define types locally

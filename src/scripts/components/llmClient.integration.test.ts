@@ -1,4 +1,4 @@
-import { analyzeContent, LLMAnalysisResult } from './llmClient';
+import { analyzeContent } from './llmClient';
 
 // --- Test Configuration ---
 const MAX_TEST_WAIT_TIME = 30000; // 30 seconds for LLM API calls
