@@ -103,7 +103,7 @@ export default function ViaLacteaFooter({ hiddenNewsletter, service }: Footer3Pr
                 <a href="https://www.instagram.com/vialacteasuenoylactancia" target="_blank" rel="noreferrer" className="me-4">
                   <i className="uil uil-instagram me-1"></i> @vialacteasuenoylactancia
                 </a>
-                <a href="https://www.facebook.com/profile.php?id=61575517253913" target="_blank" rel="noreferrer">
+                <a href="https://www.facebook.com/vialacteasuenoylactancia" target="_blank" rel="noreferrer">
                   <i className="uil uil-facebook-f me-1"></i> Vía Láctea Sueño y Lactancia
                 </a>
               </nav>

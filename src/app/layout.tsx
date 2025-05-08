@@ -61,7 +61,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               "logo": "https://vialacteasuenoylactancia.com/img/via-lactea/svg/via-lactea-logo.svg",
               "sameAs": [
                 "https://www.instagram.com/vialacteasuenoylactancia/",
-                "https://www.facebook.com/profile.php?id=61575517253913"
+                "https://www.facebook.com/vialacteasuenoylactancia"
               ],
               "contactPoint": {
                 "@type": "ContactPoint",
