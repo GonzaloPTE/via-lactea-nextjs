@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import Script from 'next/script';
 
 import ThemeProvider from "theme/ThemeProvider";
 
@@ -37,6 +38,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="es">
       <body className={manrope.className}>
+        {/* Google tag (gtag.js) */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-EVZL22V7LP"
+        />
+        <Script id="google-analytics-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-EVZL22V7LP');
+          `}
+        </Script>
+
         <ThemeProvider>{children}</ThemeProvider>
 
         {/* USED FOR SCROLL ANIMATION */}
