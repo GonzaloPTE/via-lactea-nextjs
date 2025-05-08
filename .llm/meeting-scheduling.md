@@ -41,7 +41,7 @@
 
 ```html
 <!-- Calendly inline widget begin -->
-<div class="calendly-inline-widget" data-url="https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba" style="min-width:320px;height:700px;"></div>
+<div class="calendly-inline-widget" data-url="https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba" style="min-width:320px;height:700px;"></div>
 <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
 <!-- Calendly inline widget end -->
 ```
@@ -58,7 +58,7 @@
 <!-- Calendly link widget begin -->
 <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
 <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
-<a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba'});return false;">Agenda YA tu valoración GRATUITA</a>
+<a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba'});return false;">Agenda YA tu valoración GRATUITA</a>
 <!-- Calendly link widget end -->
 ```
 

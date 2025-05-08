@@ -20,7 +20,7 @@ export default function ValacteaCTA({
   buttonText,
   buttonIcon = "uil uil-calendar-alt",
   buttonClassName = "btn btn-lg btn-grape rounded",
-  calendlyUrl = "https://calendly.com/asesoriainfantilvialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba",
+  calendlyUrl = "https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba",
   isCalendlyButton = true,
   buttonLink = "/",
   backgroundClass = "bg-soft-primary",
