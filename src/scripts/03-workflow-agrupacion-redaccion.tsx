@@ -1,9 +1,7 @@
 import dotenv from 'dotenv';
 // Import step functions
-import {
-    fetchProcessedIssuesAndRefs,
-    FetchedIssueData,
-} from './steps/03-step-01-fetch-processed-issues';
+
+
 import {
     groupIssuesIntoPosts,
     PostGroupData,

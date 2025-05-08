@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { analyzeScrapedContent, AnalyzedPageData } from './02-step-06-analyze-content';
+import { analyzeScrapedContent } from './02-step-06-analyze-content';
 import type { ScrapedPageData } from './02-step-05-scrape-content';
 
 // Load environment variables from .env.test (for GOOGLE_GEMINI_API_KEY)

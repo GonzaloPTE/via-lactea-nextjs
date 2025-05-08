@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { fetchProcessedIssuesAndRefs, FetchedIssueData } from './03-step-01-fetch-processed-issues';
+import { fetchProcessedIssuesAndRefs } from './03-step-01-fetch-processed-issues';
 import { getSupabaseClient } from '../lib/supabaseClient';
 import type { Database } from '../../types/supabase';
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';

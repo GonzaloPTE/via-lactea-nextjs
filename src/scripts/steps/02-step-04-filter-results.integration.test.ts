@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { filterAndPrepareUrls, IssuesWithFilteredUrls } from './02-step-04-filter-results';
+import { filterAndPrepareUrls } from './02-step-04-filter-results';
 import type { IssueWithSearchResults, SearchResultItem } from './02-step-03-execute-search';
 import { getSupabaseClient, saveReference, ReferenceData } from '../lib/supabaseClient';
 import type { Database } from '../../types/supabase';
-import { describe, it, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll, jest } from '@jest/globals';
 
 // Define types locally
 type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];

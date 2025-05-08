@@ -1,4 +1,4 @@
-import { scrapeWebPages, ScrapedPageData } from './02-step-05-scrape-content';
+import { scrapeWebPages } from './02-step-05-scrape-content';
 import type { IssuesWithFilteredUrls } from './02-step-04-filter-results';
 
 // --- Test Suite --- //

@@ -7,6 +7,9 @@ import { BlogCard2, BlogCard3 } from "components/reuseable/blog-cards";
 // CUSTOM DATA
 import { blogList4 } from "data/blog";
 
+// Define a placeholder date, or modify blogList4 to include dates
+const PLACEHOLDER_DATE = "01 Jan 2024";
+
 export default function Blog6() {
   return (
     <div className="row gx-lg-8 gx-xl-12 mt-17">
@@ -50,12 +53,12 @@ export default function Blog6() {
         <div className="blog grid grid-view">
           <div className="row isotope gx-md-8 gy-8 mb-8">
             {blogList4.map((item) => (
-              <BlogCard3 {...item} key={item.id} />
+              <BlogCard3 {...item} key={item.id} date={PLACEHOLDER_DATE} />
             ))}
           </div>
         </div>
 
-        <Pagination className="justify-content-start" altStyle />
+        <Pagination className="justify-content-start" altStyle totalPages={1} currentPage={1} />
       </div>
 
       <aside className="col-lg-4 sidebar mt-8 mt-lg-0">

@@ -1,4 +1,4 @@
-import { getServiceBySlug, ServiceItem } from "data/service-data";
+import { getServiceBySlug } from "data/service-data";
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 import ServiceDetailClient from "components/blocks/services/ServiceDetailClient";

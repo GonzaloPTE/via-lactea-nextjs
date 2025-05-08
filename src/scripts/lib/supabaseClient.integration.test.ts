@@ -1,7 +1,5 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import {
-    // Issue, // Removed import - define locally if needed
-    ReferenceData,
     getPendingIssues,
     checkReferenceExistsForIssue,
     saveReference,
