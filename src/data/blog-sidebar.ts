@@ -3,19 +3,22 @@ const popularPosts = [
     id: 1,
     date: '15 May 2024',
     image: '/img/photos/b4.jpg',
-    title: 'Entendiendo las Regresiones del Sueño'
+    title: 'Entendiendo las Regresiones del Sueño',
+    slug: 'entendiendo-las-regresiones-del-sueno'
   },
   {
     id: 2,
     date: '10 May 2024',
     image: '/img/photos/b5.jpg',
-    title: 'Mitos Comunes sobre la Lactancia Materna'
+    title: 'Mitos Comunes sobre la Lactancia Materna',
+    slug: 'mitos-comunes-sobre-la-lactancia-materna'
   },
   {
     id: 3,
     date: '20 May 2024',
     image: '/img/photos/b6.jpg',
-    title: 'La Importancia del Tummy Time'
+    title: 'La Importancia del Tummy Time',
+    slug: 'la-importancia-del-tummy-time'
   }
 ];
 

@@ -2,6 +2,11 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { Fragment } from "react";
 import { slugify } from "../../lib/utils"; // Keep slugify
+import DUMMY_IMAGE_POOL from "../../lib/blog-image-pool";
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { Database } from '../../types/supabase';
+import { IBlogPost } from '../../types/blog';
 
 // GLOBAL CUSTOM COMPONENTS
 import FigureImage from "./FigureImage";
@@ -19,8 +24,37 @@ type BlogSidebarProps = {
 };
 // ========================================================
 
+async function getRandomPopularPosts(): Promise<IBlogPost[]> {
+  const cookieStore = await cookies();
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        }
+      },
+    }
+  );
+  // Obtener 10 posts y elegir 3 aleatorios en el servidor
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('id, title, slug, published_at, created_at')
+    .order('published_at', { ascending: false })
+    .limit(10);
+  if (!data || error) return [];
+  // Seleccionar 3 aleatorios
+  const shuffled = data.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, 3) as IBlogPost[];
+}
+
 // Reverted to standard functional component (not async)
-export default function BlogSidebar({ thumbnail, tags }: BlogSidebarProps) {
+export default async function BlogSidebar({ thumbnail, tags }: BlogSidebarProps) {
+  const popularPosts = await getRandomPopularPosts();
   return (
     <Fragment>
       {/* About Widget */}
@@ -37,26 +71,31 @@ export default function BlogSidebar({ thumbnail, tags }: BlogSidebarProps) {
         <SocialLinks className="nav social" />
       </div>
 
-      {/* Popular Posts Widget (Still uses static data) */}
+      {/* Popular Posts Widget (Dynamic) */}
       <div className="widget">
         <h4 className="widget-title mb-3">Artículos Populares</h4>
         <ul className="image-list">
-          {data.popularPosts.map(({ id, title, image, date }) => (
-            <li key={id}>
-              <NextLink title={<FigureImage width={100} height={100} className="rounded" src={image} />} href="#" />
-              <div className="post-content">
-                <h6 className="mb-2">
-                  <NextLink className="link-dark" title={title} href="#" />
-                </h6>
-                <ul className="post-meta">
-                  <li className="post-date">
-                    <i className="uil uil-calendar-alt" />
-                    <span>{dayjs(date).format("DD MMM YYYY")}</span>
-                  </li>
-                </ul>
-              </div>
-            </li>
-          ))}
+          {popularPosts.map(({ id, title, published_at, created_at, slug }) => {
+            const image = DUMMY_IMAGE_POOL[id % DUMMY_IMAGE_POOL.length];
+            const href = slug ? `/blog/${slug}` : '#';
+            const date = published_at || created_at;
+            return (
+              <li key={id}>
+                <NextLink title={<FigureImage width={100} height={100} className="rounded" src={image} />} href={href} />
+                <div className="post-content">
+                  <h6 className="mb-2">
+                    <NextLink className="link-dark" title={title} href={href} />
+                  </h6>
+                  <ul className="post-meta">
+                    <li className="post-date">
+                      <i className="uil uil-calendar-alt" />
+                      <span>{dayjs(date).format("DD MMM YYYY")}</span>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
 

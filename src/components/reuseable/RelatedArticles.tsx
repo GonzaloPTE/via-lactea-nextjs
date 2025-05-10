@@ -8,6 +8,7 @@ import { getRelatedPosts } from '../../lib/supabase/blog';
 import { BlogCard3 } from './blog-cards'; // Assuming BlogCard3 is in this path
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import DUMMY_IMAGE_POOL from '../../lib/blog-image-pool';
 
 // Helper to get Supabase client, similar to the one in page.tsx
 // This could be refactored into a shared utility if used in many Server Components
@@ -50,17 +51,18 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = async ({ currentPostId, 
         <div className="row gy-4 justify-content-center">
           {relatedPosts.map((post) => {
              // Map IBlogPost to BlogCard3 props
+             const image = DUMMY_IMAGE_POOL[post.id % DUMMY_IMAGE_POOL.length];
              const cardProps = {
-              id: post.id,
-              link: `/blog/${post.slug}`,
-              image: DUMMY_IMAGE_POOL_RELATED[post.id % DUMMY_IMAGE_POOL_RELATED.length], // Use a separate or same image pool
-              title: post.title,
-              category: post.category || "Consejos", 
-              description: post.meta_description || '', 
-              date: post.published_at 
-                ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: es })
-                : format(new Date(post.created_at), 'dd MMM yyyy', { locale: es })
-            };
+               id: post.id,
+               link: `/blog/${post.slug}`,
+               image, // Imagen correspondiente
+               title: post.title,
+               category: post.category || "Consejos", 
+               description: post.meta_description || '', 
+               date: post.published_at 
+                 ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: es })
+                 : format(new Date(post.created_at), 'dd MMM yyyy', { locale: es })
+             };
             return (
               <div className="col-md-6 col-lg-4" key={post.id}>
                 <BlogCard3 {...cardProps} disableDefaultColClass={true} />
@@ -72,13 +74,5 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = async ({ currentPostId, 
     </section>
   );
 };
-
-// Define a dummy image pool for related articles, can be same as main one or different
-const DUMMY_IMAGE_POOL_RELATED = [
-  '/img/photos/b4.jpg',
-  '/img/photos/b1.jpg',
-  '/img/photos/b2.jpg',
-  '/img/photos/b3.jpg',
-];
 
 export default RelatedArticles; 

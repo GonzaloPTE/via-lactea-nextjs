@@ -20,15 +20,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { slugify } from '../../../lib/utils'; // Import slugify
-
-// TODO: Define the image pool
-const DUMMY_IMAGE_POOL = [
-  '/img/photos/b1.jpg',
-  '/img/photos/b2.jpg',
-  '/img/photos/b3.jpg',
-  '/img/photos/b4.jpg',
-  // Add more image paths as needed (target 30-50)
-];
+import DUMMY_IMAGE_POOL from '../../../lib/blog-image-pool';
 
 interface BlogPostPageProps {
   params: Promise<{
