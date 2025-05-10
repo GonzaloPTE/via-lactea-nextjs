@@ -17,6 +17,7 @@ import { Database } from '../../types/supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
 import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
 import { IBlogPost } from "../../types/blog"; // Import IBlogPost
+import DUMMY_IMAGE_POOL from '../../lib/blog-image-pool';
 
 // --- Define Page Props ---
 interface BlogPageProps {
@@ -122,10 +123,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) { // Mak
                       <div className="row isotope gx-md-8 gy-8 mb-8">
                         {blogPosts.map((item) => {
                           // Map IBlogPost to BlogCard3 props
+                          const image = DUMMY_IMAGE_POOL[item.id % DUMMY_IMAGE_POOL.length];
                           const cardProps = {
                             id: item.id,
                             link: `/blog/${item.slug}`,
-                            image: '/img/photos/b4.jpg', // Use default image
+                            image, // Imagen correspondiente
                             title: item.title,
                             category: "Consejos", // Use default category
                             description: item.meta_description || '', // Use meta_description
