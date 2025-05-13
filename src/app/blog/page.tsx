@@ -18,6 +18,7 @@ import { IBlogPost } from "../../types/blog"; // Import IBlogPost
 import DUMMY_IMAGE_POOL from '../../lib/blog-image-pool';
 import { createSupabaseServerClient } from "../../lib/supabase/server"; // Import the new utility
 import BlogPostList from "components/reuseable/BlogPostList"; // Import the new component
+import { generateDeterministicPostDate } from "../../lib/utils"; // Import generateDeterministicPostDate
 
 // --- Define Page Props ---
 interface BlogPageProps {
@@ -37,44 +38,58 @@ async function getBlogData(
   const currentPage = parseInt(typeof pageParam === 'string' ? pageParam : '1', 10);
   const pageSize = 6;
 
-  // Fetch count
-  const { count: totalCount, error: countError } = await supabase
+  // Fetch count first (more efficient for totalPages calculation)
+  const { count: totalCountResult, error: countError } = await supabase
     .from('blog_posts')
-    .select('', { count: 'exact', head: true })
+    .select('id', { count: 'exact', head: true })
     // .eq('status', 'published'); // Temporarily commented out to show all posts
 
   if (countError) {
     console.error('Error fetching post count:', countError);
+    // Handle error or return empty/fallback state
   }
-
-  const totalPages = Math.ceil((totalCount || 0) / pageSize);
-
+  const totalCount = totalCountResult || 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
   const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages || 1));
   const offset = (validCurrentPage - 1) * pageSize;
 
-  // Fetch posts
-  const query = supabase
+  // Fetch ALL posts (without DB pagination or sorting)
+  const { data: allPosts, error: postsError } = await supabase
     .from('blog_posts')
     .select('id, title, slug, meta_description, created_at, published_at, issue_ids, status, category, tags, is_featured, content_html') // Added content_html
     // .eq('status', 'published'); // Keep commented out for now
-    .range(offset, offset + pageSize - 1); // Restore range
+    // DB-level .range() and .order() removed
 
-  // Restore ordering
-  if (sortOption === 'oldest') {
-    query.order('published_at', { ascending: true, nullsFirst: false }).order('created_at', { ascending: true });
-  } else {
-    query.order('published_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
+  if (postsError) {
+    console.error('Error fetching posts:', postsError);
+    return { blogPosts: [], totalPages: 0, currentPage: 1 }; // Return empty state on error
   }
 
-  const { data: posts, error } = await query;
+  let processedAndSortedPosts: IBlogPost[] = allPosts || [];
 
-  if (error) {
-    console.error('Error fetching posts:', error);
-  }
+  // Process dates for all fetched posts
+  processedAndSortedPosts = processedAndSortedPosts.map(post => {
+    if (!post.published_at && post.id) { // Check post.id exists
+      const deterministicDate = generateDeterministicPostDate(post.id).toISOString();
+      post.published_at = deterministicDate;
+      if (!post.created_at) {
+        post.created_at = deterministicDate;
+      }
+    }
+    return post;
+  });
 
-  const blogPosts: IBlogPost[] = posts || []; // Remove cast
+  // Sort in memory
+  processedAndSortedPosts.sort((a, b) => {
+    const dateA = new Date(a.published_at || a.created_at || 0).getTime();
+    const dateB = new Date(b.published_at || b.created_at || 0).getTime();
+    return sortOption === 'newest' ? dateB - dateA : dateA - dateB;
+  });
 
-  return { blogPosts, totalPages, currentPage: validCurrentPage };
+  // Apply pagination in memory
+  const paginatedPosts = processedAndSortedPosts.slice(offset, offset + pageSize);
+
+  return { blogPosts: paginatedPosts, totalPages, currentPage: validCurrentPage };
 }
 
 // --- Main Page Component (Server Component) ---
