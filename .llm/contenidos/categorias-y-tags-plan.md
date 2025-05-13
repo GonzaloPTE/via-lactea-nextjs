@@ -70,13 +70,13 @@ Este documento detalla los pasos para crear páginas dedicadas a listar categor�
 2.  **Adaptar `BlogCard3`, `PaginationClientWrapper`:** Reutilizados. - **HECHO**
 3.  **`BlogSidebar.tsx`:** Ver sección IX.
 
-## IX. Actualizaciones a `BlogSidebar.tsx` [COMPLETADO - PENDIENTE REFINAMIENTO]
+## IX. Actualizaciones a `BlogSidebar.tsx` [COMPLETADO]
 
 **Objetivo:** Hacer el sidebar más contextual y útil.
 
-1.  **Nuevas Props (Opcionales):** `currentCategory?`, `currentTag?`, `allCategories?`, `allTags?`. - **HECHO**
-2.  **Lógica de Visualización:** Adaptada según la página actual (principal, listados, filtrados, detalle de post). Widgets de Categorías y Tags dinámicos. Obtención de datos propia para populares, todas las categorías y todos los tags. - **HECHO**
-3.  **Refinamiento Pendiente:** Revisar lógica de tags mostrados en páginas de listado (actualmente los primeros 15 de todos los disponibles). Considerar mostrar tags más relevantes al contexto si es posible.
+1.  **Nuevas Props (Opcionales):** `currentCategory?`, `currentTag?`. Prop `allTags` eliminada. - **HECHO**
+2.  **Lógica de Visualización:** Adaptada según la página actual. Widgets de Categorías y Tags dinámicos. Obtención de datos propia para populares, todas las categorías y todos los tags (populares, contextuales a categoría). - **HECHO**
+3.  **Refinamiento Tags Populares:** Implementada la función `getPopularTags` en `blog.ts` para obtener tags por frecuencia, opcionalmente filtrados por categoría. `BlogSidebar` ahora muestra "Etiquetas Populares" contextualmente. - **HECHO**
 
 ## X. Constantes y Configuración [COMPLETADO]
 
@@ -131,14 +131,19 @@ Este plan proporciona una hoja de ruta detallada. La implementación se realizar
 **Objetivo:** Realizar pruebas exhaustivas, validar SEO y re-habilitar filtros de 'published'.
 
 1.  **Pruebas Funcionales:** Probar todas las páginas y funcionalidades en diversos escenarios.
-2.  **Revisión `BlogSidebar`:** Ajustar lógica de tags si es necesario.
+2.  **Revisión `BlogSidebar`:** Ajustar lógica de tags si es necesario. - **HECHO**
 3.  **Re-habilitar Filtros `status = 'published'`:**
     *   `getAllUniqueCategories` (`src/lib/supabase/blog.ts`)
     *   `getAllUniqueTags` (`src/lib/supabase/blog.ts`)
     *   `getPostsByCategoryOrTag` (para posts y nombres) (`src/lib/supabase/blog.ts`)
     *   `getPostBySlug` (`src/lib/supabase/blog.ts`)
     *   `getRelatedPosts` (`src/lib/supabase/blog.ts`)
-    *   `getSidebarData` (para `popularPosts` en `BlogSidebar.tsx`)
+    *   `getSidebarData` (para `popularPosts` y `popularTags` en `BlogSidebar.tsx`)
+    *   `getPopularTags` (`src/lib/supabase/blog.ts`)
 4.  **Pruebas Post-Filtros:** Asegurar que solo se muestre contenido publicado.
 5.  **Validación SEO:** Usar Google Rich Results Test y Schema Markup Validator. Revisar Google Search Console post-indexación.
 6.  **Procesamiento de Contenido HTML:** Asegurar que los enlaces en `content_html` de los posts (`/blog/[slug]`) se normalicen a `https://` si no tienen esquema y no son relativos/anclas. - **HECHO** (Implementado en `src/lib/utils.ts` y usado en `src/app/blog/[slug]/page.tsx`).
+7.  **Generación Determinista de Fechas:** Asegurar que todos los posts tengan una fecha (`published_at`, `created_at`) generada de forma determinista si falta en la BD, para una correcta visualización y ordenación inicial. - **HECHO** (Implementado en `src/lib/utils.ts` e integrado en `src/lib/supabase/blog.ts`, `src/app/blog/page.tsx` y `src/components/reuseable/BlogSidebar.tsx`. Se corrigió la lógica de distribución para cubrir todo el rango de fechas deseado).
+8.  **Ordenación Avanzada Post-Procesamiento de Fechas:** Modificar la obtención de posts para que primero se obtengan todos los posts relevantes (filtrados por categoría/tag si aplica), luego se procesen/generen las fechas, después se ordenen en memoria por la fecha final (más recientes primero por defecto), y finalmente se aplique la paginación en memoria. - **HECHO**
+    *   Afecta a: `getPostsByCategoryOrTag` en `src/lib/supabase/blog.ts`. - **HECHO**
+    *   Afecta a: `getBlogData` en `src/app/blog/page.tsx`. - **HECHO**

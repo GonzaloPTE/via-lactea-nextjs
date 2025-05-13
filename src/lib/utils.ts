@@ -46,4 +46,38 @@ export function processPostHtmlContent(htmlString: string | null | undefined): s
     const newUrl = `https://${cleanedUrl}`;
     return `<a${beforeHref}href=${quote}${newUrl}${quote}${afterHref}>`;
   });
+}
+
+/**
+ * Generates a deterministic date for a blog post based on its ID.
+ * The date will be within the range of January 1, 2024, to May 13, 2025.
+ * @param postId The ID of the post, used to ensure determinism.
+ * @returns A Date object representing the generated date.
+ */
+export function generateDeterministicPostDate(postId: number): Date {
+  const startDateMs = new Date('2024-01-01T00:00:00.000Z').getTime();
+  const endDateMs = new Date('2025-05-13T23:59:59.999Z').getTime();
+  const rangeInMilliseconds = endDateMs - startDateMs;
+
+  // Generate a 32-bit hash
+  let hash = postId;
+  // A common way to mix bits (variant of xorshift* / MurmurHash finalizer style)
+  hash = Math.imul(hash ^ (hash >>> 16), 0x85ebca6b);
+  hash = Math.imul(hash ^ (hash >>> 13), 0xc2b2ae35);
+  hash = hash ^ (hash >>> 16);
+
+  // Convert to an unsigned 32-bit integer for normalization
+  const unsignedHash = hash >>> 0; // This gives a value between 0 and 0xFFFFFFFF (4,294,967,295)
+
+  // Normalize the hash to a value between 0 (inclusive) and 1 (exclusive)
+  // Math.pow(2, 32) is 0x100000000
+  const normalizedValue = unsignedHash / Math.pow(2, 32);
+
+  // Scale this normalized value to the desired range
+  // Math.floor ensures we get an integer offset within the range
+  const deterministicOffset = Math.floor(normalizedValue * rangeInMilliseconds);
+
+  const generatedTimestamp = startDateMs + deterministicOffset;
+  
+  return new Date(generatedTimestamp);
 } 

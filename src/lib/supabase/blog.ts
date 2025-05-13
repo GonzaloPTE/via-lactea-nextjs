@@ -1,7 +1,23 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '../../types/supabase'; // Corrected path
 import { IBlogPost } from '../../types/blog'; // Corrected path
-import { slugify } from '../utils'; // Assuming slugify is in ../utils
+import { slugify, generateDeterministicPostDate } from '../utils'; // Import generateDeterministicPostDate
+
+/**
+ * Helper function to process posts and ensure they have a date.
+ */
+function processPostDates(post: IBlogPost): IBlogPost {
+  if (!post.published_at) {
+    const deterministicDate = generateDeterministicPostDate(post.id).toISOString();
+    post.published_at = deterministicDate;
+    // If created_at was also missing, set it to the same deterministic date for completeness.
+    // Otherwise, its original value (if any) is preserved.
+    if (!post.created_at) {
+      post.created_at = deterministicDate; 
+    }
+  }
+  return post;
+}
 
 /**
  * Fetches a single blog post by its slug from the Supabase database.
@@ -25,7 +41,10 @@ export async function getPostBySlug(
     console.error(`Error fetching post by slug ${slug}:`, error.message); // Keep essential error logs
     return null;
   }
-  return data as IBlogPost;
+  if (data) {
+    return processPostDates(data as IBlogPost);
+  }
+  return null;
 }
 
 /**
@@ -84,8 +103,9 @@ export async function getRelatedPosts(
     }
   }
   
-  // Ensure we don't exceed the limit due to combining queries, though the logic above should handle it.
-  return posts.slice(0, limit);
+  // Process dates for all fetched posts
+  const processedPosts = posts.map(processPostDates);
+  return processedPosts.slice(0, limit);
 }
 
 /**
@@ -227,11 +247,34 @@ export async function getPostsByCategoryOrTag(
   // queryCount = queryCount.eq('status', 'published'); // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
   // queryData = queryData.eq('status', 'published');  // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
 
-  // Get Total Count
+  // Fetch all posts matching the filter (category/tag) first for in-memory sorting
+  const { data: allPostsData, error: dataError } = await queryData;
+
+  if (dataError) {
+    console.error(`Error fetching all posts by ${filterType} '${originalName}':`, dataError.message);
+    return { posts: [], totalPages: 0, currentPage: 1, name: originalName };
+  }
+
+  let processedAndSortedPosts = (allPostsData || []).map(p => processPostDates(p as IBlogPost));
+
+  // Sort in memory
+  processedAndSortedPosts.sort((a, b) => {
+    const dateA = new Date(a.published_at || a.created_at || 0).getTime();
+    const dateB = new Date(b.published_at || b.created_at || 0).getTime();
+    return sortOption === 'newest' ? dateB - dateA : dateA - dateB;
+  });
+
+  // Get Total Count for pagination (this query is more efficient than counting after fetching all data fields)
   const { count, error: countError } = await queryCount;
   if (countError) {
     console.error(`Error fetching post count by ${filterType} '${originalName}':`, countError);
-    return { posts: [], totalPages: 0, currentPage: 1, name: originalName };
+    // Fallback if count fails, but we have data: paginate based on what we have, though totalPages might be inaccurate.
+    // This case should be rare.
+    const totalPagesFallback = Math.ceil(processedAndSortedPosts.length / pageSize);
+    const validCurrentPageFallback = Math.max(1, Math.min(currentPage, totalPagesFallback || 1));
+    const offsetFallback = (validCurrentPageFallback - 1) * pageSize;
+    const paginatedPostsFallback = processedAndSortedPosts.slice(offsetFallback, offsetFallback + pageSize);
+    return { posts: paginatedPostsFallback, totalPages: totalPagesFallback, currentPage: validCurrentPageFallback, name: originalName };
   }
   
   const totalCount = count || 0;
@@ -239,20 +282,55 @@ export async function getPostsByCategoryOrTag(
   const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages || 1));
   const offset = (validCurrentPage - 1) * pageSize;
 
-  queryData = queryData.range(offset, offset + pageSize - 1);
-
-  if (sortOption === 'oldest') {
-    queryData = queryData.order('published_at', { ascending: true, nullsFirst: false }).order('created_at', { ascending: true });
-  } else {
-    queryData = queryData.order('published_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
-  }
-
-  const { data: postsData, error: dataError } = await queryData;
-
-  if (dataError) {
-    console.error(`Error fetching posts by ${filterType} '${originalName}':`, dataError.message); // Keep essential error logs
-    return { posts: [], totalPages, currentPage: validCurrentPage, name: originalName };
-  }
+  // Apply pagination in memory
+  const paginatedPosts = processedAndSortedPosts.slice(offset, offset + pageSize);
   
-  return { posts: (postsData || []) as IBlogPost[], totalPages, currentPage: validCurrentPage, name: originalName };
+  return { posts: paginatedPosts, totalPages, currentPage: validCurrentPage, name: originalName };
+}
+
+export interface TagWithCount {
+  name: string;
+  count: number;
+}
+
+export async function getPopularTags(
+  supabase: SupabaseClient<Database>,
+  categoryName?: string | null,
+  limit: number = 15
+): Promise<TagWithCount[]> {
+  let query = supabase.from('blog_posts').select('tags, category');
+  // query = query.eq('status', 'published'); // DEBUG: Temporarily commented out - TO BE RE-ENABLED
+
+  if (categoryName) {
+    query = query.eq('category', categoryName);
+  }
+
+  const { data: posts, error } = await query;
+
+  if (error) {
+    console.error('Error fetching posts for popular tags:', error.message);
+    return [];
+  }
+
+  if (!posts) {
+    return [];
+  }
+
+  const tagCounts: Record<string, number> = {};
+
+  posts.forEach(post => {
+    if (post.tags) {
+      post.tags.forEach(tag => {
+        if (tag) { // Ensure tag is not null or empty
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        }
+      });
+    }
+  });
+
+  const sortedTags = Object.entries(tagCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return sortedTags.slice(0, limit);
 } 

@@ -1,13 +1,13 @@
 import dayjs from "dayjs";
 import Link from "next/link";
 import { Fragment } from "react";
-import { slugify } from "../../lib/utils"; // Keep slugify
+import { slugify, generateDeterministicPostDate } from "../../lib/utils"; // Keep slugify and generateDeterministicPostDate
 import DUMMY_IMAGE_POOL from "../../lib/blog-image-pool";
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Database } from '../../types/supabase';
 import { IBlogPost } from '../../types/blog';
-import { getAllUniqueCategories, getAllUniqueTags } from "../../lib/supabase/blog"; // Import new functions
+import { getAllUniqueCategories, getPopularTags, type TagWithCount } from "../../lib/supabase/blog"; // Import new functions
 
 // GLOBAL CUSTOM COMPONENTS
 import FigureImage from "./FigureImage";
@@ -24,14 +24,13 @@ type BlogSidebarProps = {
    // For listing pages: this might be unused or could represent a subset of tags from the list
    tags?: string[] | null; 
    allCategories?: string[] | null; // All available categories
-   allTags?: string[] | null;       // All available tags (for general listing)
    currentCategory?: string | null; // Name of the current category (if on a category-filtered page)
    currentTag?: string | null;      // Name of the current tag (if on a tag-filtered page)
    // postsForTagExtraction?: IBlogPost[]; // Optional: Pass listed posts to extract tags from, if not showing allTags
 };
 // ========================================================
 
-async function getSidebarData() {
+async function getSidebarData(currentCategory?: string | null) {
   const cookieStore = await cookies();
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -59,30 +58,43 @@ async function getSidebarData() {
   let popularPosts: IBlogPost[] = [];
   if (popularPostsData && !popularPostsError) {
     const shuffled = popularPostsData.sort(() => 0.5 - Math.random());
-    popularPosts = shuffled.slice(0, 3) as IBlogPost[];
+    // Process dates for popular posts before slicing
+    const processedPopularPosts = shuffled.map(rawPost => {
+      // Ensure rawPost is treated as IBlogPost for type compatibility if needed
+      const post = rawPost as IBlogPost; 
+      if (!post.published_at && post.id) { 
+        const deterministicDate = generateDeterministicPostDate(post.id).toISOString();
+        // Return a new object to avoid modifying the original from cache if it's shared
+        const updatedPost = { ...post, published_at: deterministicDate };
+        if (!post.created_at) {
+          updatedPost.created_at = deterministicDate;
+        }
+        return updatedPost;
+      }
+      return post;
+    });
+    popularPosts = processedPopularPosts.slice(0, 3);
   }
 
   // Fetch all unique categories
   const categories = await getAllUniqueCategories(supabase);
-  // Fetch all unique tags
-  const tags = await getAllUniqueTags(supabase);
+  // Fetch popular tags (conditionally by category)
+  const popularTags = await getPopularTags(supabase, currentCategory); // Pass currentCategory
 
-  return { popularPosts, categories, allAvailableTags: tags };
+  return { popularPosts, categories, popularTags }; // Return popularTags instead of allAvailableTags
 }
 
 
 export default async function BlogSidebar({ 
   thumbnail, 
-  tags: currentPostTags, // Renaming prop for clarity internally
+  tags: currentPostTags, 
   allCategories: passedAllCategories, 
-  allTags: passedAllTags, 
   currentCategory,
   currentTag 
 }: BlogSidebarProps) {
-  const { popularPosts, categories: fetchedCategories, allAvailableTags: fetchedAllTags } = await getSidebarData();
+  const { popularPosts, categories: fetchedCategories, popularTags } = await getSidebarData(currentCategory);
 
   const displayCategories = passedAllCategories || fetchedCategories;
-  const displayTags = passedAllTags || fetchedAllTags; // General list of tags
 
   return (
     <Fragment>
@@ -158,7 +170,7 @@ export default async function BlogSidebar({
           <>
             <h4 className="widget-title mb-3">Etiquetas del Artículo</h4>
             <ul className="list-unstyled tag-list">
-              {currentPostTags.map((tag) => (
+              {currentPostTags.map((tag: string) => (
                 <li key={tag}>
                   <Link 
                     href={`/blog/tags/${slugify(tag)}`}
@@ -173,27 +185,29 @@ export default async function BlogSidebar({
               <Link href="/blog/tags" className="hover-underline text-primary">Ver todas las etiquetas <span className="ms-2">→</span></Link>
             </div>
           </>
-        ) : displayTags && displayTags.length > 0 ? (
-          // SCENARIO 2: On listing pages, showing a general list of tags (e.g., all available tags or a subset)
+        ) : popularTags && popularTags.length > 0 ? (
+          // SCENARIO 2: Use popularTags. These are TagWithCount[]
           <>
-            <h4 className="widget-title mb-3">Explorar Etiquetas</h4>
+            <h4 className="widget-title mb-3">Etiquetas Populares</h4>
             <ul className="list-unstyled tag-list">
-              {displayTags.slice(0, 15).map((tag) => ( // Show a subset, e.g., first 15
-                <li key={tag}>
+              {popularTags.map((tagItem) => ( // Iterate over TagWithCount objects
+                <li key={tagItem.name}>
                   <Link 
-                    href={`/blog/tags/${slugify(tag)}`}
-                    className={`btn btn-soft-ash btn-sm rounded-pill ${currentTag === tag ? 'active' : ''}`}
+                    href={`/blog/tags/${slugify(tagItem.name)}`}
+                    // Highlight if currentTag matches tagItem.name
+                    className={`btn btn-soft-ash btn-sm rounded-pill ${currentTag === tagItem.name ? 'active' : ''}`}
                   >
-                    {tag}
+                    {tagItem.name} {/** Optionally: {tagItem.name} ({tagItem.count}) */}
                   </Link>
                 </li>
               ))}
             </ul>
-            {displayTags.length > 15 && (
-                <div className="mt-3">
-                    <Link href="/blog/tags" className="hover-underline text-primary">Ver todas las etiquetas <span className="ms-2">→</span></Link>
-                </div>
-            )}
+            {/* Link to all tags page might still be relevant if popularTags is a limited list */}
+            {/* We can check if the number of popularTags returned is equal to the limit requested from getPopularTags */}
+            {/* For now, assume if there are popular tags, there might be more: */}
+            <div className="mt-3">
+                 <Link href="/blog/tags" className="hover-underline text-primary">Ver todas las etiquetas <span className="ms-2">→</span></Link>
+            </div>
           </>
         ) : (
           // Fallback if no tags are available at all
