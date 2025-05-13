@@ -1,9 +1,19 @@
 import { MetadataRoute } from 'next';
 import { serviceList, type ServiceItem } from '../data/service-data'; // Correct import path and add type import
+import { createSupabaseServerClient } from 'lib/supabase/server'; // Import Supabase client
+import { 
+  getAllUniqueCategories, 
+  getAllUniqueTags, 
+  getAllPublishedPostSlugsAndDates 
+} from 'lib/supabase/blog'; // Import blog data functions
+import { slugify } from 'lib/utils'; // Import slugify
 
-const BASE_URL = 'https://vialacteasuenoylactancia.com';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://vialacteasuenoylactancia.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const supabase = await createSupabaseServerClient(); // Initialize Supabase client
+  const currentDate = new Date().toISOString();
+
   // Only include static routes visible in main navigation
   const staticRoutes = [
     '/', // Inicio
@@ -27,19 +37,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // Ejemplo: Añadir URLs dinámicas (ej. posts de blog)
-  // Deberías obtener estos datos de tu CMS, base de datos, o donde los almacenes
-  // const posts = await getAllPublishedBlogPostSlugs(); // Función imaginaria
-  // const dynamicPostRoutes = posts.map((post) => ({
-  //   url: `${BASE_URL}/blog/${post.slug}`,
-  //   lastModified: post.updatedAt, // Usa la fecha real de actualización
-  //   changeFrequency: 'weekly',
-  //   priority: 0.7,
-  // }));
+  // Generate dynamic routes for blog posts
+  const postsData = await getAllPublishedPostSlugsAndDates(supabase);
+  const dynamicPostRoutes = postsData.map((post) => ({
+    url: `${BASE_URL}/blog/${post.slug}`,
+    lastModified: post.lastModified,
+    changeFrequency: 'weekly' as MetadataRoute.Sitemap[0]['changeFrequency'],
+    priority: 0.7,
+  }));
+
+  // Generate dynamic routes for blog categories
+  const categories = await getAllUniqueCategories(supabase);
+  const dynamicCategoryRoutes = categories.map((categoryName) => ({
+    url: `${BASE_URL}/blog/categorias/${slugify(categoryName)}`,
+    lastModified: currentDate, // Categories pages update less frequently or when content changes
+    changeFrequency: 'monthly' as MetadataRoute.Sitemap[0]['changeFrequency'],
+    priority: 0.6,
+  }));
+
+  // Generate dynamic routes for blog tags
+  const tags = await getAllUniqueTags(supabase);
+  const dynamicTagRoutes = tags.map((tagName) => ({
+    url: `${BASE_URL}/blog/tags/${slugify(tagName)}`,
+    lastModified: currentDate, // Tags pages update less frequently or when content changes
+    changeFrequency: 'monthly' as MetadataRoute.Sitemap[0]['changeFrequency'],
+    priority: 0.5,
+  }));
 
   return [
     ...staticRoutes,
     ...serviceRoutes, // Add service routes
-    // ...dynamicPostRoutes, // Descomenta y adapta si tienes rutas dinámicas de blog
+    ...dynamicPostRoutes, 
+    ...dynamicCategoryRoutes,
+    ...dynamicTagRoutes,
   ];
 } 

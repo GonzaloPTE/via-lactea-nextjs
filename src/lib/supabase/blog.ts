@@ -334,4 +334,47 @@ export async function getPopularTags(
     .sort((a, b) => b.count - a.count);
 
   return sortedTags.slice(0, limit);
+}
+
+/**
+ * Fetches slugs and last modification dates for all published blog posts.
+ * Uses 'published_at' as the primary last modification date.
+ * If 'published_at' is not available, it falls back to 'created_at'.
+ * If neither is available, it generates a deterministic date.
+ *
+ * @param supabase - The Supabase client instance.
+ * @returns A promise that resolves to an array of objects, each containing a slug and lastModified date.
+ */
+export async function getAllPublishedPostSlugsAndDates(
+  supabase: SupabaseClient<Database>
+): Promise<{ slug: string; lastModified: string }[]> {
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('slug, published_at, created_at, id') // Select id for deterministic date generation
+    .eq('status', 'published')
+    .not('slug', 'is', null);
+
+  if (error) {
+    console.error('Error fetching published post slugs and dates:', error.message);
+    return [];
+  }
+
+  if (!data) {
+    return [];
+  }
+
+  return data.map(post => {
+    let lastModifiedDate: Date;
+    if (post.published_at) {
+      lastModifiedDate = new Date(post.published_at);
+    } else {
+      // Fallback to deterministic date generation if no dates are set
+      // This ensures all posts have a lastModified date for the sitemap
+      lastModifiedDate = generateDeterministicPostDate(post.id);
+    }
+    return {
+      slug: post.slug!, // slug is not null due to the .not filter
+      lastModified: lastModifiedDate.toISOString(),
+    };
+  });
 } 
