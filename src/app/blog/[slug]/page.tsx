@@ -1,10 +1,9 @@
 import { Fragment } from 'react';
 import { notFound } from 'next/navigation';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { Database } from '../../../types/supabase'; // Corrected path
+// Corrected path
 import { IBlogPost } from '../../../types/blog';   // Corrected path
 import { getPostBySlug } from '../../../lib/supabase/blog'; // Corrected path
+import { createSupabaseServerClient } from "../../../lib/supabase/server"; // Import the new utility
 
 // Import Components
 import ViaLacteaNavbar from '../../../components/blocks/navbar/via-lactea/ViaLacteaNavbar'; // Corrected path
@@ -29,41 +28,13 @@ interface BlogPostPageProps {
 }
 
 // Function to get Supabase client
-const getSupabaseClient = async () => {
-  const cookieStore = await cookies(); // from next/headers
-
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: { 
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          // Note: Server Components traditionally cannot set cookies directly.
-          // This implementation allows the Supabase client to attempt to queue cookie changes.
-          // Actual cookie setting relies on Next.js mechanisms (e.g., in middleware or Server Actions responding to client requests).
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              // Check if cookieStore has a 'set' method before calling it
-              if (typeof (cookieStore as any).set === 'function') {
-                (cookieStore as any).set(name, value, options);
-              }
-            });
-          } catch (error) {
-            // console.error("Error setting cookies in Server Component context:", error);
-          }
-        }
-      },
-    }
-  );
-};
+// REMOVE THE OLD getSupabaseClient FUNCTION
+// const getSupabaseClient = async () => { ... };
 
 // SEO Metadata Generation
 export async function generateMetadata({ params }: BlogPostPageProps) {
   const awaitedParams = await params;
-  const supabase = await getSupabaseClient();
+  const supabase = await createSupabaseServerClient(); // Use the new utility
   const post = await getPostBySlug(supabase, awaitedParams.slug);
 
   if (!post) {
@@ -117,7 +88,7 @@ const generateBlogPostingJsonLd = (post: IBlogPost, imageUrl: string, canonicalU
 };
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const supabase = await getSupabaseClient();
+  const supabase = await createSupabaseServerClient(); // Use the new utility
   const awaitedParams = await params;
   const post = await getPostBySlug(supabase, awaitedParams.slug);
 
@@ -133,7 +104,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: es })
     : format(new Date(post.created_at), 'dd MMM yyyy', { locale: es });
   
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vialacteasuenoylactancia.com';
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vialacteasuenoylactancia.com';
   const canonicalUrl = `${siteUrl}/blog/${post.slug}`;
   const heroImageUrl = `${siteUrl}${selectedImage}`;
 
@@ -173,7 +144,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 {/* Tags */}
                 {post.tags && post.tags.length > 0 && (
                   <div className="post-tags mt-6 mb-3">
-                    {post.tags.map((tag, index) => (
+                    {post.tags.map((tag) => (
                       <Link 
                         href={`/blog/tag/${slugify(tag)}`} 
                         key={tag} 
@@ -193,7 +164,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </div>
 
               <aside className="col-lg-4 sidebar mt-8 mt-lg-0">
-                <BlogSidebar tags={post.tags} />
+                <BlogSidebar 
+                  tags={post.tags}
+                  currentCategory={post.category}
+                />
               </aside>
             </div>
           </div>
