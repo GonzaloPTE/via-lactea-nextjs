@@ -17,8 +17,8 @@ import { getPostsByCategoryOrTag } from '../../../../lib/supabase/blog';
 const PAGE_SIZE = 6; // Constante para el tamaño de página
 
 type TagPostsPageProps = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 // ===================================================================================================
