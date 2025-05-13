@@ -133,16 +133,17 @@ Este plan proporciona una hoja de ruta detallada. La implementación se realizar
 
 1.  **Pruebas Funcionales:** Probar todas las páginas y funcionalidades en diversos escenarios.
 2.  **Revisión `BlogSidebar`:** Ajustar lógica de tags si es necesario. - **HECHO**
-3.  **Re-habilitar Filtros `status = 'published'`:**
-    *   `getAllUniqueCategories` (`src/lib/supabase/blog.ts`)
-    *   `getAllUniqueTags` (`src/lib/supabase/blog.ts`)
-    *   `getPostsByCategoryOrTag` (para posts y nombres) (`src/lib/supabase/blog.ts`)
-    *   `getPostBySlug` (`src/lib/supabase/blog.ts`)
-    *   `getRelatedPosts` (`src/lib/supabase/blog.ts`)
-    *   `getSidebarData` (para `popularPosts` y `popularTags` en `BlogSidebar.tsx`)
-    *   `getPopularTags` (`src/lib/supabase/blog.ts`)
-4.  **Pruebas Post-Filtros:** Asegurar que solo se muestre contenido publicado.
-5.  **Validación SEO:** Usar Google Rich Results Test y Schema Markup Validator. Revisar Google Search Console post-indexación.
+3.  **Re-habilitar Filtros `status = 'published'`:** - **HECHO**
+    *   `getAllUniqueCategories` (`src/lib/supabase/blog.ts`) - **HECHO**
+    *   `getAllUniqueTags` (`src/lib/supabase/blog.ts`) - **HECHO**
+    *   `getPostsByCategoryOrTag` (para posts y nombres) (`src/lib/supabase/blog.ts`) - **HECHO**
+    *   `getPostBySlug` (`src/lib/supabase/blog.ts`) - **HECHO**
+    *   `getRelatedPosts` (`src/lib/supabase/blog.ts`) - **HECHO**
+    *   `getSidebarData` (para `popularPosts` y `popularTags` en `BlogSidebar.tsx`) - **HECHO**
+    *   `getPopularTags` (`src/lib/supabase/blog.ts`) - **HECHO**
+    *   `getBlogData` (para `totalCount` y `allPosts` en `src/app/blog/page.tsx`) - **HECHO**
+4.  **Pruebas Post-Filtros:** Asegurar que solo se muestre contenido publicado. [PENDIENTE]
+5.  **Validación SEO:** Usar Google Rich Results Test y Schema Markup Validator. Revisar Google Search Console post-indexación. [PENDIENTE]
 6.  **Procesamiento de Contenido HTML:** Asegurar que los enlaces en `content_html` de los posts (`/blog/[slug]`) se normalicen a `https://` si no tienen esquema y no son relativos/anclas. - **HECHO** (Implementado en `src/lib/utils.ts` y usado en `src/app/blog/[slug]/page.tsx`).
 7.  **Generación Determinista de Fechas:** Asegurar que todos los posts tengan una fecha (`published_at`, `created_at`) generada de forma determinista si falta en la BD, para una correcta visualización y ordenación inicial. - **HECHO** (Implementado en `src/lib/utils.ts` e integrado en `src/lib/supabase/blog.ts`, `src/app/blog/page.tsx` y `src/components/reuseable/BlogSidebar.tsx`. Se corrigió la lógica de distribución para cubrir todo el rango de fechas deseado).
 8.  **Ordenación Avanzada Post-Procesamiento de Fechas:** Modificar la obtención de posts para que primero se obtengan todos los posts relevantes (filtrados por categoría/tag si aplica), luego se procesen/generen las fechas, después se ordenen en memoria por la fecha final (más recientes primero por defecto), y finalmente se aplique la paginación en memoria. - **HECHO**
