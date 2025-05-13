@@ -17,14 +17,14 @@ import { slugify } from '../../../lib/utils';
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Etiquetas del Blog | Vía Láctea",
-    description: "Explora todos los artículos de nuestro blog por etiquetas. Encuentra contenido relevante sobre sueño infantil, lactancia, crianza y más.",
-    keywords: ["etiquetas blog", "tags blog", "temas blog", "Vía Láctea blog", "sueño infantil", "lactancia"],
+    description: "Descubre artículos de Vía Láctea por etiquetas. Filtra por temas específicos como #LactanciaExclusiva, #SueñoRecienNacido, #CrianzaRespetuosa y más para acceder rápidamente a la información que buscas.",
+    keywords: ["etiquetas blog", "tags blog", "temas blog", "Vía Láctea blog", "sueño infantil", "lactancia", "crianza respetuosa", "alimentación complementaria"],
     alternates: {
       canonical: "/blog/tags",
     },
     openGraph: {
       title: "Etiquetas del Blog | Vía Láctea",
-      description: "Explora todos los artículos de nuestro blog por etiquetas.",
+      description: "Descubre artículos de Vía Láctea por etiquetas. Filtra por temas específicos como #LactanciaExclusiva, #SueñoRecienNacido, #CrianzaRespetuosa y más para acceder rápidamente a la información que buscas.",
       url: "/blog/tags",
       type: "website",
       // images: [ { url: '/img/via-lactea/og-image-blog-tags.jpg' } ] // Example OG image
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: "Etiquetas del Blog | Vía Láctea",
-      description: "Explora todos los artículos de nuestro blog por etiquetas.",
+      description: "Descubre artículos de Vía Láctea por etiquetas. Filtra por temas específicos como #LactanciaExclusiva, #SueñoRecienNacido, #CrianzaRespetuosa y más para acceder rápidamente a la información que buscas.",
       // images: [ '/img/via-lactea/og-image-blog-tags.jpg' ] // Example Twitter image
     }
   };
@@ -78,14 +78,14 @@ export default async function TagsPage() {
 
       <main className="content-wrapper">
         <PageHeader
-          title="Etiquetas del Blog"
-          subtitle="Explora nuestros artículos por temas y etiquetas"
+          title="Etiquetas del Blog Vía Láctea"
+          subtitle="Accede directamente a la información que te interesa sobre #Lactancia, #SueñoInfantil, #CrianzaRespetuosa y otros temas clave navegando por nuestras etiquetas."
         />
 
         <section className="wrapper bg-light">
           <div className="container py-10 py-md-12">
             <div className="row gx-lg-8 gy-8">
-              <div className="col-lg-8">
+              <div className="col-12">
                 {tags && tags.length > 0 ? (
                   <div className="d-flex flex-wrap align-items-center justify-content-start gap-2">
                     {tags.map((tag) => (
@@ -100,15 +100,11 @@ export default async function TagsPage() {
                   </div>
                 ) : (
                   <div className="text-center">
-                    <p className="lead">No hay etiquetas disponibles en este momento.</p>
-                    <p>Vuelve más tarde para explorar nuestro contenido.</p>
+                    <p className="lead">Aún no hemos añadido etiquetas a nuestros artículos.</p>
+                    <p>¡Estamos en ello! Mientras tanto, te invitamos a explorar todos nuestros posts en el <Link href="/blog" className="hover-underline text-primary">blog principal</Link>.</p>
                   </div>
                 )}
               </div>
-
-              {/* <aside className="col-lg-4 sidebar mt-8 mt-lg-0">
-                <BlogSidebar />
-              </aside> */}
             </div>
           </div>
         </section>

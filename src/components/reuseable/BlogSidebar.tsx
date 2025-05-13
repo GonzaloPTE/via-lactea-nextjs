@@ -15,8 +15,6 @@ import NextLink from "components/reuseable/links/NextLink"; // Keep NextLink for
 import SocialLinks from "components/reuseable/SocialLinks";
 
 // CUSTOM DATA
-import data from "data/blog-sidebar"; // Keep using static data for other sections
-
 // ========================================================
 type BlogSidebarProps = {
    thumbnail?: string;
@@ -216,6 +214,7 @@ export default async function BlogSidebar({
       </div>
 
       {/* Archive Widget (Still uses static data from import) */}
+      {/* 
       <div className="widget">
         <h4 className="widget-title mb-3">Archivo</h4>
         <ul className="unordered-list bullet-primary text-reset">
@@ -226,6 +225,7 @@ export default async function BlogSidebar({
           ))}
         </ul>
       </div>
+      */}
     </Fragment>
   );
 }
