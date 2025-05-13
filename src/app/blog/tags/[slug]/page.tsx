@@ -1,9 +1,6 @@
 import { Fragment } from 'react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata, ResolvingMetadata } from 'next';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { createSupabaseServerClient } from '../../../../lib/supabase/server';
 
 // Componentes
@@ -11,15 +8,11 @@ import ViaLacteaNavbar from '../../../../components/blocks/navbar/via-lactea/Via
 import CalendlyButton from '../../../../components/blocks/navbar/components/CalendlyButton';
 import ViaLacteaFooter from '../../../../components/blocks/footer/ViaLacteaFooter';
 import PageHeader from '../../../../components/reuseable/PageHeader';
-import { BlogCard3 } from '../../../../components/reuseable/blog-cards';
-import PaginationClientWrapper from '../../../../components/reuseable/PaginationClientWrapper';
 import BlogSidebar from '../../../../components/reuseable/BlogSidebar';
 import BlogPostList from '../../../../components/reuseable/BlogPostList';
 
 // Supabase y datos
 import { getPostsByCategoryOrTag } from '../../../../lib/supabase/blog';
-import { IBlogPost } from '../../../../types/blog';
-import DUMMY_IMAGE_POOL from '../../../../lib/blog-image-pool';
 
 const PAGE_SIZE = 6; // Constante para el tamaño de página
 

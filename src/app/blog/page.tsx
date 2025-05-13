@@ -2,20 +2,16 @@ import { Fragment } from "react";
 import CalendlyButton from "components/blocks/navbar/components/CalendlyButton";
 import ViaLacteaNavbar from "components/blocks/navbar/via-lactea/ViaLacteaNavbar";
 // Updated imports: Removed Carousel, BlogCard4. Added BlogCard3, Pagination.
-import { BlogCard3 } from "components/reuseable/blog-cards"; 
-import PaginationClientWrapper from "components/reuseable/PaginationClientWrapper"; // Use the wrapper again
+// Use the wrapper again
 import BlogSidebar from "components/reuseable/BlogSidebar"; 
 import BlogHero from "components/blocks/hero/BlogHero"; // Import BlogHero
 // Utils
-import { format } from 'date-fns'; 
-import { es } from 'date-fns/locale'; 
 
 // Supabase
 import { Database } from '../../types/supabase'; 
 import { SupabaseClient } from '@supabase/supabase-js';
 import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
 import { IBlogPost } from "../../types/blog"; // Import IBlogPost
-import DUMMY_IMAGE_POOL from '../../lib/blog-image-pool';
 import { createSupabaseServerClient } from "../../lib/supabase/server"; // Import the new utility
 import BlogPostList from "components/reuseable/BlogPostList"; // Import the new component
 import { generateDeterministicPostDate } from "../../lib/utils"; // Import generateDeterministicPostDate

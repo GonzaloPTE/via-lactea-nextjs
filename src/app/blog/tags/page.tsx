@@ -44,10 +44,12 @@ export default async function TagsPage() {
   tags.sort((a, b) => a.localeCompare(b)); // Sort tags alphabetically
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vialacteasuenoylactancia.com';
+  const pageUrl = `${baseUrl}/blog/tags`;
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "@id": `${pageUrl}#breadcrumb`,
     "itemListElement": [
       {
         "@type": "ListItem",
@@ -64,12 +66,34 @@ export default async function TagsPage() {
     ]
   };
 
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Etiquetas del Blog - Vía Láctea",
+    "description": "Descubre artículos de Vía Láctea por etiquetas. Filtra por temas específicos como #LactanciaExclusiva, #SueñoRecienNacido, #CrianzaRespetuosa y más para acceder rápidamente a la información que buscas.",
+    "url": pageUrl,
+    "breadcrumb": {
+      "@id": breadcrumbSchema["@id"]
+    },
+    "mainEntityOfPage": {
+      "@type": "ItemList",
+      "name": "Lista de Etiquetas del Blog",
+      "description": "Lista de todas las etiquetas disponibles en el blog de Vía Láctea.",
+      "itemListElement": tags.map((tag, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": tag,
+        "url": `${pageUrl}/${slugify(tag)}`
+      }))
+    }
+  };
+
   return (
     <Fragment>
-      {/* ========== SEO: BreadcrumbList Schema ========== */}
+      {/* ========== SEO: Schemas ========== */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([breadcrumbSchema, webPageSchema]) }}
       />
 
       <header className="wrapper bg-soft-primary">
