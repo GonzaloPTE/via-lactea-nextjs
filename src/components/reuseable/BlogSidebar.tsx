@@ -7,6 +7,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Database } from '../../types/supabase';
 import { IBlogPost } from '../../types/blog';
+import { getAllUniqueCategories, getAllUniqueTags } from "../../lib/supabase/blog"; // Import new functions
 
 // GLOBAL CUSTOM COMPONENTS
 import FigureImage from "./FigureImage";
@@ -17,14 +18,20 @@ import SocialLinks from "components/reuseable/SocialLinks";
 import data from "data/blog-sidebar"; // Keep using static data for other sections
 
 // ========================================================
-// Updated props to include optional tags array
 type BlogSidebarProps = {
    thumbnail?: string;
-   tags?: string[] | null;
+   // For single post page: tags of the current post
+   // For listing pages: this might be unused or could represent a subset of tags from the list
+   tags?: string[] | null; 
+   allCategories?: string[] | null; // All available categories
+   allTags?: string[] | null;       // All available tags (for general listing)
+   currentCategory?: string | null; // Name of the current category (if on a category-filtered page)
+   currentTag?: string | null;      // Name of the current tag (if on a tag-filtered page)
+   // postsForTagExtraction?: IBlogPost[]; // Optional: Pass listed posts to extract tags from, if not showing allTags
 };
 // ========================================================
 
-async function getRandomPopularPosts(): Promise<IBlogPost[]> {
+async function getSidebarData() {
   const cookieStore = await cookies();
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,21 +47,43 @@ async function getRandomPopularPosts(): Promise<IBlogPost[]> {
       },
     }
   );
-  // Obtener 10 posts y elegir 3 aleatorios en el servidor
-  const { data, error } = await supabase
+
+  // Fetch popular posts
+  const { data: popularPostsData, error: popularPostsError } = await supabase
     .from('blog_posts')
     .select('id, title, slug, published_at, created_at')
-    .order('published_at', { ascending: false })
+    // .eq('status', 'published') // Consider if popular posts should also be published only
+    .order('published_at', { ascending: false, nullsFirst: true })
     .limit(10);
-  if (!data || error) return [];
-  // Seleccionar 3 aleatorios
-  const shuffled = data.sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, 3) as IBlogPost[];
+  
+  let popularPosts: IBlogPost[] = [];
+  if (popularPostsData && !popularPostsError) {
+    const shuffled = popularPostsData.sort(() => 0.5 - Math.random());
+    popularPosts = shuffled.slice(0, 3) as IBlogPost[];
+  }
+
+  // Fetch all unique categories
+  const categories = await getAllUniqueCategories(supabase);
+  // Fetch all unique tags
+  const tags = await getAllUniqueTags(supabase);
+
+  return { popularPosts, categories, allAvailableTags: tags };
 }
 
-// Reverted to standard functional component (not async)
-export default async function BlogSidebar({ thumbnail, tags }: BlogSidebarProps) {
-  const popularPosts = await getRandomPopularPosts();
+
+export default async function BlogSidebar({ 
+  thumbnail, 
+  tags: currentPostTags, // Renaming prop for clarity internally
+  allCategories: passedAllCategories, 
+  allTags: passedAllTags, 
+  currentCategory,
+  currentTag 
+}: BlogSidebarProps) {
+  const { popularPosts, categories: fetchedCategories, allAvailableTags: fetchedAllTags } = await getSidebarData();
+
+  const displayCategories = passedAllCategories || fetchedCategories;
+  const displayTags = passedAllTags || fetchedAllTags; // General list of tags
+
   return (
     <Fragment>
       {/* About Widget */}
@@ -99,46 +128,80 @@ export default async function BlogSidebar({ thumbnail, tags }: BlogSidebarProps)
         </ul>
       </div>
 
-      {/* Categories Widget (Still uses static data) */}
+      {/* Categories Widget (Dynamic) */}
       <div className="widget">
         <h4 className="widget-title mb-3">Categorías</h4>
-        <ul className="unordered-list bullet-primary text-reset">
-          {data.categories.map(({ id, title, post, url }) => (
-            <li key={id}>
-              <NextLink title={`${title} (${post})`} href={url} />
-            </li>
-          ))}
-        </ul>
+        {displayCategories && displayCategories.length > 0 ? (
+          <ul className="unordered-list bullet-primary text-reset">
+            {displayCategories.map((category) => (
+              <li key={category} className={currentCategory === category ? 'fw-bold' : ''}>
+                <Link href={`/blog/categorias/${slugify(category)}`} className="link-dark">
+                  {category}
+                </Link>
+                {/* We don't have post counts per category easily here without more complex queries */}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-muted">No hay categorías disponibles.</p>
+        )}
+        <div className="mt-3">
+           <Link href="/blog/categorias" className="hover-underline text-primary">Ver todas las categorías <span className="ms-2">→</span></Link>
+        </div>
       </div>
 
-      {/* Tags Widget (Shows tags from current post passed via props) */}
+      {/* Tags Widget - Logic to be refined based on context */}
       <div className="widget">
-        <h4 className="widget-title mb-3">Etiquetas del Artículo</h4>
-        {tags && tags.length > 0 ? (
-          <> {/* Use Fragment to group list and link */} 
+        {/* Title will be conditional */} 
+        {currentPostTags && currentPostTags.length > 0 ? (
+           // SCENARIO 1: On a single post page, showing tags for THAT post
+          <>
+            <h4 className="widget-title mb-3">Etiquetas del Artículo</h4>
             <ul className="list-unstyled tag-list">
-              {tags.map((tag) => (
+              {currentPostTags.map((tag) => (
                 <li key={tag}>
                   <Link 
-                    href={`/blog/tag/${slugify(tag)}`} 
-                    className="btn btn-soft-ash btn-sm rounded-pill"
+                    href={`/blog/tags/${slugify(tag)}`}
+                    className={`btn btn-soft-ash btn-sm rounded-pill ${currentTag === tag ? 'active' : ''}`}
                   >
                     {tag}
                   </Link>
                 </li>
               ))}
             </ul>
-            {/* Link to all tags page */}
             <div className="mt-3">
-              <Link href="/blog/tag" className="hover-underline text-primary">Ver todas las etiquetas <span className="ms-2">→</span></Link>
+              <Link href="/blog/tags" className="hover-underline text-primary">Ver todas las etiquetas <span className="ms-2">→</span></Link>
             </div>
           </>
+        ) : displayTags && displayTags.length > 0 ? (
+          // SCENARIO 2: On listing pages, showing a general list of tags (e.g., all available tags or a subset)
+          <>
+            <h4 className="widget-title mb-3">Explorar Etiquetas</h4>
+            <ul className="list-unstyled tag-list">
+              {displayTags.slice(0, 15).map((tag) => ( // Show a subset, e.g., first 15
+                <li key={tag}>
+                  <Link 
+                    href={`/blog/tags/${slugify(tag)}`}
+                    className={`btn btn-soft-ash btn-sm rounded-pill ${currentTag === tag ? 'active' : ''}`}
+                  >
+                    {tag}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {displayTags.length > 15 && (
+                <div className="mt-3">
+                    <Link href="/blog/tags" className="hover-underline text-primary">Ver todas las etiquetas <span className="ms-2">→</span></Link>
+                </div>
+            )}
+          </>
         ) : (
-          <p className="text-muted">Este artículo no tiene etiquetas.</p>
+          // Fallback if no tags are available at all
+          <p className="text-muted">No hay etiquetas disponibles.</p>
         )}
       </div>
 
-      {/* Archive Widget (Still uses static data) */}
+      {/* Archive Widget (Still uses static data from import) */}
       <div className="widget">
         <h4 className="widget-title mb-3">Archivo</h4>
         <ul className="unordered-list bullet-primary text-reset">

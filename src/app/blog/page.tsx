@@ -11,13 +11,12 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale'; 
 
 // Supabase
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { Database } from '../../types/supabase'; 
 import { SupabaseClient } from '@supabase/supabase-js';
 import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
 import { IBlogPost } from "../../types/blog"; // Import IBlogPost
 import DUMMY_IMAGE_POOL from '../../lib/blog-image-pool';
+import { createSupabaseServerClient } from "../../lib/supabase/server"; // Import the new utility
 
 // --- Define Page Props ---
 interface BlogPageProps {
@@ -80,21 +79,7 @@ async function getBlogData(
 // --- Main Page Component (Server Component) ---
 export default async function BlogPage({ searchParams }: BlogPageProps) { // Make async again, accept searchParams
   // Setup server client
-  const cookieStore = await cookies()
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: { 
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
-        }
-      },
-    }
-  )
+  const supabase = await createSupabaseServerClient(); // Use the new utility
 
   // Fetch data using the helper
   const { blogPosts, totalPages, currentPage } = await getBlogData(supabase, searchParams);
