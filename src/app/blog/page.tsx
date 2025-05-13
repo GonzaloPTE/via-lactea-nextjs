@@ -42,7 +42,7 @@ async function getBlogData(
   const { count: totalCountResult, error: countError } = await supabase
     .from('blog_posts')
     .select('id', { count: 'exact', head: true })
-    // .eq('status', 'published'); // Temporarily commented out to show all posts
+    .eq('status', 'published');
 
   if (countError) {
     console.error('Error fetching post count:', countError);
@@ -57,7 +57,7 @@ async function getBlogData(
   const { data: allPosts, error: postsError } = await supabase
     .from('blog_posts')
     .select('id, title, slug, meta_description, created_at, published_at, issue_ids, status, category, tags, is_featured, content_html') // Added content_html
-    // .eq('status', 'published'); // Keep commented out for now
+    .eq('status', 'published');
     // DB-level .range() and .order() removed
 
   if (postsError) {

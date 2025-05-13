@@ -49,7 +49,7 @@ async function getSidebarData(currentCategory?: string | null) {
   const { data: popularPostsData, error: popularPostsError } = await supabase
     .from('blog_posts')
     .select('id, title, slug, published_at, created_at')
-    // .eq('status', 'published') // Consider if popular posts should also be published only
+    .eq('status', 'published') // Consider if popular posts should also be published only
     .order('published_at', { ascending: false, nullsFirst: true })
     .limit(10);
   

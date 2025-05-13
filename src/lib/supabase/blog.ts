@@ -34,7 +34,7 @@ export async function getPostBySlug(
     .from('blog_posts')
     .select('*') // Select all columns, IBlogPost type should match
     .eq('slug', slug)
-    // .eq('status', 'published') // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
+    .eq('status', 'published') // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
     .single();
 
   if (error) {
@@ -71,7 +71,7 @@ export async function getRelatedPosts(
       .select('id, title, slug, meta_description, category, created_at, published_at, is_featured, tags') // Select fields needed for BlogCard3
       .eq('category', category)
       .neq('id', currentPostId)
-      // .eq('status', 'published') // DEBUG: Temporarily commented out - TO BE RE-ENABLED
+      .eq('status', 'published') // DEBUG: Temporarily commented out - TO BE RE-ENABLED
       .order('published_at', { ascending: false })
       .limit(limit);
 
@@ -92,7 +92,7 @@ export async function getRelatedPosts(
       .from('blog_posts')
       .select('id, title, slug, meta_description, category, created_at, published_at, is_featured, tags')
       .not('id', 'in', `(${existingIds.join(',')})`) // Exclude already fetched posts and current post
-      // .eq('status', 'published') // DEBUG: Temporarily commented out - TO BE RE-ENABLED
+      .eq('status', 'published') // DEBUG: Temporarily commented out - TO BE RE-ENABLED
       .order('published_at', { ascending: false })
       .limit(remainingLimit);
 
@@ -152,7 +152,7 @@ export async function getAllUniqueCategories(supabase: SupabaseClient<Database>)
     .from('blog_posts')
     .select('category') 
     .not('category', 'is', null)
-    // .eq('status', 'published'); // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
+    .eq('status', 'published'); // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
 
   if (error) {
     console.error('Error fetching unique categories:', error);
@@ -168,7 +168,7 @@ export async function getAllUniqueTags(supabase: SupabaseClient<Database>): Prom
     .from('blog_posts')
     .select('tags')
     .not('tags', 'is', null)
-    // .eq('status', 'published'); // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
+    .eq('status', 'published'); // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
 
   if (error) {
     console.error('Error fetching unique tags:', error);
@@ -193,12 +193,16 @@ export async function getPostsByCategoryOrTag(
   let queryCount = supabase.from('blog_posts').select('id', { count: 'exact', head: true });
   let queryData = supabase.from('blog_posts').select(POST_COLUMNS_SELECT);
   
+  // Apply status filter first to both queries
+  queryCount = queryCount.eq('status', 'published');
+  queryData = queryData.eq('status', 'published');
+  
   if (filterType === 'category') {
     const { data: categoriesData, error: catError } = await supabase
         .from('blog_posts')
         .select('category')
-        .not('category', 'is', null);
-        // .eq('status', 'published'); // DEBUG: Temporarily commented out - TO BE RE-ENABLED
+        .not('category', 'is', null)
+        .eq('status', 'published'); // Keep this for accurate name matching from published posts
     
     if (catError || !categoriesData) {
         console.error(`Error fetching categories to match slug ${slug}:`, catError); 
@@ -222,8 +226,8 @@ export async function getPostsByCategoryOrTag(
     const { data: tagsData, error: tagError } = await supabase
         .from('blog_posts')
         .select('tags')
-        .not('tags', 'is', null);
-        // .eq('status', 'published'); // DEBUG: Temporarily commented out - TO BE RE-ENABLED
+        .not('tags', 'is', null)
+        .eq('status', 'published'); // Keep this for accurate name matching from published posts
 
     if (tagError || !tagsData) {
         console.error(`Error fetching tags to match slug ${slug}:`, tagError); 
@@ -243,9 +247,6 @@ export async function getPostsByCategoryOrTag(
     queryCount = queryCount.contains('tags', [originalName]);
     queryData = queryData.contains('tags', [originalName]);
   }
-
-  // queryCount = queryCount.eq('status', 'published'); // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
-  // queryData = queryData.eq('status', 'published');  // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
 
   // Fetch all posts matching the filter (category/tag) first for in-memory sorting
   const { data: allPostsData, error: dataError } = await queryData;
@@ -299,7 +300,7 @@ export async function getPopularTags(
   limit: number = 15
 ): Promise<TagWithCount[]> {
   let query = supabase.from('blog_posts').select('tags, category');
-  // query = query.eq('status', 'published'); // DEBUG: Temporarily commented out - TO BE RE-ENABLED
+  query = query.eq('status', 'published'); // DEBUG: Temporarily commented out - TO BE RE-ENABLED
 
   if (categoryName) {
     query = query.eq('category', categoryName);
