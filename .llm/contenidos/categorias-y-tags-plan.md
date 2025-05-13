@@ -121,6 +121,7 @@ Este plan proporciona una hoja de ruta detallada. La implementación se realizar
         *   Implementar `BreadcrumbList` en las 4 páginas (listados generales y filtrados). - **HECHO**
         *   Páginas de listado general (`/blog/categorias`, `/blog/tags`):
             *   Implementar schema `WebPage` básico, si no está cubierto ya por `BreadcrumbList` u otros schemas globales. [PENDIENTE - REVISAR SI ES NECESARIO TRAS COLLECTIONPAGE EN FILTRADAS]
+            *   Copy revisado y optimizado para SEO. - **HECHO**
         *   Páginas filtradas (`/blog/categorias/[slug]`, `/blog/tags/[slug]`):
             *   Investigar e implementar schema `CollectionPage` (que es un tipo específico de `WebPage`). - **HECHO** (Implementada versión descriptiva. Listado explícito de posts como `mainEntity` o `hasPart` podría ser una mejora futura si se considera necesario y se facilita el acceso a los datos de los posts en `generateMetadata` o se pasa desde el componente de página).
 4.  **Contenido H1:** Asegurar que sean descriptivos (ya gestionado por `PageHeader`). - **HECHO**
@@ -147,3 +148,4 @@ Este plan proporciona una hoja de ruta detallada. La implementación se realizar
 8.  **Ordenación Avanzada Post-Procesamiento de Fechas:** Modificar la obtención de posts para que primero se obtengan todos los posts relevantes (filtrados por categoría/tag si aplica), luego se procesen/generen las fechas, después se ordenen en memoria por la fecha final (más recientes primero por defecto), y finalmente se aplique la paginación en memoria. - **HECHO**
     *   Afecta a: `getPostsByCategoryOrTag` en `src/lib/supabase/blog.ts`. - **HECHO**
     *   Afecta a: `getBlogData` en `src/app/blog/page.tsx`. - **HECHO**
+9.  **Visibilidad del Blog en Navbar:** Asegurar que el enlace al Blog sea visible en el componente `ViaLacteaNavbar.tsx`. - **HECHO** (Descomentado en `src/data/via-lactea-navigation.ts`).

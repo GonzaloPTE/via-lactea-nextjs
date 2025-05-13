@@ -20,13 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
   // Basic metadata, can be expanded based on lib/meta.ts or specific SEO strategy
   return {
     title: "Categorías del Blog | Vía Láctea",
-    description: "Explora todos los artículos de nuestro blog organizados por categorías. Encuentra información sobre sueño infantil, lactancia y más.",
+    description: "Explora todas las categorías de nuestro blog en Vía Láctea. Encuentra artículos detallados, guías y consejos sobre lactancia, sueño infantil, desarrollo del bebé, y mucho más. ¡Sumérgete en el tema que más te interese!",
     alternates: {
       canonical: "/blog/categorias",
     },
     openGraph: {
       title: "Categorías del Blog | Vía Láctea",
-      description: "Explora todos los artículos de nuestro blog organizados por categorías.",
+      description: "Explora todas las categorías de nuestro blog en Vía Láctea. Encuentra artículos detallados, guías y consejos sobre lactancia, sueño infantil, desarrollo del bebé, y mucho más. ¡Sumérgete en el tema que más te interese!",
       url: "/blog/categorias",
       type: "website",
       // images: [ { url: '/path/to/default-blog-image.jpg' } ] // Add a default image if available
@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: "Categorías del Blog | Vía Láctea",
-      description: "Explora todos los artículos de nuestro blog organizados por categorías.",
+      description: "Explora todas las categorías de nuestro blog en Vía Láctea. Encuentra artículos detallados, guías y consejos sobre lactancia, sueño infantil, desarrollo del bebé, y mucho más. ¡Sumérgete en el tema que más te interese!",
       // images: [ '/path/to/default-blog-image.jpg' ] // Add a default image if available
     }
   };
@@ -122,18 +122,21 @@ export default async function BlogCategoriesPage() {
 
       <main className="content-wrapper">
         {/* ========== PAGE HEADER ========== */}
-        <PageHeader title="Categorías del Blog" />
+        <PageHeader 
+          title="Categorías del Blog Vía Láctea"
+          subtitle="Sumérgete en temas clave como lactancia, sueño infantil y desarrollo del bebé. Explora nuestras categorías para encontrar guías y consejos prácticos que te acompañarán en la crianza."
+        />
         
         <section className="wrapper bg-light">
           <div className="container py-10 py-md-12">
             <div className="row gx-lg-8 gy-8">
-              <div className="col-lg-8">
+              <div className="col-12">
                 <div className="row">
                   {categories && categories.length > 0 ? (
                     categories.map((category, index) => {
                       const categorySlug = slugify(category);
                       const imageSrc = DUMMY_IMAGE_POOL[index % DUMMY_IMAGE_POOL.length];
-                      const description = `Explora todos nuestros artículos y recursos sobre ${category}.`;
+                      const description = `Descubre artículos, guías y consejos sobre ${category}. Profundiza en este tema y encuentra el apoyo que necesitas.`;
                       
                       return (
                         <CategoryCard
@@ -146,19 +149,13 @@ export default async function BlogCategoriesPage() {
                       );
                     })
                   ) : (
-                    <div className="col-12">
-                      <p className="text-center">No hay categorías disponibles en este momento.</p>
+                    <div className="col-12 text-center">
+                      <p className="lead">Actualmente no tenemos categorías definidas.</p>
+                      <p>¡Estamos trabajando en organizar nuestro contenido! Mientras tanto, puedes explorar todos nuestros artículos en el <Link href="/blog" className="hover-underline text-primary">blog principal</Link>.</p>
                     </div>
                   )}
                 </div>
               </div>
-
-              {/* ========== BLOG SIDEBAR (REMOVED) ========== */}
-              {/* 
-              <aside className="col-lg-4 sidebar mt-8 mt-lg-0">
-                <BlogSidebar />
-              </aside>
-              */}
             </div>
           </div>
         </section>
