@@ -27,7 +27,7 @@ const BlogPostHero: React.FC<BlogPostHeroProps> = ({ title, category, publishedD
                 </li>
                 <li className="post-author">
                   <i className="uil uil-user"></i> {/* User Icon */}
-                  <span> Por Miriam Rubio</span> {/* TODO: Make this a Link if Miriam has an author page */}
+                  <span> Por Vía Láctea Sueño y Lactancia</span> {/* TODO: Make this a Link if Miriam has an author page */}
                 </li>
               </ul>
             </div>
