@@ -17,6 +17,7 @@ import ViaLacteaFooter from "components/blocks/footer/ViaLacteaFooter";
 import { IBlogPost } from "../../types/blog"; // Import IBlogPost
 import DUMMY_IMAGE_POOL from '../../lib/blog-image-pool';
 import { createSupabaseServerClient } from "../../lib/supabase/server"; // Import the new utility
+import BlogPostList from "components/reuseable/BlogPostList"; // Import the new component
 
 // --- Define Page Props ---
 interface BlogPageProps {
@@ -102,48 +103,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) { // Mak
             <div className="row gx-lg-8 gx-xl-12">
               {/* Main Content Column */}
               <div className="col-lg-8">
-                {blogPosts.length > 0 ? (
-                  <div className="position-relative">
-                    <div className="blog grid grid-view">
-                      <div className="row isotope gx-md-8 gy-8 mb-8">
-                        {blogPosts.map((item) => {
-                          // Map IBlogPost to BlogCard3 props
-                          const image = DUMMY_IMAGE_POOL[item.id % DUMMY_IMAGE_POOL.length];
-                          const cardProps = {
-                            id: item.id,
-                            link: `/blog/${item.slug}`,
-                            image, // Imagen correspondiente
-                            title: item.title,
-                            category: "Consejos", // Use default category
-                            description: item.meta_description || '', // Use meta_description
-                            date: item.published_at 
-                              ? format(new Date(item.published_at), 'dd MMM yyyy', { locale: es })
-                              : format(new Date(item.created_at), 'dd MMM yyyy', { locale: es })
-                          };
-                          return (
-                            <BlogCard3 {...cardProps} key={item.id} />
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  // Message if no posts found
-                  <div className="text-center py-10">
-                    <p className="text-lg text-gray-600">No hay artículos disponibles por el momento.</p>
-                    <p className="text-gray-500">Vuelve pronto para encontrar nuevo contenido.</p>
-                  </div>
-                )}
-
-                {/* Pagination - Needs props eventually for real data */}
-                {blogPosts.length > 0 && (
-                  <PaginationClientWrapper 
-                    className="justify-content-start" 
-                    altStyle 
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                  />
-                )}
+                <BlogPostList 
+                  posts={blogPosts}
+                  totalPages={totalPages}
+                  currentPage={currentPage}
+                  // emptyListMessage and emptyListLink can be customized if needed for this page
+                />
               </div>
               {/* Sidebar Column */}
               <aside className="col-lg-4 sidebar mt-8 mt-lg-0">

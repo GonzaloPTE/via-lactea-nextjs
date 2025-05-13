@@ -18,11 +18,11 @@ export async function getPostBySlug(
     .from('blog_posts')
     .select('*') // Select all columns, IBlogPost type should match
     .eq('slug', slug)
-    // .eq('status', 'published') // Temporarily commented out for debugging
+    // .eq('status', 'published') // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
     .single();
 
   if (error) {
-    console.error(`Error fetching post by slug ${slug}:`, error);
+    console.error(`Error fetching post by slug ${slug}:`, error.message); // Keep essential error logs
     return null;
   }
   return data as IBlogPost;
@@ -52,7 +52,7 @@ export async function getRelatedPosts(
       .select('id, title, slug, meta_description, category, created_at, published_at, is_featured, tags') // Select fields needed for BlogCard3
       .eq('category', category)
       .neq('id', currentPostId)
-      // .eq('status', 'published') // Assuming only published posts should be related
+      // .eq('status', 'published') // DEBUG: Temporarily commented out - TO BE RE-ENABLED
       .order('published_at', { ascending: false })
       .limit(limit);
 
@@ -73,7 +73,7 @@ export async function getRelatedPosts(
       .from('blog_posts')
       .select('id, title, slug, meta_description, category, created_at, published_at, is_featured, tags')
       .not('id', 'in', `(${existingIds.join(',')})`) // Exclude already fetched posts and current post
-      // .eq('status', 'published')
+      // .eq('status', 'published') // DEBUG: Temporarily commented out - TO BE RE-ENABLED
       .order('published_at', { ascending: false })
       .limit(remainingLimit);
 
@@ -132,7 +132,7 @@ export async function getAllUniqueCategories(supabase: SupabaseClient<Database>)
     .from('blog_posts')
     .select('category') 
     .not('category', 'is', null)
-    // .eq('status', 'published'); // Temporarily commented out for debugging
+    // .eq('status', 'published'); // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
 
   if (error) {
     console.error('Error fetching unique categories:', error);
@@ -148,7 +148,7 @@ export async function getAllUniqueTags(supabase: SupabaseClient<Database>): Prom
     .from('blog_posts')
     .select('tags')
     .not('tags', 'is', null)
-    // .eq('status', 'published'); // Temporarily commented out for debugging
+    // .eq('status', 'published'); // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
 
   if (error) {
     console.error('Error fetching unique tags:', error);
@@ -169,8 +169,6 @@ export async function getPostsByCategoryOrTag(
   sortOption: 'newest' | 'oldest'
 ): Promise<{ posts: IBlogPost[]; totalPages: number; currentPage: number; name: string | null }> {
   
-  // console.log(`[getPostsByCategoryOrTag] Received slug: "${slug}", filterType: "${filterType}"`); // LOG REMOVED
-
   let originalName: string | null = null;
   let queryCount = supabase.from('blog_posts').select('id', { count: 'exact', head: true });
   let queryData = supabase.from('blog_posts').select(POST_COLUMNS_SELECT);
@@ -180,30 +178,23 @@ export async function getPostsByCategoryOrTag(
         .from('blog_posts')
         .select('category')
         .not('category', 'is', null);
-        // .eq('status', 'published');
+        // .eq('status', 'published'); // DEBUG: Temporarily commented out - TO BE RE-ENABLED
     
-    // console.log('[getPostsByCategoryOrTag] Raw categoriesData:', categoriesData); // LOG REMOVED
-
     if (catError || !categoriesData) {
-        // console.error(`[getPostsByCategoryOrTag] Error fetching categories to match slug ${slug}:`, catError); // LOG REMOVED (original error still good)
-        console.error(`Error fetching categories to match slug ${slug}:`, catError); // Keep standard error
+        console.error(`Error fetching categories to match slug ${slug}:`, catError); 
         return { posts: [], totalPages: 0, currentPage: 1, name: null };
     }
     const uniqueRawCategories = [...new Set(categoriesData.map(c => c.category).filter(Boolean) as string[])];
-    // console.log('[getPostsByCategoryOrTag] Unique raw categories from DB:', uniqueRawCategories); // LOG REMOVED
 
     const foundCategory = uniqueRawCategories.find(c => {
       const currentSlug = slugify(c);
-      // console.log(`[getPostsByCategoryOrTag] Comparing DB category "${c}" (slugified: "${currentSlug}") with URL slug "${slug}"`); // LOG REMOVED
       return currentSlug === slug;
     });
     
     if (!foundCategory) {
-      // console.log(`[getPostsByCategoryOrTag] No matching category found for slug "${slug}"`); // LOG REMOVED
       return { posts: [], totalPages: 0, currentPage: 1, name: null };
     }
     originalName = foundCategory;
-    // console.log(`[getPostsByCategoryOrTag] Matched category. Original name: "${originalName}"`); // LOG REMOVED
     queryCount = queryCount.eq('category', originalName);
     queryData = queryData.eq('category', originalName);
 
@@ -212,36 +203,29 @@ export async function getPostsByCategoryOrTag(
         .from('blog_posts')
         .select('tags')
         .not('tags', 'is', null);
-        // .eq('status', 'published');
-
-    // console.log('[getPostsByCategoryOrTag] Raw tagsData:', tagsData); // LOG REMOVED
+        // .eq('status', 'published'); // DEBUG: Temporarily commented out - TO BE RE-ENABLED
 
     if (tagError || !tagsData) {
-        // console.error(`[getPostsByCategoryOrTag] Error fetching tags to match slug ${slug}:`, tagError); // LOG REMOVED
-        console.error(`Error fetching tags to match slug ${slug}:`, tagError); // Keep standard error
+        console.error(`Error fetching tags to match slug ${slug}:`, tagError); 
         return { posts: [], totalPages: 0, currentPage: 1, name: null };
     }
     const allTags = [...new Set(tagsData.flatMap(item => item.tags || []).filter(Boolean) as string[])];
-    // console.log('[getPostsByCategoryOrTag] Unique raw tags from DB:', allTags); // LOG REMOVED
 
     const foundTag = allTags.find(t => {
       const currentSlug = slugify(t);
-      // console.log(`[getPostsByCategoryOrTag] Comparing DB tag "${t}" (slugified: "${currentSlug}") with URL slug "${slug}"`); // LOG REMOVED
       return currentSlug === slug;
     });
 
     if (!foundTag) {
-      // console.log(`[getPostsByCategoryOrTag] No matching tag found for slug "${slug}"`); // LOG REMOVED
       return { posts: [], totalPages: 0, currentPage: 1, name: null };
     }
     originalName = foundTag;
-    // console.log(`[getPostsByCategoryOrTag] Matched tag. Original name: "${originalName}"`); // LOG REMOVED
     queryCount = queryCount.contains('tags', [originalName]);
     queryData = queryData.contains('tags', [originalName]);
   }
 
-  // queryCount = queryCount.eq('status', 'published'); // TEMPORARILY COMMENTED OUT FOR DEBUGGING
-  // queryData = queryData.eq('status', 'published');  // TEMPORARILY COMMENTED OUT FOR DEBUGGING
+  // queryCount = queryCount.eq('status', 'published'); // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
+  // queryData = queryData.eq('status', 'published');  // DEBUG: Temporarily commented out for debugging - TO BE RE-ENABLED
 
   // Get Total Count
   const { count, error: countError } = await queryCount;
@@ -264,12 +248,9 @@ export async function getPostsByCategoryOrTag(
   }
 
   const { data: postsData, error: dataError } = await queryData;
-  // console.log(`[getPostsByCategoryOrTag] For ${filterType} "${originalName}", postsData:`, postsData); // Add this if posts are still not showing
-  // console.log(`[getPostsByCategoryOrTag] For ${filterType} "${originalName}", dataError:`, dataError); // Add this if posts are still not showing
-
 
   if (dataError) {
-    console.error(`Error fetching posts by ${filterType} '${originalName}':`, dataError);
+    console.error(`Error fetching posts by ${filterType} '${originalName}':`, dataError.message); // Keep essential error logs
     return { posts: [], totalPages, currentPage: validCurrentPage, name: originalName };
   }
   

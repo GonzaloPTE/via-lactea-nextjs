@@ -14,6 +14,7 @@ import PageHeader from '../../../../components/reuseable/PageHeader';
 import { BlogCard3 } from '../../../../components/reuseable/blog-cards';
 import PaginationClientWrapper from '../../../../components/reuseable/PaginationClientWrapper';
 import BlogSidebar from '../../../../components/reuseable/BlogSidebar';
+import BlogPostList from '../../../../components/reuseable/BlogPostList';
 
 // Supabase y datos
 import { getPostsByCategoryOrTag } from '../../../../lib/supabase/blog';
@@ -165,44 +166,16 @@ export default async function TagPostsPage({ params, searchParams }: TagPostsPag
           <div className="container py-10 py-md-12">
             <div className="row gx-lg-8 gx-xl-12">
               <div className="col-lg-8">
-                {posts && posts.length > 0 ? (
-                  <div className="position-relative">
-                    <div className="blog grid grid-view">
-                      <div className="row isotope gx-md-8 gy-8 mb-8">
-                        {posts.map((item: IBlogPost) => {
-                          const image = DUMMY_IMAGE_POOL[item.id % DUMMY_IMAGE_POOL.length];
-                          const cardProps = {
-                            id: item.id,
-                            link: `/blog/${item.slug}`,
-                            image,
-                            title: item.title,
-                            category: item.category || "General",
-                            description: item.meta_description || '',
-                            date: item.published_at
-                              ? format(new Date(item.published_at), 'dd MMM yyyy', { locale: es })
-                              : format(new Date(item.created_at), 'dd MMM yyyy', { locale: es })
-                          };
-                          return <BlogCard3 {...cardProps} key={item.id} />;
-                        })}
-                      </div>
-                    </div>
-                    {totalPages > 1 && (
-                      <PaginationClientWrapper
-                        className="justify-content-start"
-                        altStyle
-                        totalPages={totalPages}
-                        currentPage={validatedCurrentPage}
-                      />
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-center py-10">
-                    <p className="lead">No se encontraron artículos con la etiqueta "{tagName}".</p>
-                    <Link href="/blog/tags" className="btn btn-primary rounded-pill mt-3">
-                      Ver todas las etiquetas
-                    </Link>
-                  </div>
-                )}
+                <BlogPostList
+                  posts={posts}
+                  totalPages={totalPages}
+                  currentPage={validatedCurrentPage}
+                  emptyListMessage={`No se encontraron artículos con la etiqueta "${tagName}".`}
+                  emptyListLink={{
+                    href: "/blog/tags",
+                    text: "Ver todas las etiquetas"
+                  }}
+                />
               </div>
               <aside className="col-lg-4 sidebar mt-8 mt-lg-0">
                 <BlogSidebar 

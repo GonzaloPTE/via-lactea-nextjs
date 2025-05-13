@@ -126,7 +126,7 @@ Este plan proporciona una hoja de ruta detallada. La implementación se realizar
 4.  **Contenido H1:** Asegurar que sean descriptivos (ya gestionado por `PageHeader`). - **HECHO**
 5.  **Sidebar:** Eliminado de páginas de listado general (`/blog/categorias`, `/blog/tags`) por el usuario. - **HECHO**
 
-## XIII. Refinamiento y Pruebas Finales [PENDIENTE]
+## XIII. Refinamiento y Pruebas Finales [PARCIALMENTE COMPLETADO]
 
 **Objetivo:** Realizar pruebas exhaustivas, validar SEO y re-habilitar filtros de 'published'.
 
@@ -141,3 +141,4 @@ Este plan proporciona una hoja de ruta detallada. La implementación se realizar
     *   `getSidebarData` (para `popularPosts` en `BlogSidebar.tsx`)
 4.  **Pruebas Post-Filtros:** Asegurar que solo se muestre contenido publicado.
 5.  **Validación SEO:** Usar Google Rich Results Test y Schema Markup Validator. Revisar Google Search Console post-indexación.
+6.  **Procesamiento de Contenido HTML:** Asegurar que los enlaces en `content_html` de los posts (`/blog/[slug]`) se normalicen a `https://` si no tienen esquema y no son relativos/anclas. - **HECHO** (Implementado en `src/lib/utils.ts` y usado en `src/app/blog/[slug]/page.tsx`).

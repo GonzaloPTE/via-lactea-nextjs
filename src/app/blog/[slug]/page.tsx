@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { IBlogPost } from '../../../types/blog';   // Corrected path
 import { getPostBySlug } from '../../../lib/supabase/blog'; // Corrected path
 import { createSupabaseServerClient } from "../../../lib/supabase/server"; // Import the new utility
+import { processPostHtmlContent } from '../../../lib/utils'; // Nueva importación
 
 // Import Components
 import ViaLacteaNavbar from '../../../components/blocks/navbar/via-lactea/ViaLacteaNavbar'; // Corrected path
@@ -113,6 +114,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   // Define Instagram profile URL (should ideally come from env or config)
   const VIA_LACTEA_INSTAGRAM_URL = "https://www.instagram.com/vialacteasuenoylactancia/";
 
+  const processedContentHtml = processPostHtmlContent(post.content_html);
+
   return (
     <Fragment>
       <header className="wrapper bg-soft-primary">
@@ -132,14 +135,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="row gx-lg-8 gx-xl-12">
               <div className="col-lg-8">
                 {/* Post Content */}
-                {post.content_html ? (
-                  <div
-                    className="blog-content" 
-                    dangerouslySetInnerHTML={{ __html: post.content_html }}
-                  />
-                ) : (
-                  <p>Contenido no disponible.</p>
-                )}
+                <div className="post-content" dangerouslySetInnerHTML={{ __html: processedContentHtml }} />
 
                 {/* Tags */}
                 {post.tags && post.tags.length > 0 && (
