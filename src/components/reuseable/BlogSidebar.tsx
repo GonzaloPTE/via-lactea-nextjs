@@ -7,7 +7,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Database } from '../../types/supabase';
 import { IBlogPost } from '../../types/blog';
-import { getAllUniqueCategories, getPopularTags, type TagWithCount } from "../../lib/supabase/blog"; // Import new functions
+import { getAllUniqueCategories, getPopularTags } from "../../lib/supabase/blog"; // Import new functions
 
 // GLOBAL CUSTOM COMPONENTS
 import FigureImage from "./FigureImage";

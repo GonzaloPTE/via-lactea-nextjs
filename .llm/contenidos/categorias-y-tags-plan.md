@@ -120,7 +120,7 @@ Este plan proporciona una hoja de ruta detallada. La implementación se realizar
 3.  **Datos Estructurados (Schema.org):**
         *   Implementar `BreadcrumbList` en las 4 páginas (listados generales y filtrados). - **HECHO**
         *   Páginas de listado general (`/blog/categorias`, `/blog/tags`):
-            *   Implementar schema `WebPage` básico, si no está cubierto ya por `BreadcrumbList` u otros schemas globales. [PENDIENTE - REVISAR SI ES NECESARIO TRAS COLLECTIONPAGE EN FILTRADAS]
+            *   Implementar schema `WebPage` básico, si no está cubierto ya por `BreadcrumbList` u otros schemas globales. - **HECHO** (Incluye `name`, `description`, `url`, referencia a `BreadcrumbList` y `mainEntityOfPage` como `ItemList` de las categorías/tags).
             *   Copy revisado y optimizado para SEO. - **HECHO**
         *   Páginas filtradas (`/blog/categorias/[slug]`, `/blog/tags/[slug]`):
             *   Investigar e implementar schema `CollectionPage` (que es un tipo específico de `WebPage`). - **HECHO** (Implementada versión descriptiva. Listado explícito de posts como `mainEntity` o `hasPart` podría ser una mejora futura si se considera necesario y se facilita el acceso a los datos de los posts en `generateMetadata` o se pasa desde el componente de página).
@@ -142,11 +142,12 @@ Este plan proporciona una hoja de ruta detallada. La implementación se realizar
     *   `getSidebarData` (para `popularPosts` y `popularTags` en `BlogSidebar.tsx`) - **HECHO**
     *   `getPopularTags` (`src/lib/supabase/blog.ts`) - **HECHO**
     *   `getBlogData` (para `totalCount` y `allPosts` en `src/app/blog/page.tsx`) - **HECHO**
-4.  **Pruebas Post-Filtros:** Asegurar que solo se muestre contenido publicado. [PENDIENTE]
-5.  **Validación SEO:** Usar Google Rich Results Test y Schema Markup Validator. Revisar Google Search Console post-indexación. [PENDIENTE]
+4.  **Pruebas Post-Filtros:** Asegurar que solo se muestre contenido publicado. - **HECHO** (Confirmado por el usuario)
+5.  **Validación SEO:** Usar Google Rich Results Test y Schema Markup Validator. Revisar Google Search Console post-indexación. [PENDIENTE - A realizar post-despliegue]
 6.  **Procesamiento de Contenido HTML:** Asegurar que los enlaces en `content_html` de los posts (`/blog/[slug]`) se normalicen a `https://` si no tienen esquema y no son relativos/anclas. - **HECHO** (Implementado en `src/lib/utils.ts` y usado en `src/app/blog/[slug]/page.tsx`).
 7.  **Generación Determinista de Fechas:** Asegurar que todos los posts tengan una fecha (`published_at`, `created_at`) generada de forma determinista si falta en la BD, para una correcta visualización y ordenación inicial. - **HECHO** (Implementado en `src/lib/utils.ts` e integrado en `src/lib/supabase/blog.ts`, `src/app/blog/page.tsx` y `src/components/reuseable/BlogSidebar.tsx`. Se corrigió la lógica de distribución para cubrir todo el rango de fechas deseado).
 8.  **Ordenación Avanzada Post-Procesamiento de Fechas:** Modificar la obtención de posts para que primero se obtengan todos los posts relevantes (filtrados por categoría/tag si aplica), luego se procesen/generen las fechas, después se ordenen en memoria por la fecha final (más recientes primero por defecto), y finalmente se aplique la paginación en memoria. - **HECHO**
     *   Afecta a: `getPostsByCategoryOrTag` en `src/lib/supabase/blog.ts`. - **HECHO**
     *   Afecta a: `getBlogData` en `src/app/blog/page.tsx`. - **HECHO**
 9.  **Visibilidad del Blog en Navbar:** Asegurar que el enlace al Blog sea visible en el componente `ViaLacteaNavbar.tsx`. - **HECHO** (Descomentado en `src/data/via-lactea-navigation.ts`).
+10. **Eliminación Widget Archivo Sidebar:** Quitar la sección "Archivo" del `BlogSidebar.tsx`. - **HECHO**

@@ -89,10 +89,12 @@ export default async function BlogCategoriesPage() {
   categories.sort((a, b) => a.localeCompare(b));
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vialacteasuenoylactancia.com';
+  const pageUrl = `${baseUrl}/blog/categorias`;
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "@id": `${pageUrl}#breadcrumb`,
     "itemListElement": [
       {
         "@type": "ListItem",
@@ -109,12 +111,35 @@ export default async function BlogCategoriesPage() {
     ]
   };
 
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Categorías del Blog - Vía Láctea",
+    "description": "Explora todas las categorías de nuestro blog en Vía Láctea. Encuentra artículos detallados, guías y consejos sobre lactancia, sueño infantil, desarrollo del bebé, y mucho más.",
+    "url": pageUrl,
+    "breadcrumb": {
+      "@id": breadcrumbSchema["@id"] // Referencia al ID del BreadcrumbList existente
+    },
+    "mainEntityOfPage": {
+       "@type": "ItemList",
+       "name": "Lista de Categorías del Blog",
+       "description": "Lista de todas las categorías disponibles en el blog de Vía Láctea.",
+       // itemListElement se podría popular si se pasa `categories` aquí, pero no es estrictamente necesario para WebPage.
+       "itemListElement": categories.map((category, index) => ({
+         "@type": "ListItem",
+         "position": index + 1,
+         "name": category,
+         "url": `${pageUrl}/${slugify(category)}`
+       }))
+    }
+  };
+
   return (
     <>
-      {/* ========== SEO: BreadcrumbList Schema ========== */}
+      {/* ========== SEO: Schemas ========== */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([breadcrumbSchema, webPageSchema]) }}
       />
 
       {/* ========== NAVIGATION BAR ========== */}
