@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { Content } from '@google/generative-ai';
 import type { Database } from '../../types/supabase'; // For DiscoveredIssue type
+import Handlebars from 'handlebars';
+import type { NumberedReference } from '../components/llmClient'; // For the new formatter
 
 // Explicitly define types from Supabase schema if not already imported broadly
 type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
@@ -14,14 +16,24 @@ interface ReferenceForPrompt {
     extracts: string[] | null;
 }
 
+// Type for the keys of prompt templates - add new template keys here
+export type PromptTemplateName = 
+    | 'queryGeneration' 
+    | 'referenceAnalysis' 
+    | 'issueGrouping' 
+    | 'blogPostGeneration' 
+    | 'markdownToHtml'
+    | 'referenceCorrection'; // Added new template name
+
 // --- Constants ---
 const PROMPTS_DIR = path.resolve(__dirname, '../../../.llm/contenidos/prompts');
-const PROMPT_FILE_MAP = {
+const PROMPT_FILE_MAP: Record<PromptTemplateName, string> = {
     queryGeneration: path.join(PROMPTS_DIR, 'generador-queries.md'),
     referenceAnalysis: path.join(PROMPTS_DIR, 'investigacion-referencias.md'),
     issueGrouping: path.join(PROMPTS_DIR, 'agrupador-issues-en-blog-posts.md'),
     blogPostGeneration: path.join(PROMPTS_DIR, 'redactor-blog-posts.md'),
     markdownToHtml: path.join(PROMPTS_DIR, 'markdown-a-html.md'),
+    referenceCorrection: path.join(PROMPTS_DIR, 'corrector-referencias-html.md'),
 };
 const MAX_CONTENT_LENGTH = 15000; // Max characters for web content in prompts
 
@@ -204,4 +216,29 @@ export function formatMarkdownToHtmlPrompt(template: string, markdownContent: st
     }
 
     return [{ role: "user", parts: [{ text: formattedPrompt }] }];
+}
+
+/**
+ * Formats the prompt for correcting HTML references.
+ * @param templateContent The loaded prompt template content.
+ * @param htmlContent The HTML content of the blog post.
+ * @param numberedReferencesForPrompt Array of numbered reference objects.
+ * @returns The formatted prompt string, or null if formatting fails.
+ */
+export function formatPromptForReferenceCorrection(
+    templateContent: string,
+    htmlContent: string,
+    numberedReferencesForPrompt: NumberedReference[]
+): string | null {
+    try {
+        const template = Handlebars.compile(templateContent);
+        const data = {
+            htmlContent,
+            numberedReferencesForPrompt // Pass as is, template uses {{#each numberedReferencesForPrompt}}
+        };
+        return template(data);
+    } catch (error: any) {
+        console.error("Error compiling or executing Handlebars template for Reference Correction:", error.message);
+        return null;
+    }
 } 
