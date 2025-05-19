@@ -50,3 +50,6 @@ remove-app-dirs.ps1
 .env
 .env.local
 .env.test
+
+# python
+venv

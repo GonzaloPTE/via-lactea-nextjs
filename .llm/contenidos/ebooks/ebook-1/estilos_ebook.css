@@ -1,0 +1,230 @@
+/* CSS Styles for Dulces Sueños Ebook */
+@charset "UTF-8";
+
+@page {
+    size: A4;
+    margin: 2cm;
+}
+
+@page :first { /* No page number on the cover */
+    @bottom-center { content: normal; }
+}
+
+body {
+    font-family: 'Georgia', serif; /* Example serif font, choose one that fits your brand */
+    line-height: 1.6;
+    color: #333;
+    -webkit-font-smoothing: antialiased; /* Smoother fonts */
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Portada --- */
+h1.title { /* If Pandoc uses this for the main title */
+    font-size: 3em;
+    font-weight: bold;
+    color: #2c3e50; /* Dark blue/grey */
+    text-align: center;
+    margin-top: 30vh; /* Push down on the page */
+}
+
+p.subtitle { /* If Pandoc uses this for subtitle, or create a custom class */
+    font-size: 1.5em;
+    color: #5e87a8; /* Lighter blue */
+    text-align: center;
+    font-style: italic;
+    margin-bottom: 2em;
+}
+
+p.author { /* If Pandoc uses this */
+    font-size: 1.2em;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30vh;
+}
+
+.portada-background-container { /* You'd need to wrap portada.md content in this div in HTML */
+    background-image: url('../../../../public/img/via-lactea/photos/blog/lindo-bebe-durmiendo.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 297mm; /* A4 height */
+    width: 210mm;  /* A4 width */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1; /* Behind text */
+}
+
+
+/* --- Índice (Table of Contents) --- */
+nav#TOC { /* Pandoc usually creates a nav with id TOC */
+    page-break-before: always; /* TOC on a new page */
+    page-break-after: always;  /* Content starts on new page after TOC */
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+nav#TOC h1, nav#TOC h2 { /* Style for TOC title if Pandoc generates one */
+    font-size: 1.8em;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 1.5em;
+    font-weight:normal;
+}
+
+nav#TOC ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+nav#TOC ul li {
+    margin-bottom: 0.8em;
+    font-size: 1.1em;
+}
+
+nav#TOC ul li a {
+    text-decoration: none;
+    color: #5e87a8; /* Link color */
+}
+
+nav#TOC ul li a:hover {
+    color: #2c3e50;
+}
+
+nav#TOC ul ul { /* Sub-levels if any */
+    padding-left: 2em;
+    margin-top: 0.5em;
+}
+
+
+/* --- Encabezados de Capítulos y Secciones --- */
+h1, h2, h3, h4, h5, h6 { /* General heading styles */
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* Example sans-serif, choose brand font */
+    color: #2c3e50;
+    margin-top: 1.8em;
+    margin-bottom: 0.8em;
+    line-height: 1.3;
+}
+
+h3 { /* Main Chapter Titles from ### */
+    font-size: 2em;
+    font-weight: bold;
+    color: #5e87a8; /* Chapter title color */
+    text-align: center;
+    margin-top: 2.5em;
+    margin-bottom: 1.5em;
+    padding-bottom: 0.3em;
+    border-bottom: 2px solid #5e87a8;
+    page-break-before: always; /* Each main chapter on a new page */
+}
+
+h4 { /* Sub-section titles from #### */
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #3a506b; /* Darker subheading color */
+    margin-top: 2em;
+}
+
+/* --- Párrafos y Texto General --- */
+p {
+    margin-bottom: 1em;
+    text-align: justify; /* Justify text for a book-like feel */
+    hyphens: auto; /* Enable hyphenation if supported and desired */
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+/* --- Listas --- */
+ul, ol {
+    margin-bottom: 1em;
+    padding-left: 1.5em; /* Standard indent */
+}
+
+ul li, ol li {
+    margin-bottom: 0.5em;
+}
+
+/* --- Tablas --- */
+table {
+    width: 100%;
+    margin-bottom: 1.5em;
+    border-collapse: collapse;
+    page-break-inside: avoid; /* Try to keep tables on one page */
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 0.5em 0.8em;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2; /* Light grey for table headers */
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* --- Imágenes e Ilustraciones --- */
+.ilustracion-container {
+    text-align: center;
+    margin: 2em 0;
+    page-break-inside: avoid; /* Try to keep image with its prompt */
+}
+
+img.ilustracion-ebook {
+    max-width: 80%;
+    height: auto; /* Maintain aspect ratio */
+    display: block;
+    margin: 0 auto 0.5em auto; /* Center image and add space below */
+    border: 1px solid #ddd; /* Optional border */
+    border-radius: 4px; /* Optional rounded corners */
+}
+
+p.prompt-ilustracion {
+    font-size: 0.9em;
+    color: #777;
+    font-style: italic;
+    text-align: center;
+    margin-top: 0.2em;
+    margin-bottom: 0;
+}
+
+/* --- Enlaces --- */
+a {
+    color: #5e87a8; /* Link color consistent with TOC */
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #2c3e50;
+    text-decoration: none;
+}
+
+/* --- Encabezados y Pies de Página (Paginación) --- */
+@page {
+    @bottom-center {
+        content: counter(page);
+        font-family: 'Arial', sans-serif;
+        font-size: 0.8em;
+        color: #777;
+        vertical-align: top;
+        padding-top: 1em; /* Add some space from bottom margin */
+    }
+}
+
+/* Ensure content doesn't get cut off weirdly at page breaks for common elements */
+p, ul, ol, table, blockquote {
+    page-break-inside: auto; /* Default, but good to be aware */
+}
+blockquote {
+    border-left: 3px solid #ccc;
+    padding-left: 1em;
+    margin-left: 0;
+    font-style: italic;
+    color: #555;
+} 
