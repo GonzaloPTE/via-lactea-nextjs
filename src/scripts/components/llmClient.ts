@@ -1,31 +1,32 @@
-import axios from 'axios';
 import {
     formatReferenceAnalysisPrompt,
     formatQueryGenerationPrompt,
     formatIssueGroupingPrompt,
     formatBlogPostGenerationPrompt,
     loadPromptTemplate,
-    formatMarkdownToHtmlPrompt
+    formatMarkdownToHtmlPrompt,
+    formatPromptForReferenceCorrection,
 } from '../lib/promptUtils';
 import { retryAsyncOperation } from '../lib/retryUtils';
-import { Content } from '@google/generative-ai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Content, GenerationConfig } from "@google/generative-ai";
 import { z } from 'zod';
-import type { PostGenerationData } from '../steps/03-step-04-fetch-data-for-generation'; // Import for type usage
+import type { PostGenerationData } from '../steps/03-step-04-fetch-data-for-generation';
+import type { Database } from "../../types/supabase"; // Assuming Database type is primary export
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row']; // Define locally if not directly exported
+import type { ReferenceContext } from "../steps/04-step-02-fetch-references-for-posts";
 
-// --- Interfaces --- //
-
+// --- Interfaces & Schemas ---
 export interface LLMAnalysisResult {
     is_relevant: boolean;
-    summary?: string;
-    extracts?: string[];
-    tags?: string[];
+    summary?: string | null;
+    extracts?: string[] | null;
+    tags?: string[] | null;
 }
 
 export interface LLMQueryGenerationResult {
     queries: string[];
 }
 
-// Schema for Issue Grouping (matches expected JSON output from prompt)
 const PostGroupSchema = z.object({
     titulo: z.string().min(1),
     slug: z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
@@ -36,22 +37,50 @@ const PostGroupSchema = z.object({
 export const PostGroupArraySchema = z.array(PostGroupSchema);
 export type PostGroupData = z.infer<typeof PostGroupSchema>;
 
-// Input type for the grouping function
 interface IssueInputForGrouping {
     id: number;
     issue_text: string;
     tags: string[] | null;
 }
 
-// Input types for blog post generation - using relevant parts from PostGenerationData
-// No longer need BlogPostIssueInput or BlogPostReferenceInput here as PostGenerationData is more complete
+export interface NumberedReference extends ReferenceContext {
+    number: number;
+}
 
-// --- Helper Functions --- //
+// --- Configuration ---
+const API_KEY = process.env.GOOGLE_GEMINI_API_KEY;
+if (!API_KEY) {
+    console.warn(
+        "GOOGLE_GEMINI_API_KEY is not set. LLM client will not function fully. " +
+        "This is expected in some test environments where LLMs are mocked."
+    );
+}
+const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
+const DEFAULT_MODEL_NAME = "gemini-1.5-flash-latest";
+const DEFAULT_RETRY_OPTIONS = {
+    retries: 3,
+    initialDelayMs: 2000,
+    backoffFactor: 2,
+};
+
+// --- Helper Functions ---
+function ensureStringPrompt(promptInput: string | Content[] | Content): string {
+    if (typeof promptInput === 'string') {
+        return promptInput;
+    }
+    if (Array.isArray(promptInput)) { // Content[]
+        return promptInput.map(contentPart => 
+            contentPart.parts.map(part => part.text || '').join('\n')
+        ).join('\n');
+    } 
+    // Assuming it's a single Content object
+    return promptInput.parts.map(part => part.text || '').join('\n');
+}
 
 function parseAndValidateJsonResponse<T>(
     responseText: string | null,
-    expectedKeys: (keyof T)[],
-    context: string
+    context: string,
+    schema?: z.ZodType<T, any, any> // Optional Zod schema for validation
 ): T | null {
     if (!responseText) {
         console.error(`LLM returned empty response for ${context}`);
@@ -59,18 +88,22 @@ function parseAndValidateJsonResponse<T>(
     }
     const cleanedJsonString = responseText.trim().replace(/^```json\n?|\n?```$/g, '');
 
-    if (context.startsWith('Generating queries')) {
-        console.log(`  [DEBUG] Cleaned JSON string for ${context}:`, cleanedJsonString);
-    }
-
     try {
         const parsedJson = JSON.parse(cleanedJsonString);
-        const missingKeys = expectedKeys.filter(key => !(key in parsedJson));
-        if (missingKeys.length > 0) {
-            console.warn(`LLM JSON response for ${context} missing keys: ${missingKeys.join(', ')}`);
-            console.log(`  [DEBUG] Parsed JSON object with missing keys:`, parsedJson);
+        if (schema) {
+            const validationResult = schema.safeParse(parsedJson);
+            if (validationResult.success) {
+                return validationResult.data;
+            } else {
+                console.error(`LLM JSON response validation failed for ${context}:`, validationResult.error.errors);
+                console.log("  [DEBUG] Raw response for failed validation:", responseText);
+                return null;
+            }
         }
-        return parsedJson as T;
+        // If no schema, perform basic key check (original behavior, less robust)
+        // const missingKeys = expectedKeys.filter(key => !(key in parsedJson));
+        // if (missingKeys.length > 0) { ... }
+        return parsedJson as T; // Use with caution if no schema
     } catch (parseError: any) {
         console.error(`Failed to parse LLM JSON response for ${context}:`, parseError.message);
         console.error("  Raw response text was:", responseText);
@@ -78,226 +111,147 @@ function parseAndValidateJsonResponse<T>(
     }
 }
 
-async function callGeminiAPI(
-    promptContents: Content[],
-    contextForLogging: string,
-    expectJson: boolean = true // Default to expecting JSON
-): Promise<string | null> {
-    const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
-    if (!apiKey) {
-        throw new Error('GOOGLE_GEMINI_API_KEY environment variable is not set.');
+async function callGenerativeModel(prompt: string, modelName: string = DEFAULT_MODEL_NAME, expectJson: boolean = false): Promise<string | null> {
+    if (!genAI) {
+        console.error("LLM client not initialized because API_KEY is missing.");
+        return null;
     }
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-
-    const generationConfig: { responseMimeType?: string } = {};
-    if (expectJson) {
-        generationConfig.responseMimeType = "application/json";
-    }
-
-    const requestBody = {
-        contents: promptContents,
-        generationConfig: generationConfig, // Use potentially modified config
-    };
-
-    console.log(`  -> LLM: ${contextForLogging} (Expecting ${expectJson ? 'JSON' : 'Text'})`);
-
     try {
-        const response = await retryAsyncOperation(
-            async () => {
-                return await axios.post(apiUrl, requestBody, {
-                    headers: { 'Content-Type': 'application/json' },
-                    timeout: 90000 // Increased timeout for potentially longer blog post generation
-                });
-            },
-            {
-                retries: 3,
-                initialDelayMs: 2000, // Increased initial delay
-                backoffFactor: 2,
-                onRetry: (error, attempt) => {
-                    let status = 'unknown';
-                    if (axios.isAxiosError(error) && error.response) {
-                        status = String(error.response.status);
-                    }
-                    console.warn(`    LLM call failed (attempt ${attempt}/${3 + 1}, status: ${status}). Retrying... Error: ${error.message}`);
-                }
-            }
-        );
-
-        const responseData = response.data;
-        if (responseData?.candidates?.[0]?.content?.parts?.[0]?.text) {
-            return responseData.candidates[0].content.parts[0].text;
-        } else {
-            console.warn(`  <- LLM: Response structure unexpected. Data:`, responseData);
-            return null;
-        }
+        const generationConfig: GenerationConfig = expectJson ? { responseMimeType: "application/json" } : {};
+        const model = genAI.getGenerativeModel({
+             model: modelName,
+             generationConfig: generationConfig,
+        });
+        const safetySettings = [
+            { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+            { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+            { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+            { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+        ];
+        const result = await model.generateContent({ contents: [{role: "user", parts: [{text: prompt}]}], safetySettings });
+        const response = result.response;
+        return response.text();
     } catch (error: any) {
-        console.error(`  <- LLM: API call failed definitively for ${contextForLogging}:`, error.message);
-        if (axios.isAxiosError(error) && error.response) {
-            console.error(`    LLM Error Status: ${error.response.status}`);
-            console.error(`    LLM Error Data:`, error.response.data);
-        }
+        console.error(`Error calling ${modelName} model:`, error.message);
         return null;
     }
 }
 
-// --- Exported Functions --- //
+// --- Exported Functions ---
 
-export async function generateSearchQueries(
-    issueText: string,
-    maxQueries: number = 3
+export async function generateSearchQueriesLLM(
+    issue: DiscoveredIssue
 ): Promise<string[] | null> {
     const promptTemplate = await loadPromptTemplate('queryGeneration');
     if (!promptTemplate) return null;
-
-    const context = `Generating queries for topic: "${issueText.substring(0, 50)}..."`;
-
-    try {
-        const parsedResult = await retryAsyncOperation(
-            async () => {
-                const promptContents = formatQueryGenerationPrompt(promptTemplate, issueText);
-                const rawResponse = await callGeminiAPI(promptContents, context);
-                const result = parseAndValidateJsonResponse<LLMQueryGenerationResult>(
-                    rawResponse,
-                    ['queries'],
-                    context
-                );
-                if (!result || !result.queries || result.queries.length === 0) {
-                    console.warn(`  Validation failed for query generation attempt: Result was null, missing 'queries', or empty.`);
-                    throw new Error('LLM response validation failed for query generation (expected key: queries)');
-                }
-                return result;
-            },
-            {
-                retries: 3,
-                initialDelayMs: 2000,
-                onRetry: (error, attempt) => {
-                    console.warn(`  Query generation failed (attempt ${attempt}/${3 + 1}). Retrying... Error: ${error.message}`);
-                }
-            }
-        );
-
-        console.log(`  <- LLM: Generated ${parsedResult.queries.length} queries after validation.`);
-        return parsedResult.queries;
-
-    } catch (error) {
-        console.error(`  <- LLM: Failed to get valid search queries definitively for topic: "${issueText.substring(0, 50)}..." Error: ${error instanceof Error ? error.message : String(error)}`);
-        return null;
-    }
+    const promptContentInput = formatQueryGenerationPrompt(promptTemplate, issue.issue_text);
+    const stringPrompt = ensureStringPrompt(promptContentInput);
+    const context = `Generating queries for topic: "${issue.issue_text.substring(0, 50)}..."`;
+    const rawResponse = await callGenerativeModel(stringPrompt, DEFAULT_MODEL_NAME, true);
+    const parsed = parseAndValidateJsonResponse<LLMQueryGenerationResult>(rawResponse, context, z.object({ queries: z.array(z.string()) }));
+    return parsed ? parsed.queries : null;
 }
 
-export async function analyzeContent(
-    htmlContent: string,
-    originalIssueText: string,
-    url: string
+export async function analyzeReferenceContentLLM(
+    scrapedContent: string,
+    issueText: string
 ): Promise<LLMAnalysisResult | null> {
     const promptTemplate = await loadPromptTemplate('referenceAnalysis');
     if (!promptTemplate) return null;
-    const promptContents = formatReferenceAnalysisPrompt(promptTemplate, htmlContent, originalIssueText, url);
-    const context = `Analyzing content from URL: ${url} for topic: "${originalIssueText.substring(0, 50)}..."`;
-    const rawResponse = await callGeminiAPI(promptContents, context);
-    const parsedResult = parseAndValidateJsonResponse<LLMAnalysisResult>(
-        rawResponse,
-        ['is_relevant', 'summary', 'extracts', 'tags'],
-        context
+    const promptContentInput = formatReferenceAnalysisPrompt(promptTemplate, scrapedContent, issueText, '');
+    const stringPrompt = ensureStringPrompt(promptContentInput);
+    const context = `Analyzing reference content for topic: "${issueText.substring(0,50)}..."`;
+    const rawResponse = await callGenerativeModel(stringPrompt, DEFAULT_MODEL_NAME, true);
+    return parseAndValidateJsonResponse<LLMAnalysisResult>(
+        rawResponse, 
+        context,
+        z.object({
+            is_relevant: z.boolean(),
+            summary: z.string().optional().nullable(),
+            extracts: z.array(z.string()).optional().nullable(),
+            tags: z.array(z.string()).optional().nullable(),
+        })
     );
-    if (parsedResult) {
-        console.log(`  <- LLM: Analysis complete for URL: ${url}. Relevant: ${parsedResult.is_relevant}`);
-    } else {
-        console.warn(`  <- LLM: Failed to get valid analysis for URL: ${url}`);
-    }
-    return parsedResult;
 }
 
 export async function groupIssuesWithLLM(
     issues: IssueInputForGrouping[],
     validCategories: string[]
-): Promise<PostGroupData[]> {
+): Promise<PostGroupData[]> { 
     const promptTemplate = await loadPromptTemplate('issueGrouping');
     if (!promptTemplate) return [];
-
-    const promptContents = formatIssueGroupingPrompt(promptTemplate, issues, validCategories);
-    const context = `Grouping ${issues.length} issues into blog posts (with categories)`;
-    const rawResponse = await callGeminiAPI(promptContents, context);
-
-    // Use a specialized parse function or adapt the generic one
-    if (!rawResponse) {
-        console.error(`LLM returned empty response for ${context}`);
-        return [];
-    }
-    const cleanedJsonString = rawResponse.trim().replace(/^```json\n?|\n?```$/g, '');
-
-    try {
-        const parsedJson = JSON.parse(cleanedJsonString);
-        const validationResult = PostGroupArraySchema.safeParse(parsedJson);
-        if (validationResult.success) {
-            console.log(`  <- LLM: Grouping successful. Found ${validationResult.data.length} groups.`);
-            return validationResult.data;
-        } else {
-            console.error(`LLM response validation failed for ${context}:`, validationResult.error.errors);
-            // console.log("  Raw response text was:", rawResponse); // Optional: log raw for debug
-            return [];
-        }
-    } catch (parseError: any) {
-        console.error(`Failed to parse LLM JSON response for ${context}:`, parseError.message);
-        console.error("  Raw response text was:", rawResponse);
-        return [];
-    }
+    const promptContentInput = formatIssueGroupingPrompt(promptTemplate, issues, validCategories);
+    const stringPrompt = ensureStringPrompt(promptContentInput);
+    const context = `Grouping ${issues.length} issues into blog posts`;
+    const rawResponse = await callGenerativeModel(stringPrompt, DEFAULT_MODEL_NAME, true);
+    const parsed = parseAndValidateJsonResponse<PostGroupData[]>(rawResponse, context, PostGroupArraySchema);
+    return parsed || [];
 }
 
-export async function generateBlogPostWithLLM(
-    postGenData: PostGenerationData // Changed to accept the full PostGenerationData object
-): Promise<string | null> {
+export async function generateBlogPostWithLLM(postData: PostGenerationData): Promise<string | null> {
     const promptTemplate = await loadPromptTemplate('blogPostGeneration');
     if (!promptTemplate) return null;
-
-    // Pass all necessary fields from postGenData to the formatting function
-    const promptContents = formatBlogPostGenerationPrompt(
-        promptTemplate,
-        postGenData.blogPostTitle,
-        postGenData.slug,
-        postGenData.category,
-        postGenData.tags,
-        postGenData.issues,
-        postGenData.references
+    const promptContentInput = formatBlogPostGenerationPrompt(
+        promptTemplate, 
+        postData.blogPostTitle, 
+        postData.slug, 
+        postData.category, 
+        postData.tags, 
+        postData.issues, 
+        postData.references
     );
-    const context = `Generating blog post content for title: "${postGenData.blogPostTitle.substring(0, 50)}..."`;
-
-    // Call API expecting text response
-    const rawResponse = await callGeminiAPI(promptContents, context, false);
-
-    if (rawResponse) {
-        console.log(`  <- LLM: Blog post generation successful for "${postGenData.blogPostTitle.substring(0, 50)}..."`);
-    } else {
-         console.error(`  <- LLM: Blog post generation failed for "${postGenData.blogPostTitle.substring(0, 50)}..."`);
-    }
-
-    return rawResponse;
+    const stringPrompt = ensureStringPrompt(promptContentInput);
+    return callGenerativeModel(stringPrompt, DEFAULT_MODEL_NAME, false);
 }
 
-export async function convertMarkdownToHtmlWithLLM(
-    markdownContent: string
-): Promise<string | null> {
+export async function convertMarkdownToHtmlWithLLM(markdownContent: string): Promise<string | null> {
     const promptTemplate = await loadPromptTemplate('markdownToHtml');
     if (!promptTemplate) return null;
+    const promptContentInput = formatMarkdownToHtmlPrompt(promptTemplate, markdownContent);
+    const stringPrompt = ensureStringPrompt(promptContentInput);
+    return callGenerativeModel(stringPrompt, DEFAULT_MODEL_NAME, false);
+}
 
-    const promptContents = formatMarkdownToHtmlPrompt(promptTemplate, markdownContent);
-    const context = `Converting Markdown to HTML (length: ${markdownContent.length})`;
-
-    // Call API expecting text response
-    const rawResponse = await callGeminiAPI(promptContents, context, false); // Expecting text/html, not JSON
-
-    if (rawResponse) {
-        console.log(`  <- LLM: Markdown to HTML conversion successful.`);
-        // Basic check: Does it look like HTML?
-        if (!rawResponse.trim().startsWith('<')) {
-            console.warn(`  LLM response for HTML conversion doesn't look like HTML:`, rawResponse.substring(0, 100));
-            // Decide whether to return potentially incorrect response or null
-            // For now, return it and let the caller decide/handle potential issues.
-        }
-    } else {
-         console.error(`  <- LLM: Markdown to HTML conversion failed.`);
+export async function correctReferencesInHtmlWithLLM(
+    htmlContent: string,
+    numberedReferences: NumberedReference[],
+): Promise<string | null> {
+    const promptTemplateName = 'referenceCorrection';
+    const promptTemplate = await loadPromptTemplate(promptTemplateName);
+    if (!promptTemplate) {
+        console.error(`[llmClient.correctReferencesInHtmlWithLLM] Failed to load prompt template: ${promptTemplateName}`);
+        return null;
     }
 
-    // Return the raw response, assuming it's the HTML fragment
-    return rawResponse;
+    try {
+        return await retryAsyncOperation(
+            async () => {
+                const promptContentInput = formatPromptForReferenceCorrection(promptTemplate, htmlContent, numberedReferences);
+                if (!promptContentInput) {
+                    console.error("[llmClient.correctReferencesInHtmlWithLLM] Failed to format prompt inside retry.");
+                    throw new Error("Failed to format prompt for reference correction.");
+                }
+                const stringPrompt = ensureStringPrompt(promptContentInput);
+                console.log(`[llmClient.correctReferencesInHtmlWithLLM] Attempting LLM call. Prompt length: ${stringPrompt.length}`);
+                const correctedHtml = await callGenerativeModel(stringPrompt, DEFAULT_MODEL_NAME, false);
+                if (correctedHtml === null) {
+                    throw new Error('LLM returned null for HTML reference correction.');
+                }
+                
+                if (correctedHtml === htmlContent) {
+                    console.log("[llmClient.correctReferencesInHtmlWithLLM] LLM made no changes to HTML content.");
+                } else {
+                    console.log("[llmClient.correctReferencesInHtmlWithLLM] LLM returned corrected HTML content.");
+                }
+                return correctedHtml;
+            },
+            { 
+                ...DEFAULT_RETRY_OPTIONS, 
+                onRetry: (e,a) => console.warn(`HTML ref correction failed (attempt ${a}/${DEFAULT_RETRY_OPTIONS.retries + 1}). Retrying. Err: ${e.message}`)
+            }
+        );
+    } catch (error) {
+        console.error(`Failed to correct HTML references definitively for HTML (len: ${htmlContent.length}): ${error instanceof Error ? error.message : String(error)}`);
+        return null;
+    }
 } 
