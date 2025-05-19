@@ -2,7 +2,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { runWorkflow } from './02-workflow-investigacion-referencias'; // Import the orchestrator
 import { getSupabaseClient } from './lib/supabaseClient';
-import type { DiscoveredIssue } from '../types/supabase';
+import type { Database } from '../types/supabase'; // Import Database type
+
+// Define DiscoveredIssue locally using the Database type
+type DiscoveredIssue = Database['public']['Tables']['discovered_issues']['Row'];
 
 // Load environment variables from .env.test
 dotenv.config({ path: path.resolve(__dirname, '../../.env.test') });
@@ -102,7 +105,9 @@ describe('02-workflow-investigacion-referencias Integration Test', () => {
             console.log(`Requesting workflow run for ${issuesToRequest} issues. Setup created IDs:`, createdIssueIds);
 
             // Execute the workflow, asking it to fetch the number created by setup
-            const workflowResult = await runWorkflow({ issuesToFetch: issuesToRequest });
+            // const workflowResult = await runWorkflow({ issuesToFetch: issuesToRequest });
+            // Pass batchSize to ensure test issues are picked up. issuesToRequest is usually small (e.g., 2).
+            const workflowResult = await runWorkflow({ batchSize: issuesToRequest }); 
             
             // Store the actual processed IDs from the result
             expect(workflowResult.success).toBe(true);
