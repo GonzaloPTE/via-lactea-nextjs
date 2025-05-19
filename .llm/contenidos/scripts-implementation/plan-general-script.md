@@ -78,7 +78,25 @@ Este script automatizará el proceso de encontrar y analizar referencias web par
 
 **Fase 3: Agrupación de temas y Redacción de Blog Posts (Script `03-workflow-agrupacion-redaccion.tsx`)**
 
-*   (Plan por definir).
+*   (Plan definido en `@03-plan.md` y `@03-plan-nuevos-campos.md`). Este workflow se encarga de agrupar issues, generar borradores de posts, y poblar campos como `category`, `tags`, `content` (Markdown), `meta_description`, y `content_html`.
+
+**Workflow 4: Corrección de Referencias en HTML (`04-workflow-correccion-referencias.tsx`)**
+
+Este script se enfocará en mejorar la calidad del `content_html` de los blog posts, específicamente corrigiendo referencias mal formadas o placeholders.
+
+**Fases (conceptuales):**
+
+1.  **Implementación de Componentes/Pasos:**
+    *   `04-step-01-fetch-posts-for-correction.ts`: Obtiene posts de `blog_posts` que necesitan corrección de referencias (basado en `status`, `version`, y si `content_html` existe).
+    *   `04-step-02-fetch-references-for-posts.ts`: Para cada post, recupera las referencias (`url`, `title`, `summary`) de la tabla `references` asociadas a los `issue_ids` del post.
+    *   `04-step-03-correct-html-references-llm.ts`: Utiliza un LLM para analizar el `content_html` junto con las referencias obtenidas. El LLM identificará placeholders o enlaces incorrectos y los reemplazará con etiquetas `<a>` correctas, usando la `url` y el `title`/`summary` de las referencias.
+    *   `04-step-04-update-posts-version.ts`: Actualiza el `blog_posts` con el `content_html` corregido y incrementa la columna `version`.
+
+2.  **Ensamblaje del Script Principal (`04-workflow-correccion-referencias.tsx`):**
+    *   Orquesta la ejecución de los pasos anteriores.
+    *   Maneja el procesamiento por lotes y el logging.
+
+*   (Plan detallado en `@.llm/contenidos/scripts-implementation/04-plan.md`).
 
 **Consideraciones Adicionales:**
 

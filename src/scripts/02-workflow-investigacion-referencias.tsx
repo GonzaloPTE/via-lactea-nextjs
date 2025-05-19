@@ -30,6 +30,7 @@ export async function runWorkflow(options?: { batchSize?: number }) {
     console.log(`--- Starting Reference Research Workflow (v2) --- (Batch size: ${batchSize})`);
     let totalProcessedCount = 0;
     let currentBatchNumber = 0;
+    const allProcessedIssueIds: number[] = []; // Added to collect all processed IDs
 
     while (true) {
         currentBatchNumber++;
@@ -89,6 +90,7 @@ export async function runWorkflow(options?: { batchSize?: number }) {
             await updateIssueStatuses(currentBatchIds, 'ref_analysis_done');
             console.log(`  Marked ${currentBatchIds.length} issues from batch ${currentBatchNumber} as ref_analysis_done.`);
             
+            allProcessedIssueIds.push(...currentBatchIds); // Accumulate processed IDs
             totalProcessedCount += currentBatchIds.length; // Increment total count
             // --- End processing the current batch --- 
 
@@ -105,7 +107,7 @@ export async function runWorkflow(options?: { batchSize?: number }) {
     console.log(`\n--- Reference Research Workflow (v2) Finished ---`);
     console.log(`Total issues processed across all batches: ${totalProcessedCount}`);
     // Return success and total count
-    return { success: true, totalProcessedCount: totalProcessedCount }; 
+    return { success: true, totalProcessedCount: totalProcessedCount, processedIssueIds: allProcessedIssueIds }; 
 
 } // End runWorkflow
 
