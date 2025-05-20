@@ -1,5 +1,5 @@
 import type { ScrapedPageData } from './02-step-05-scrape-content';
-import { analyzeContent, LLMAnalysisResult } from '../components/llmClient';
+import { analyzeReferenceContentLLM as analyzeContent, LLMAnalysisResult } from '../components/llmClient';
 
 // Input type is ScrapedPageData
 // Output adds analysis results or error

@@ -154,13 +154,14 @@ export async function generateSearchQueriesLLM(
 
 export async function analyzeReferenceContentLLM(
     scrapedContent: string,
-    issueText: string
+    issueText: string,
+    url: string
 ): Promise<LLMAnalysisResult | null> {
     const promptTemplate = await loadPromptTemplate('referenceAnalysis');
     if (!promptTemplate) return null;
-    const promptContentInput = formatReferenceAnalysisPrompt(promptTemplate, scrapedContent, issueText, '');
+    const promptContentInput = formatReferenceAnalysisPrompt(promptTemplate, scrapedContent, issueText, url);
     const stringPrompt = ensureStringPrompt(promptContentInput);
-    const context = `Analyzing reference content for topic: "${issueText.substring(0,50)}..."`;
+    const context = `Analyzing reference content from ${url} for topic: "${issueText.substring(0,50)}..."`;
     const rawResponse = await callGenerativeModel(stringPrompt, DEFAULT_MODEL_NAME, true);
     return parseAndValidateJsonResponse<LLMAnalysisResult>(
         rawResponse, 
