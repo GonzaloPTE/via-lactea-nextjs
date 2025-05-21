@@ -98,6 +98,23 @@ Este script se enfocará en mejorar la calidad del `content_html` de los blog po
 
 *   (Plan detallado en `@.llm/contenidos/scripts-implementation/04-plan.md`).
 
+**Workflow 5: Generación de Publicaciones para Redes Sociales (`05-workflow-generacion-rrss.tsx`)**
+
+Este script se encargará de tomar posts de blog existentes y generar múltiples (hasta 3) borradores de publicaciones cortas y atractivas para Instagram y Facebook, fomentando la interacción.
+
+**Fases (conceptuales):**
+
+1.  **Implementación de Componentes/Pasos:**
+    *   `05-step-01-fetch-blog-posts.ts`: Obtiene posts de `blog_posts` que sean candidatos para generar publicaciones de redes sociales (ej. estado 'published' o 'draft_generated', y quizás un nuevo campo/estado para rastrear la generación de contenido para RRSS).
+    *   `05-step-02-generate-social-media-posts-llm.ts`: Utiliza un LLM (con un nuevo prompt `.llm/contenidos/prompts/creador-publicacion-redes.md`) para generar hasta 3 variantes de texto para redes sociales a partir del contenido del blog post (`title`, `meta_description`, `content_html` o `content` Markdown).
+    *   `05-step-03-save-social-media-posts.ts`: Guarda las publicaciones generadas en una nueva tabla (ej. `social_media_publications`) vinculada al `blog_post_id` original.
+
+2.  **Ensamblaje del Script Principal (`05-workflow-generacion-rrss.tsx`):**
+    *   Orquesta la ejecución de los pasos anteriores.
+    *   Maneja el procesamiento por lotes y el logging.
+
+*   (Plan detallado se creará en `@.llm/contenidos/scripts-implementation/05-plan.md`).
+
 **Consideraciones Adicionales:**
 
 *   **Manejo de Errores Robustos:** Implementar reintentos, backoff exponencial para APIs externas.
