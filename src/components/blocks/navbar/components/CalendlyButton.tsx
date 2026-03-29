@@ -17,7 +17,8 @@ export default function CalendlyButton({
   className = "btn btn-sm btn-primary rounded mt-1",
   calendlyUrl
 }: CalendlyButtonProps) {
-  // Usar el hook personalizado
+  /*
+  // Usar el hook personalizado (Desactivado para abrir el nuevo componente de reserva)
   const { handleCalendlyClick } = useCalendly('navbar', calendlyUrl);
 
   return (
@@ -29,5 +30,18 @@ export default function CalendlyButton({
       {icon && <i className={`${icon} fs-25 me-1`}></i>}
       {text}
     </a>
+  );
+  */
+
+  return (
+    <button 
+      type="button" 
+      className={className}
+      data-bs-toggle="modal" 
+      data-bs-target="#bookingModal"
+    >
+      {icon && <i className={`${icon} fs-25 me-1`}></i>}
+      {text}
+    </button>
   );
 } 
