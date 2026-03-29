@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import useCalendly from "hooks/useCalendly";
 
 // Props para personalizar el botón
 interface CalendlyButtonProps {
@@ -17,21 +16,6 @@ export default function CalendlyButton({
   className = "btn btn-sm btn-primary rounded mt-1",
   calendlyUrl
 }: CalendlyButtonProps) {
-  /*
-  // Usar el hook personalizado (Desactivado para abrir el nuevo componente de reserva)
-  const { handleCalendlyClick } = useCalendly('navbar', calendlyUrl);
-
-  return (
-    <a 
-      href="#" 
-      onClick={handleCalendlyClick} 
-      className={className}
-    >
-      {icon && <i className={`${icon} fs-25 me-1`}></i>}
-      {text}
-    </a>
-  );
-  */
 
   return (
     <button 

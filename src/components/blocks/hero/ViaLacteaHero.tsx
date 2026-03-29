@@ -19,35 +19,25 @@ export default function ViaLacteaHero() {
               </p>
 
               <div className="d-inline-flex me-2">
-                {/* 
-                <CalendlyButton 
+                <CalendlyButton
                   text="Agenda YA tu valoración GRATUITA"
                   icon="uil uil-calendar-alt"
                   className="btn btn-lg btn-grape rounded"
                   calendlyUrl="https://calendly.com/vialactea/valoracion-gratuita?hide_gdpr_banner=1&primary_color=605dba"
-                /> 
-                */}
-                <button 
-                  type="button" 
-                  className="btn btn-lg btn-grape rounded" 
-                  data-bs-toggle="modal" 
-                  data-bs-target="#bookingModal"
-                >
-                  <i className="uil uil-calendar-alt me-2"></i> Agenda YA tu valoración GRATUITA
-                </button>
+                />
               </div>
             </div>
 
             <div className="col-10 col-md-7 mx-auto col-lg-6 col-xl-5 ms-xl-5 mt-13 position-relative">
               <div className="img-mask mask-3" style={{ transform: 'scale(1.3)', transformOrigin: 'center center' }}>
-                  <img
+                <img
                   className="img-fluid"
                   srcSet="/img/via-lactea/photos/perfil-hero.png"
                   src="/img/via-lactea/photos/perfil-hero.png"
                   data-cue="fadeIn"
                   data-delay="300"
                   alt="Miriam Rubio - Asesora de sueño infantil respetuoso y lactancia"
-                  />
+                />
               </div>
             </div>
           </div>
