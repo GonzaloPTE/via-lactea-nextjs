@@ -27,6 +27,8 @@ import "assets/scss/style.scss";
 // CUSTOM TESTIMONIALS CSS
 import "../../public/css/custom-testimonials.css";
 
+import BookingModal from "components/blocks/booking/BookingModal";
+
 const manrope = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -62,6 +64,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
         {/* USED FOR PROGRESS BAR ANIMATE */}
         <Progress />
+
+        {/* GLOBAL BOOKING MODAL */}
+        <BookingModal />
 
         {/* Schema.org Organization */}
         <script
