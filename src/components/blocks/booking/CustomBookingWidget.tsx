@@ -88,8 +88,8 @@ export default function CustomBookingWidget() {
             <div className="animate__animated animate__fadeIn">
               <h3 className="mb-4 fs-22 fw-bold text-dark">Selecciona una fecha y hora</h3>
 
-              <div className="row gx-lg-8 align-items-start">
-                <div className={`col-12 text-center transition-all ${selectedDate ? 'col-lg-7' : 'col-lg-12'}`}>
+              <div className="row gx-lg-8 align-items-start p-4">
+                <div className={`col-12 text-center transition-all ${selectedDate ? 'col-lg-7' : 'col-lg-12'} p-0`}>
                   <CalendarSelector
                     selectedDate={selectedDate}
                     onSelectDate={(date) => {

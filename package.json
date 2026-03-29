@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "lint": "next lint",
+    "lint": "next lint --no-cache",
     "lint:fix": "npx eslint --fix",
-    "build": "next build && opennextjs-cloudflare build --skipBuild",
+    "build": "opennextjs-cloudflare",
     "start": "next start",
     "sass": "sass --no-source-map src/assets/scss:public/css",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
