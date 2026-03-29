@@ -6,7 +6,7 @@
     "dev": "next dev",
     "lint": "next lint --no-cache",
     "lint:fix": "npx eslint --fix",
-    "build": "opennextjs-cloudflare",
+    "build": "opennextjs-cloudflare build",
     "start": "next start",
     "sass": "sass --no-source-map src/assets/scss:public/css",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
