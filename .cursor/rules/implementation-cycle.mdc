@@ -1,0 +1,34 @@
+---
+description: Reglas de Ciclo de Implementación de Componentes
+globs: src/components/**/*.{tsx,ts}, src/app/**/*.{tsx,ts}, src/pages/**/*.{tsx,ts}
+alwaysApply: true
+---
+# Ciclo de Implementación Estricto
+
+Esta regla dicta la forma de trabajo para cualquier nueva funcionalidad, componente o refactorización que se lleve acabo en el código base.
+
+## Fases del Flujo de Trabajo
+
+### 1. Lectura del Plan (Research & Plan)
+- Revisa siempre el fichero `implementation_plan.md` asociado a la tarea. 
+- No comiences a codificar sin tener un listado paso a paso claro (ej. usando un `task.md` con casillas de verificación).
+- Asegúrate de entender la arquitectura, dependencias y estética (Bootstrap 5, SCSS/SASS, Unicons).
+
+### 2. Codificación (Execution)
+- Crea o modifica los archivos de forma limpia. 
+- Realiza pequeñas implementaciones paso a paso.
+- Si se reemplaza algo que está en producción (ej. el bóton de Calendly viejo), **NO LO ELIMINES**. Protégelo ocultándolo mediante comentarios (JSX: `{/* */}`) o feature flags.
+
+### 3. Compilación e Integración Continua (Build)
+- Una vez integrados los cambios de un Hito o "chunk", ejecuta la compilación del frontend (`npm run build` o visualiza el output de `npm run dev`).
+- Asegúrate de resolver cualquier warning de linter o error de tipado (TypeScript) ANTES del siguiente paso.
+- El ciclo obliga a que la terminal esté libre de errores.
+
+### 4. Pruebas y Validación Local (Localhost)
+- Abre el navegador contra `http://localhost:3000`.
+- Verifica los cambios visuales y funcionales correspondientes al chunk que codificaste.
+- Realiza pruebas End-to-End manuales: haz click, comprueba la interactividad, y si la UI se adapta responsive.
+
+### 5. Iteración y Corrección (Iterate)
+- Si en la prueba local observas una desviación visual o un bug de rendimiento, reinicia el ciclo en el **Paso 2 (Codificación)**.
+- Sólo marca la tarea como `[X]` en `task.md` si superaste exitosamente el ciclo para ese sub-paso.
