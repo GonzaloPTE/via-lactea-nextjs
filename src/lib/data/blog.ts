@@ -15,50 +15,28 @@ export function processPostDates(post: any): IBlogPost {
 
 let cachedPosts: IBlogPost[] | null = null;
 
+const BLOG_DATA_URL = 'https://blog.vialacteasuenoylactancia.com/blog_posts.json';
+
 export async function getBlogPosts(): Promise<IBlogPost[]> {
   if (cachedPosts) return cachedPosts;
 
-  // 1. Cloudflare R2 binding (Runtime - Worker)
-  // This is the primary method in production and has zero bundle overhead.
-  const bucket = (process.env as any).BLOG_BUCKET || (globalThis as any).BLOG_BUCKET;
-  
-  if (!bucket) {
-    console.warn('BLOG_BUCKET binding not found on process.env or globalThis');
-  }
-
-  if (bucket && typeof bucket.get === 'function') {
-    try {
-      console.log('Fetching from R2 bucket binding...');
-      const obj = await bucket.get('blog_posts.json');
-      if (obj) {
-        const data = await obj.json();
-        console.log(`Success! Fetched ${data.length} posts from R2 binding.`);
-        cachedPosts = (data as any[]).map(processPostDates);
-        return cachedPosts!;
-      } else {
-        console.warn('Object blog_posts.json NOT found in R2 bucket.');
-      }
-    } catch (error) {
-      console.error('Error fetching from R2 bucket binding:', error);
-    }
-  }
-
-  // 2. Fallback to local file (Build time / Local Development)
-  // The local file is populated by a separate sync script during build.
   try {
-    const fs = await import('fs');
-    const path = await import('path');
-    const localPath = path.join(process.cwd(), 'src/data/blog_posts_merged.json');
-    if (fs.existsSync(localPath)) {
-      const data = JSON.parse(fs.readFileSync(localPath, 'utf-8'));
-      cachedPosts = (data as any[]).map(processPostDates);
-      return cachedPosts!;
-    }
-  } catch (e) {
-    // environments without 'fs' support (like Edge runtime)
-  }
+    const response = await fetch(BLOG_DATA_URL, {
+      next: { revalidate: 3600 } // Revalidate every hour
+    });
 
-  return [];
+    if (!response.ok) {
+      throw new Error(`Failed to fetch blog posts: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log(`Success! Fetched ${data.length} posts from ${BLOG_DATA_URL}`);
+    cachedPosts = (data as any[]).map(processPostDates);
+    return cachedPosts!;
+  } catch (error) {
+    console.error('Error fetching blog posts from URL:', error);
+    return [];
+  }
 }
 
 // Replicate the functions that used to need supabase

@@ -15,12 +15,6 @@
         "service": "vialacteasuenoylactancia",
       },
     ],
-    "r2_buckets": [
-      {
-        "binding": "BLOG_BUCKET",
-        "bucket_name": "vialacteasuenoylactancia"
-      }
-    ],
     // Variables de entorno públicas
     "vars": {
       "CLOUDFLARE_TURNSTILE_SITE_KEY": "0x4AAAAAABQIFzguJJ5SKDpJ",
