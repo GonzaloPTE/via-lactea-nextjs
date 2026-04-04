@@ -8,8 +8,7 @@ import ViaLacteaNavbar from '../../../components/blocks/navbar/via-lactea/ViaLac
 import CalendlyButton from '../../../components/blocks/navbar/components/CalendlyButton';
 import ViaLacteaFooter from '../../../components/blocks/footer/ViaLacteaFooter';
 import PageHeader from '../../../components/reuseable/PageHeader';
-import { createSupabaseServerClient } from '../../../lib/supabase/server'; // USE THIS
-import { getAllUniqueTags } from '../../../lib/supabase/blog';
+import { getAllUniqueTags } from '../../../lib/data/blog';
 import { slugify } from '../../../lib/utils';
 // import BlogSidebar from '../../../components/reuseable/BlogSidebar'; // Sidebar removed
 
@@ -39,8 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TagsPage() {
-  const supabase = await createSupabaseServerClient(); // Use the centralized server client
-  const tags = await getAllUniqueTags(supabase);
+  const tags = await getAllUniqueTags();
   tags.sort((a, b) => a.localeCompare(b)); // Sort tags alphabetically
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vialacteasuenoylactancia.com';

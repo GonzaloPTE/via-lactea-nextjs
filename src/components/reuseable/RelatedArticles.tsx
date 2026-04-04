@@ -1,44 +1,14 @@
 import React from 'react';
 import { RelatedArticlesProps } from '../../types/blog';
 import { IBlogPost } from '../../types/blog';
-import { createServerClient } from '@supabase/ssr'; // For server-side data fetching
-import { cookies } from 'next/headers'; // For server-side data fetching
-import { Database } from '../../types/supabase';
-import { getRelatedPosts } from '../../lib/supabase/blog';
+import { getRelatedPosts } from '../../lib/data/blog';
 import { BlogCard3 } from './blog-cards'; // Assuming BlogCard3 is in this path
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import DUMMY_IMAGE_POOL from '../../lib/blog-image-pool';
 
-// Helper to get Supabase client, similar to the one in page.tsx
-// This could be refactored into a shared utility if used in many Server Components
-const getSupabaseClientForComponent = async () => {
-  const cookieStore = await cookies();
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet: any[]) { // Simplified type for brevity, ensure it matches actual usage
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              if (typeof (cookieStore as any).set === 'function') {
-                (cookieStore as any).set(name, value, options);
-              }
-            });
-          } catch (error) { /* Server components cannot set cookies */ }
-        }
-      }
-    }
-  );
-};
-
 const RelatedArticles: React.FC<RelatedArticlesProps> = async ({ currentPostId, category, tags }) => {
-  const supabase = await getSupabaseClientForComponent();
-  const relatedPosts: IBlogPost[] = await getRelatedPosts(supabase, currentPostId, category, 3);
+  const relatedPosts: IBlogPost[] = await getRelatedPosts(currentPostId, category, 3);
 
   if (!relatedPosts || relatedPosts.length === 0) {
     return null; // Don't render the section if no related articles found

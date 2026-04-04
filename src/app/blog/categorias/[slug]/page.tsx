@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { notFound } from 'next/navigation';
 import { Metadata, ResolvingMetadata } from 'next';
-import { createSupabaseServerClient } from '../../../../lib/supabase/server';
 
 // Componentes
 import ViaLacteaNavbar from '../../../../components/blocks/navbar/via-lactea/ViaLacteaNavbar';
@@ -11,8 +10,8 @@ import PageHeader from '../../../../components/reuseable/PageHeader';
 import BlogSidebar from '../../../../components/reuseable/BlogSidebar';
 import BlogPostList from '../../../../components/reuseable/BlogPostList';
 
-// Supabase y datos
-import { getPostsByCategoryOrTag } from '../../../../lib/supabase/blog';
+// Lib y datos
+import { getPostsByCategoryOrTag } from '../../../../lib/data/blog';
 
 const PAGE_SIZE = 6; // Constante para el tamaño de página
 
@@ -25,8 +24,6 @@ export async function generateMetadata(
   { params, searchParams }: CategoryPostsPageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const supabase = await createSupabaseServerClient();
-  
   const awaitedParams = await params;
   const awaitedSearchParams = await searchParams;
   const { slug } = awaitedParams;
@@ -34,7 +31,7 @@ export async function generateMetadata(
   const pageParam = awaitedSearchParams?.['pagina'];
   const sortOption = sortParam === 'oldest' ? 'oldest' : 'newest';
   const currentPage = parseInt(typeof pageParam === 'string' ? pageParam : '1', 10);
-  const { name: categoryName } = await getPostsByCategoryOrTag(supabase, 'category', slug, currentPage, PAGE_SIZE, sortOption);
+  const { name: categoryName } = await getPostsByCategoryOrTag('category', slug, currentPage, PAGE_SIZE, sortOption);
 
   if (!categoryName) {
     return {
@@ -70,7 +67,6 @@ export async function generateMetadata(
 }
 
 export default async function CategoryPostsPage({ params, searchParams }: CategoryPostsPageProps) {
-  const supabase = await createSupabaseServerClient();
   const awaitedParams = await params;
   const awaitedSearchParams = await searchParams;
   const { slug } = awaitedParams;
@@ -80,7 +76,6 @@ export default async function CategoryPostsPage({ params, searchParams }: Catego
   const currentPage = parseInt(typeof pageParam === 'string' ? pageParam : '1', 10);
 
   const { posts, totalPages, currentPage: validatedCurrentPage, name: categoryName } = await getPostsByCategoryOrTag(
-    supabase,
     'category',
     slug,
     currentPage,

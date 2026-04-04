@@ -8,8 +8,7 @@ import PageHeader from "components/reuseable/PageHeader";
 import FigureImage from "components/reuseable/FigureImage"; // For category images
 
 // CUSTOM LIB FUNCTIONS
-import { createSupabaseServerClient } from "lib/supabase/server"; // USE THIS
-import { getAllUniqueCategories } from "lib/supabase/blog";
+import { getAllUniqueCategories } from "lib/data/blog";
 import { slugify } from "lib/utils";
 import DUMMY_IMAGE_POOL from "lib/blog-image-pool"; // For category card images
 
@@ -83,9 +82,7 @@ function CategoryCard({ title, link, image, description }: CategoryCardProps) {
 // PAGE COMPONENT
 // ===================================================================================================
 export default async function BlogCategoriesPage() {
-  const supabase = await createSupabaseServerClient(); // Use the centralized server client
-
-  const categories = await getAllUniqueCategories(supabase);
+  const categories = await getAllUniqueCategories();
   categories.sort((a, b) => a.localeCompare(b));
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vialacteasuenoylactancia.com';

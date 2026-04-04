@@ -53,3 +53,11 @@ remove-app-dirs.ps1
 
 # python
 venv
+
+# antigravity
+.gemini
+artifacts
+
+# cursor
+.cursor
+.cursorignore

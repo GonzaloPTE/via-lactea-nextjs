@@ -1,10 +1,7 @@
-import { type NextRequest } from 'next/server'
-import { updateSession } from './src/utils/supabase/middleware' // Use relative path from root
+import { type NextRequest, NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // updateSession handles refreshing potentially expired sessions
-  // and updating request/response cookies
-  return await updateSession(request)
+  return NextResponse.next()
 }
 
 export const config = {

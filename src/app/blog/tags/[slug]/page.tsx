@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { notFound } from 'next/navigation';
 import { Metadata, ResolvingMetadata } from 'next';
-import { createSupabaseServerClient } from '../../../../lib/supabase/server';
 
 // Componentes
 import ViaLacteaNavbar from '../../../../components/blocks/navbar/via-lactea/ViaLacteaNavbar';
@@ -11,8 +10,8 @@ import PageHeader from '../../../../components/reuseable/PageHeader';
 import BlogSidebar from '../../../../components/reuseable/BlogSidebar';
 import BlogPostList from '../../../../components/reuseable/BlogPostList';
 
-// Supabase y datos
-import { getPostsByCategoryOrTag } from '../../../../lib/supabase/blog';
+// Lib y datos
+import { getPostsByCategoryOrTag } from '../../../../lib/data/blog';
 
 const PAGE_SIZE = 6; // Constante para el tamaño de página
 
@@ -28,15 +27,13 @@ export async function generateMetadata(
   { params, searchParams }: TagPostsPageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const supabase = await createSupabaseServerClient();
-
   const awaitedParams = await params;
   const awaitedSearchParams = await searchParams;
   const { slug } = awaitedParams;
   const sortParam = awaitedSearchParams?.['ordenar'];
   const pageParam = awaitedSearchParams?.['pagina'];
   const sortOption = sortParam === 'oldest' ? 'oldest' : 'newest';
-  const { name: tagName } = await getPostsByCategoryOrTag(supabase, 'tag', slug, 1, 1, sortOption);
+  const { name: tagName } = await getPostsByCategoryOrTag('tag', slug, 1, 1, sortOption);
 
   if (!tagName) {
     return {
@@ -75,7 +72,6 @@ export async function generateMetadata(
 // PAGE COMPONENT
 // ===================================================================================================
 export default async function TagPostsPage({ params, searchParams }: TagPostsPageProps) {
-  const supabase = await createSupabaseServerClient();
   const awaitedParams = await params;
   const awaitedSearchParams = await searchParams;
   const { slug } = awaitedParams;
@@ -85,7 +81,6 @@ export default async function TagPostsPage({ params, searchParams }: TagPostsPag
   const currentPage = parseInt(typeof pageParam === 'string' ? pageParam : '1', 10);
 
   const { posts, totalPages, currentPage: validatedCurrentPage, name: tagName } = await getPostsByCategoryOrTag(
-    supabase,
     'tag',
     slug,
     currentPage,

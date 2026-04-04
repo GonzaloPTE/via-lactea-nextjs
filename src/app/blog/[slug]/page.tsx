@@ -1,9 +1,8 @@
 import { Fragment } from 'react';
 import { notFound } from 'next/navigation';
 // Corrected path
-import { IBlogPost } from '../../../types/blog';   // Corrected path
-import { getPostBySlug } from '../../../lib/supabase/blog'; // Corrected path
-import { createSupabaseServerClient } from "../../../lib/supabase/server"; // Import the new utility
+import { IBlogPost } from '../../../types/blog';
+import { getPostBySlug } from '../../../lib/data/blog';
 import { processPostHtmlContent } from '../../../lib/utils'; // Nueva importación
 
 // Import Components
@@ -35,8 +34,7 @@ interface BlogPostPageProps {
 // SEO Metadata Generation
 export async function generateMetadata({ params }: BlogPostPageProps) {
   const awaitedParams = await params;
-  const supabase = await createSupabaseServerClient(); // Use the new utility
-  const post = await getPostBySlug(supabase, awaitedParams.slug);
+  const post = await getPostBySlug(awaitedParams.slug);
 
   if (!post) {
     return {
@@ -89,9 +87,8 @@ const generateBlogPostingJsonLd = (post: IBlogPost, imageUrl: string, canonicalU
 };
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const supabase = await createSupabaseServerClient(); // Use the new utility
   const awaitedParams = await params;
-  const post = await getPostBySlug(supabase, awaitedParams.slug);
+  const post = await getPostBySlug(awaitedParams.slug);
 
   if (!post) {
     notFound(); // Triggers Next.js 404 page

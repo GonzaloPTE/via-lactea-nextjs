@@ -3,11 +3,12 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { slugify, generateDeterministicPostDate } from "../../lib/utils"; // Keep slugify and generateDeterministicPostDate
 import DUMMY_IMAGE_POOL from "../../lib/blog-image-pool";
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { Database } from '../../types/supabase';
 import { IBlogPost } from '../../types/blog';
-import { getAllUniqueCategories, getPopularTags } from "../../lib/supabase/blog"; // Import new functions
+import { 
+  allPublishedPosts, 
+  getAllUniqueCategories, 
+  getPopularTags 
+} from "../../lib/data/blog"; // Import from new provider
 
 // GLOBAL CUSTOM COMPONENTS
 import FigureImage from "./FigureImage";
@@ -29,57 +30,17 @@ type BlogSidebarProps = {
 // ========================================================
 
 async function getSidebarData(currentCategory?: string | null) {
-  const cookieStore = await cookies();
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
-        }
-      },
-    }
-  );
-
-  // Fetch popular posts
-  const { data: popularPostsData, error: popularPostsError } = await supabase
-    .from('blog_posts')
-    .select('id, title, slug, published_at, created_at')
-    .eq('status', 'published') // Consider if popular posts should also be published only
-    .order('published_at', { ascending: false, nullsFirst: true })
-    .limit(10);
-  
-  let popularPosts: IBlogPost[] = [];
-  if (popularPostsData && !popularPostsError) {
-    const shuffled = popularPostsData.sort(() => 0.5 - Math.random());
-    // Process dates for popular posts before slicing
-    const processedPopularPosts = shuffled.map(rawPost => {
-      // Ensure rawPost is treated as IBlogPost for type compatibility if needed
-      const post = rawPost as IBlogPost; 
-      if (!post.published_at && post.id) { 
-        const deterministicDate = generateDeterministicPostDate(post.id).toISOString();
-        // Return a new object to avoid modifying the original from cache if it's shared
-        const updatedPost = { ...post, published_at: deterministicDate };
-        if (!post.created_at) {
-          updatedPost.created_at = deterministicDate;
-        }
-        return updatedPost;
-      }
-      return post;
-    });
-    popularPosts = processedPopularPosts.slice(0, 3);
-  }
+  // Use memory data from the provider
+  const popularPosts = [...allPublishedPosts]
+    .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime())
+    .slice(0, 3);
 
   // Fetch all unique categories
-  const categories = await getAllUniqueCategories(supabase);
+  const categories = await getAllUniqueCategories();
   // Fetch popular tags (conditionally by category)
-  const popularTags = await getPopularTags(supabase, currentCategory); // Pass currentCategory
+  const popularTags = await getPopularTags(currentCategory);
 
-  return { popularPosts, categories, popularTags }; // Return popularTags instead of allAvailableTags
+  return { popularPosts, categories, popularTags };
 }
 
 

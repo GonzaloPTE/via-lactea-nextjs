@@ -1,17 +1,15 @@
 import { MetadataRoute } from 'next';
 import { serviceList, type ServiceItem } from '../data/service-data'; // Correct import path and add type import
-import { createSupabaseServerClient } from 'lib/supabase/server'; // Import Supabase client
 import { 
   getAllUniqueCategories, 
   getAllUniqueTags, 
   getAllPublishedPostSlugsAndDates 
-} from 'lib/supabase/blog'; // Import blog data functions
-import { slugify } from 'lib/utils'; // Import slugify
+} from '../lib/data/blog'; // Import blog data functions from new provider
+import { slugify } from '../lib/utils'; // Import slugify
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://vialacteasuenoylactancia.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = await createSupabaseServerClient(); // Initialize Supabase client
   const currentDate = new Date().toISOString();
 
   // Only include static routes visible in main navigation
@@ -38,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Generate dynamic routes for blog posts
-  const postsData = await getAllPublishedPostSlugsAndDates(supabase);
+  const postsData = await getAllPublishedPostSlugsAndDates();
   const dynamicPostRoutes = postsData.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
     lastModified: post.lastModified,
@@ -47,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Generate dynamic routes for blog categories
-  const categories = await getAllUniqueCategories(supabase);
+  const categories = await getAllUniqueCategories();
   const dynamicCategoryRoutes = categories.map((categoryName) => ({
     url: `${BASE_URL}/blog/categorias/${slugify(categoryName)}`,
     lastModified: currentDate, // Categories pages update less frequently or when content changes
@@ -56,7 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Generate dynamic routes for blog tags
-  const tags = await getAllUniqueTags(supabase);
+  const tags = await getAllUniqueTags();
   const dynamicTagRoutes = tags.map((tagName) => ({
     url: `${BASE_URL}/blog/tags/${slugify(tagName)}`,
     lastModified: currentDate, // Tags pages update less frequently or when content changes
