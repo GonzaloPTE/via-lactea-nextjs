@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { notFound } from 'next/navigation';
 // Corrected path
 import { IBlogPost } from '../../../types/blog';
-import { getPostBySlug, allPublishedPosts } from '../../../lib/data/blog';
+import { getPostBySlug, getBlogPosts } from '../../../lib/data/blog';
 import { processPostHtmlContent, slugify } from '../../../lib/utils';
 
 // Import Components
@@ -28,7 +28,8 @@ interface BlogPostPageProps {
 
 // --- Static Generation ---
 export async function generateStaticParams() {
-  return allPublishedPosts.map((post) => ({
+  const allPosts = await getBlogPosts();
+  return allPosts.map((post: IBlogPost) => ({
     slug: post.slug,
   }));
 }

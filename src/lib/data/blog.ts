@@ -1,4 +1,3 @@
-import postsData from '../../data/blog_posts_lite.json';
 import { IBlogPost } from '../../types/blog';
 import { slugify, generateDeterministicPostDate } from '../utils';
 
@@ -14,21 +13,75 @@ export function processPostDates(post: any): IBlogPost {
   return post as IBlogPost;
 }
 
-export const allPublishedPosts: IBlogPost[] = (postsData as any[]).map(processPostDates);
+let cachedPosts: IBlogPost[] | null = null;
+
+export async function getBlogPosts(): Promise<IBlogPost[]> {
+  if (cachedPosts) return cachedPosts;
+
+  // 1. Cloudflare R2 binding (Runtime - Worker)
+  const bucket = (process.env as any).BLOG_BUCKET;
+  if (bucket && typeof bucket.get === 'function') {
+    try {
+      const obj = await bucket.get('blog_posts.json');
+      if (obj) {
+        const data = await obj.json();
+        cachedPosts = (data as any[]).map(processPostDates);
+        return cachedPosts!;
+      }
+    } catch (error) {
+      console.error('Error fetching from R2 bucket binding:', error);
+    }
+  }
+
+  // 2. Fallback for Node.js environments (Local dev / Build)
+  // We prefer fetching from R2 if credentials are provided in .env / .dev.vars
+  const accountId = process.env.R2_ACCOUNT_ID;
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+  const bucketName = process.env.R2_BUCKET_NAME || 'vialacteasuenoylactancia';
+
+  if (accountId && accessKeyId && secretAccessKey) {
+    try {
+      const { S3Client, GetObjectCommand } = await import('@aws-sdk/client-s3');
+      const s3 = new S3Client({
+        region: 'auto',
+        endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+        credentials: { accessKeyId, secretAccessKey },
+      });
+      const response = await s3.send(new GetObjectCommand({ Bucket: bucketName, Key: 'blog_posts.json' }));
+      const body = await response.Body?.transformToString();
+      if (body) {
+        const data = JSON.parse(body);
+        cachedPosts = (data as any[]).map(processPostDates);
+        return cachedPosts!;
+      }
+    } catch (error) {
+      console.error('Error fetching from R2 via S3 client:', error);
+    }
+  }
+
+  // 3. Fallback to local file (Build time / Offline dev)
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const localPath = path.join(process.cwd(), 'src/data/blog_posts_merged.json');
+    if (fs.existsSync(localPath)) {
+      const data = JSON.parse(fs.readFileSync(localPath, 'utf-8'));
+      cachedPosts = (data as any[]).map(processPostDates);
+      return cachedPosts!;
+    }
+  } catch (e) {
+    // environments without 'fs' support
+  }
+
+  return [];
+}
 
 // Replicate the functions that used to need supabase
 export async function getPostBySlug(slug: string): Promise<IBlogPost | null> {
-  const postLite = allPublishedPosts.find(p => p.slug === slug);
-  if (!postLite) return null;
-  
-  // Try to load the full content dynamically
-  try {
-    const fullPost = await import(`../../data/posts/${slug}.json`);
-    return { ...postLite, ...fullPost.default };
-  } catch (error) {
-    console.error(`Error loading full post data for ${slug}:`, error);
-    return postLite;
-  }
+  const allPosts = await getBlogPosts();
+  const post = allPosts.find(p => p.slug === slug);
+  return post || null;
 }
 
 export async function getRelatedPosts(
@@ -36,10 +89,11 @@ export async function getRelatedPosts(
   category: string | null | undefined,
   limit: number = 3
 ): Promise<IBlogPost[]> {
+  const allPosts = await getBlogPosts();
   let posts: IBlogPost[] = [];
   
   if (category) {
-    posts = allPublishedPosts
+    posts = allPosts
       .filter(p => p.category === category && p.id !== currentPostId)
       .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime());
   }
@@ -49,7 +103,7 @@ export async function getRelatedPosts(
     const existingIds = new Set(posts.map(p => p.id));
     existingIds.add(currentPostId);
     
-    const recentPosts = allPublishedPosts
+    const recentPosts = allPosts
       .filter(p => !existingIds.has(p.id))
       .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime())
       .slice(0, remainingLimit);
@@ -60,17 +114,20 @@ export async function getRelatedPosts(
 }
 
 export async function getAllUniqueCategories(): Promise<string[]> {
-  const cats = allPublishedPosts.map(p => p.category).filter(Boolean) as string[];
+  const allPosts = await getBlogPosts();
+  const cats = allPosts.map(p => p.category).filter(Boolean) as string[];
   return [...new Set(cats)];
 }
 
 export async function getAllUniqueTags(): Promise<string[]> {
-  const tags = allPublishedPosts.flatMap(p => p.tags || []).filter(Boolean) as string[];
+  const allPosts = await getBlogPosts();
+  const tags = allPosts.flatMap(p => p.tags || []).filter(Boolean) as string[];
   return [...new Set(tags)];
 }
 
 export async function getPopularTags(categoryName?: string | null, limit: number = 15) {
-  let posts = allPublishedPosts;
+  const allPosts = await getBlogPosts();
+  let posts = allPosts;
   if (categoryName) {
     posts = posts.filter(p => p.category === categoryName);
   }
@@ -89,7 +146,8 @@ export async function getPopularTags(categoryName?: string | null, limit: number
 }
 
 export async function getAllPublishedPostSlugsAndDates() {
-  return allPublishedPosts.map(post => ({
+  const allPosts = await getBlogPosts();
+  return allPosts.map(post => ({
     slug: post.slug,
     lastModified: post.published_at!
   }));
@@ -102,7 +160,8 @@ export async function getPostsByCategoryOrTag(
   pageSize: number,
   sortOption: 'newest' | 'oldest'
 ) {
-  let filteredPosts = allPublishedPosts;
+  const allPosts = await getBlogPosts();
+  let filteredPosts = allPosts;
   let originalName: string | null = null;
   
   if (filterType === 'category') {
@@ -110,13 +169,13 @@ export async function getPostsByCategoryOrTag(
     const foundCategory = cats.find(c => slugify(c) === slug);
     if (!foundCategory) return { posts: [], totalPages: 0, currentPage: 1, name: null };
     originalName = foundCategory;
-    filteredPosts = allPublishedPosts.filter(p => p.category === originalName);
+    filteredPosts = allPosts.filter(p => p.category === originalName);
   } else {
     const tags = await getAllUniqueTags();
     const foundTag = tags.find(t => slugify(t) === slug);
     if (!foundTag) return { posts: [], totalPages: 0, currentPage: 1, name: null };
     originalName = foundTag;
-    filteredPosts = allPublishedPosts.filter(p => p.tags && p.tags.includes(originalName!));
+    filteredPosts = allPosts.filter(p => p.tags && p.tags.includes(originalName!));
   }
   
   const sortedPosts = [...filteredPosts].sort((a, b) => {
@@ -136,13 +195,14 @@ export async function getPostsByCategoryOrTag(
 export async function getBlogData(
   searchParams: { [key: string]: string | string[] | undefined }
 ) {
+  const allPosts = await getBlogPosts();
   const sortParam = searchParams['ordenar']; 
   const pageParam = searchParams['pagina'];  
   const sortOption = sortParam === 'oldest' ? 'oldest' : 'newest';
   const currentPage = parseInt(typeof pageParam === 'string' ? pageParam : '1', 10);
   const pageSize = 6;
   
-  const sortedPosts = [...allPublishedPosts].sort((a, b) => {
+  const sortedPosts = [...allPosts].sort((a, b) => {
     const dateA = new Date(a.published_at!).getTime();
     const dateB = new Date(b.published_at!).getTime();
     return sortOption === 'newest' ? dateB - dateA : dateA - dateB;

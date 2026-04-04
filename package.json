@@ -41,6 +41,7 @@
     "typewriter-effect": "^2.21.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1024.0",
     "@types/bootstrap": "^5.2.10",
     "@types/isotope-layout": "^3.0.14",
     "@types/jest": "^29.5.14",

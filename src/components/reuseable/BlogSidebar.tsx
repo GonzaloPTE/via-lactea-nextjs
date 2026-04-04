@@ -6,7 +6,7 @@ import { slugify, generateDeterministicPostDate } from "../../lib/utils"; // Kee
 import DUMMY_IMAGE_POOL from "../../lib/blog-image-pool";
 import { IBlogPost } from '../../types/blog';
 import { 
-  allPublishedPosts, 
+  getBlogPosts, 
   getAllUniqueCategories, 
   getPopularTags 
 } from "../../lib/data/blog"; // Import from new provider
@@ -32,7 +32,8 @@ type BlogSidebarProps = {
 
 async function getSidebarData(currentCategory?: string | null) {
   // Use memory data from the provider
-  const popularPosts = [...allPublishedPosts]
+  const allPosts = await getBlogPosts();
+  const popularPosts = [...allPosts]
     .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime())
     .slice(0, 3);
 
