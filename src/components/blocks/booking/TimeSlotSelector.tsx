@@ -1,10 +1,6 @@
-"use client";
-
 import React from "react";
-import dayjs from "dayjs";
-import "dayjs/locale/es";
-
-dayjs.locale("es");
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 export interface TimeSlotSelectorProps {
   selectedDate: Date;
@@ -20,7 +16,7 @@ export default function TimeSlotSelector({
   onConfirm
 }: TimeSlotSelectorProps) {
 
-  const formattedDate = dayjs(selectedDate).format("dddd, D MMMM");
+  const formattedDate = format(selectedDate, "eeee, d MMMM", { locale: es });
   const timeSlots = ["17:00", "17:30", "18:00", "18:30", "19:00", "19:30"];
 
   return (

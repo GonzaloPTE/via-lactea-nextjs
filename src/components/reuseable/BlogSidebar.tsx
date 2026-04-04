@@ -1,4 +1,5 @@
-import dayjs from "dayjs";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import Link from "next/link";
 import { Fragment } from "react";
 import { slugify, generateDeterministicPostDate } from "../../lib/utils"; // Keep slugify and generateDeterministicPostDate
@@ -87,10 +88,8 @@ export default async function BlogSidebar({
                     <NextLink className="link-dark" title={title} href={href} />
                   </h6>
                   <ul className="post-meta">
-                    <li className="post-date">
                       <i className="uil uil-calendar-alt" />
-                      <span>{dayjs(date).format("DD MMM YYYY")}</span>
-                    </li>
+                      <span>{format(new Date(date!), "dd MMM yyyy", { locale: es })}</span>
                   </ul>
                 </div>
               </li>

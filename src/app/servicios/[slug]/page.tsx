@@ -1,4 +1,4 @@
-import { getServiceBySlug } from "data/service-data";
+import { getServiceBySlug, serviceList } from "data/service-data";
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 import ServiceDetailClient from "components/blocks/services/ServiceDetailClient";
@@ -7,6 +7,12 @@ import Script from 'next/script';
 // Tipado para params
 interface ServiceDetailProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  return serviceList.map((service) => ({
+    slug: service.slug,
+  }));
 }
 
 export async function generateMetadata(

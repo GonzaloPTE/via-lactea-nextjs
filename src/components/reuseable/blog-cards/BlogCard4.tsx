@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import dayjs from "dayjs";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 // GLOBAL CUSTOM COMPONENTS
 import NextLink from "../links/NextLink";
 
@@ -48,7 +49,7 @@ export default function BlogCard4(props: BlogCard4Props) {
           <ul className="post-meta d-flex mb-0">
             <li className="post-date">
               <i className="uil uil-calendar-alt" />
-              <span>{dayjs(date).format("DD MMM YYYY")}</span>
+              <span>{format(new Date(date), "dd MMM yyyy", { locale: es })}</span>
             </li>
 
             <li className="post-comments">

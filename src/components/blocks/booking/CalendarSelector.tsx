@@ -1,14 +1,22 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import dayjs from "dayjs";
-import "dayjs/locale/es";
-import localeData from "dayjs/plugin/localeData";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-
-dayjs.extend(localeData);
-dayjs.extend(isSameOrBefore);
-dayjs.locale("es");
+import { 
+  startOfMonth, 
+  endOfMonth, 
+  startOfToday, 
+  getDay, 
+  getDaysInMonth, 
+  setDate, 
+  isBefore, 
+  isSameDay, 
+  addMonths, 
+  subMonths, 
+  format,
+  isSameMonth,
+  startOfDay
+} from "date-fns";
+import { es } from "date-fns/locale";
 
 export interface CalendarSelectorProps {
   selectedDate: Date | null;
@@ -16,24 +24,24 @@ export interface CalendarSelectorProps {
 }
 
 export default function CalendarSelector({ selectedDate, onSelectDate }: CalendarSelectorProps) {
-  const [currentMonth, setCurrentMonth] = useState(dayjs().startOf("month"));
+  const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
 
   const handlePrevMonth = () => {
-    setCurrentMonth(currentMonth.subtract(1, "month"));
+    setCurrentMonth(subMonths(currentMonth, 1));
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth(currentMonth.add(1, "month"));
+    setCurrentMonth(addMonths(currentMonth, 1));
   };
 
   // Generar la matriz de días del mes
   const generateCalendar = useMemo(() => {
-    const startDay = currentMonth.startOf("month").day(); // 0 (Sun) - 6 (Sat)
+    const startDay = getDay(startOfMonth(currentMonth)); // 0 (Sun) - 6 (Sat)
     // Ajustar para que la semana empiece en Lunes (1)
     const firstDayIndex = startDay === 0 ? 6 : startDay - 1; 
 
-    const daysInMonth = currentMonth.daysInMonth();
-    const today = dayjs().startOf("day");
+    const daysInMonthCount = getDaysInMonth(currentMonth);
+    const today = startOfToday();
 
     let days = [];
     
@@ -43,15 +51,15 @@ export default function CalendarSelector({ selectedDate, onSelectDate }: Calenda
     }
     
     // Fill actual days
-    for (let i = 1; i <= daysInMonth; i++) {
-        const dateObj = currentMonth.date(i);
+    for (let i = 1; i <= daysInMonthCount; i++) {
+        const dateObj = setDate(currentMonth, i);
         // Deshabilitar días pasados o domingos (ejemplo: domingos = 0)
-        const isPast = dateObj.isBefore(today);
-        const isSunday = dateObj.day() === 0;
+        const isPast = isBefore(startOfDay(dateObj), today);
+        const isSunday = getDay(dateObj) === 0;
         const disabled = isPast || isSunday;
         
         days.push({
-            date: dateObj.toDate(),
+            date: dateObj,
             day: i,
             disabled: disabled
         });
@@ -75,16 +83,16 @@ export default function CalendarSelector({ selectedDate, onSelectDate }: Calenda
     return weeks;
   }, [currentMonth]);
 
-  const monthYearLabel = currentMonth.format("MMMM YYYY");
-  const isCurrentMonthPrevDisabled = currentMonth.isSameOrBefore(dayjs(), "month");
+  const monthYearLabel = format(currentMonth, "MMMM yyyy", { locale: es });
+  const isCurrentMonthPrevDisabled = isSameMonth(currentMonth, new Date());
 
   return (
     <div className="calendar-selector">
       <div className="d-flex justify-content-between align-items-center mb-4 px-2">
         <button 
             className="btn btn-circle btn-soft-primary btn-sm border-0" 
-            onClick={currentMonth.isSameOrBefore(dayjs(), "month") ? undefined : handlePrevMonth} 
-            style={{ opacity: currentMonth.isSameOrBefore(dayjs(), "month") ? 0 : 1, visibility: currentMonth.isSameOrBefore(dayjs(), "month") ? 'hidden' : 'visible' }}
+            onClick={isCurrentMonthPrevDisabled ? undefined : handlePrevMonth} 
+            style={{ opacity: isCurrentMonthPrevDisabled ? 0 : 1, visibility: isCurrentMonthPrevDisabled ? 'hidden' : 'visible' }}
             type="button"
         >
             <i className="uil uil-angle-left"></i>
@@ -115,7 +123,7 @@ export default function CalendarSelector({ selectedDate, onSelectDate }: Calenda
               <tr key={idx}>
                 {week.map((dayObj, dIdx) => {
                   if (!dayObj) return <td key={dIdx} className="border-0 p-1"></td>;
-                  const isSelected = selectedDate && dayjs(selectedDate).isSame(dayjs(dayObj.date), "day");
+                  const isSelected = selectedDate && isSameDay(selectedDate, dayObj.date);
                   
                   return (
                     <td key={dIdx} className="border-0 p-1">

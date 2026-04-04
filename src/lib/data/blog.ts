@@ -1,4 +1,4 @@
-import postsData from '../../data/blog_posts.json';
+import postsData from '../../data/blog_posts_lite.json';
 import { IBlogPost } from '../../types/blog';
 import { slugify, generateDeterministicPostDate } from '../utils';
 
@@ -18,8 +18,17 @@ export const allPublishedPosts: IBlogPost[] = (postsData as any[]).map(processPo
 
 // Replicate the functions that used to need supabase
 export async function getPostBySlug(slug: string): Promise<IBlogPost | null> {
-  const post = allPublishedPosts.find(p => p.slug === slug);
-  return post || null;
+  const postLite = allPublishedPosts.find(p => p.slug === slug);
+  if (!postLite) return null;
+  
+  // Try to load the full content dynamically
+  try {
+    const fullPost = await import(`../../data/posts/${slug}.json`);
+    return { ...postLite, ...fullPost.default };
+  } catch (error) {
+    console.error(`Error loading full post data for ${slug}:`, error);
+    return postLite;
+  }
 }
 
 export async function getRelatedPosts(

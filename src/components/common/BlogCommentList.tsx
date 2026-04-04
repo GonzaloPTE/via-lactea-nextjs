@@ -1,4 +1,5 @@
-import dayjs from "dayjs";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 // GLOBAL CUSTOM COMPONENTS
 import FigureImage from "../reuseable/FigureImage";
 import NextLink from "components/reuseable/links/NextLink";
@@ -77,7 +78,7 @@ export default function BlogCommentList() {
 
                 <ul className="post-meta">
                   <li>
-                    <i className="uil uil-calendar-alt" /> {dayjs(createdAt).format("DD MMM YYYY")}
+                    <i className="uil uil-calendar-alt" /> {format(new Date(createdAt), "dd MMM yyyy", { locale: es })}
                   </li>
                 </ul>
               </div>

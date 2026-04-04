@@ -11,7 +11,15 @@ import BlogSidebar from '../../../../components/reuseable/BlogSidebar';
 import BlogPostList from '../../../../components/reuseable/BlogPostList';
 
 // Lib y datos
-import { getPostsByCategoryOrTag } from '../../../../lib/data/blog';
+import { getPostsByCategoryOrTag, getAllUniqueCategories } from '../../../../lib/data/blog';
+import { slugify } from '../../../../lib/utils';
+
+export async function generateStaticParams() {
+  const categories = await getAllUniqueCategories();
+  return categories.map((category) => ({
+    slug: slugify(category),
+  }));
+}
 
 const PAGE_SIZE = 6; // Constante para el tamaño de página
 

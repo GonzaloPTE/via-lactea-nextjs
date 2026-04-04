@@ -1,4 +1,5 @@
-import dayjs from "dayjs";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import Link from "next/link";
 // GLOBAL CUSTOM COMPONENTS
 import Carousel from "components/reuseable/Carousel";
@@ -53,7 +54,7 @@ export default function Blog5() {
                         <ul className="post-meta d-flex mb-0">
                           <li className="post-date">
                             <i className="uil uil-calendar-alt" />
-                            <span>{dayjs(item.createdAt).format("DD MMM YYYY")}</span>
+                            <span>{format(new Date(item.createdAt), "dd MMM yyyy", { locale: es })}</span>
                           </li>
 
                           <li className="post-comments">

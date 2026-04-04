@@ -1,7 +1,5 @@
-"use client";
-
-import { Fragment, useEffect, useState, use } from "react";
-import { useRouter } from "next/navigation";
+import { Fragment } from "react";
+import { notFound } from "next/navigation";
 // GLOBAL CUSTOM COMPONENTS
 import ThumbsCarousel from "components/reuseable/ThumbsCarousel";
 // LOCAL CUSTOM COMPONENTS
@@ -12,8 +10,15 @@ import { productList, getProductBySlug, ProductItem } from "../../../data/produc
 import ResourceDetailActions from "components/reuseable/products/ResourceDetailActions";
 
 // Tipado para params como Promise
+// Tipado para params
 interface ResourceDetailParams {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  return productList.map((product) => ({
+    slug: product.slug,
+  }));
 }
 
 // Componente para mostrar los beneficios como sección independiente
@@ -169,52 +174,22 @@ const ProductDetails = ({ product }: { product: ProductItem }) => {
   );
 };
 
-export default function ResourceDetailPage({ params }: ResourceDetailParams) {
-  const router = useRouter();
-  const resolvedParams = use(params);
-  const { slug } = resolvedParams;
-  const [product, setProduct] = useState<ProductItem | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<ProductItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!slug) return;
-    
-    // Obtener el producto actual por slug
-    const productData = getProductBySlug(slug);
-    
-    if (productData) {
-      setProduct(productData);
-      
-      // Obtener productos relacionados
-      if (productData.relatedProductIds) {
-        const related = productData.relatedProductIds
-          .map(relId => productList.find(p => p.id === relId))
-          .filter(Boolean) as ProductItem[];
-        setRelatedProducts(related);
-      }
-    }
-    
-    setLoading(false);
-  }, [slug]);
-
-  // Manejar la redirección si el producto no existe
-  useEffect(() => {
-    if (!loading && !product) {
-      router.push('/recursos');
-    }
-  }, [loading, product, router]);
-
-  // Si está cargando o no hay producto, mostrar pantalla de carga
-  if (loading || !product) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
-        </div>
-      </div>
-    );
+export default async function ResourceDetailPage({ params }: ResourceDetailParams) {
+  const { slug } = await params;
+  
+  // Obtener el producto actual por slug
+  const product = getProductBySlug(slug);
+  
+  if (!product) {
+    notFound();
   }
+
+  // Obtener productos relacionados
+  const relatedProducts = product.relatedProductIds
+    ? (product.relatedProductIds
+        .map(relId => productList.find(p => p.id === relId))
+        .filter(Boolean) as ProductItem[])
+    : [];
 
   // Determinar precio basado en el formato principal
   const priceInfo = product.prices.find(p => p.format === product.primaryFormat);
@@ -251,7 +226,7 @@ export default function ResourceDetailPage({ params }: ResourceDetailParams) {
 
             {/* ========== product actions section ========== */}
             <div className="col-lg-6">
-              <ResourceDetailActions product={product} />
+              <ResourceDetailActions product={{ ...product, benefits: [] }} />
             </div>
           </div>
         </div>

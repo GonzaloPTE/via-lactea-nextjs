@@ -1,5 +1,6 @@
 import Link from "next/link";
-import dayjs from "dayjs";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 // LOCAL CUSTOM COMPONENTS
 import NextLink from "../links/NextLink";
 
@@ -33,7 +34,7 @@ export default function BlogCard5(props: BlogCard5Props) {
         <ul className="post-meta text-white mb-0">
           <li className="post-date">
             <i className="uil uil-calendar-alt" />
-            <span>{dayjs(createdAt).format("DD MMM YYYY")}</span>
+            <span>{format(new Date(createdAt), "dd MMM yyyy", { locale: es })}</span>
           </li>
 
           <li className="post-author">

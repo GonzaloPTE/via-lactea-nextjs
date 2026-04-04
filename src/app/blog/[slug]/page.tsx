@@ -2,8 +2,8 @@ import { Fragment } from 'react';
 import { notFound } from 'next/navigation';
 // Corrected path
 import { IBlogPost } from '../../../types/blog';
-import { getPostBySlug } from '../../../lib/data/blog';
-import { processPostHtmlContent } from '../../../lib/utils'; // Nueva importación
+import { getPostBySlug, allPublishedPosts } from '../../../lib/data/blog';
+import { processPostHtmlContent, slugify } from '../../../lib/utils';
 
 // Import Components
 import ViaLacteaNavbar from '../../../components/blocks/navbar/via-lactea/ViaLacteaNavbar'; // Corrected path
@@ -18,7 +18,6 @@ import Link from 'next/link';
 // Utils for date formatting
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { slugify } from '../../../lib/utils'; // Import slugify
 import DUMMY_IMAGE_POOL from '../../../lib/blog-image-pool';
 
 interface BlogPostPageProps {
@@ -27,9 +26,14 @@ interface BlogPostPageProps {
   }>;
 }
 
+// --- Static Generation ---
+export async function generateStaticParams() {
+  return allPublishedPosts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
 // Function to get Supabase client
-// REMOVE THE OLD getSupabaseClient FUNCTION
-// const getSupabaseClient = async () => { ... };
 
 // SEO Metadata Generation
 export async function generateMetadata({ params }: BlogPostPageProps) {

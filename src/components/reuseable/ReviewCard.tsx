@@ -1,4 +1,5 @@
-import dayjs from "dayjs";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 // GLOBAL CUSTOM COMPONENTS
 import NextLink from "./links/NextLink";
 import FigureImage from "components/reuseable/FigureImage";
@@ -33,7 +34,7 @@ export default function ReviewCard({ createdAt, actions, user, review }: ReviewC
           <ul className="post-meta">
             <li>
               <i className="uil uil-calendar-alt" />
-              {dayjs(createdAt).format("DD MMM YYYY")}
+              {format(new Date(createdAt), "dd MMM yyyy", { locale: es })}
             </li>
           </ul>
         </div>
