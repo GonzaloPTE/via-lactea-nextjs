@@ -20,14 +20,23 @@ export async function getBlogPosts(): Promise<IBlogPost[]> {
 
   // 1. Cloudflare R2 binding (Runtime - Worker)
   // This is the primary method in production and has zero bundle overhead.
-  const bucket = (process.env as any).BLOG_BUCKET;
+  const bucket = (process.env as any).BLOG_BUCKET || (globalThis as any).BLOG_BUCKET;
+  
+  if (!bucket) {
+    console.warn('BLOG_BUCKET binding not found on process.env or globalThis');
+  }
+
   if (bucket && typeof bucket.get === 'function') {
     try {
+      console.log('Fetching from R2 bucket binding...');
       const obj = await bucket.get('blog_posts.json');
       if (obj) {
         const data = await obj.json();
+        console.log(`Success! Fetched ${data.length} posts from R2 binding.`);
         cachedPosts = (data as any[]).map(processPostDates);
         return cachedPosts!;
+      } else {
+        console.warn('Object blog_posts.json NOT found in R2 bucket.');
       }
     } catch (error) {
       console.error('Error fetching from R2 bucket binding:', error);
