@@ -19,6 +19,7 @@ export async function getBlogPosts(): Promise<IBlogPost[]> {
   if (cachedPosts) return cachedPosts;
 
   // 1. Cloudflare R2 binding (Runtime - Worker)
+  // This is the primary method in production and has zero bundle overhead.
   const bucket = (process.env as any).BLOG_BUCKET;
   if (bucket && typeof bucket.get === 'function') {
     try {
@@ -33,34 +34,8 @@ export async function getBlogPosts(): Promise<IBlogPost[]> {
     }
   }
 
-  // 2. Fallback for Node.js environments (Local dev / Build)
-  // We prefer fetching from R2 if credentials are provided in .env / .dev.vars
-  const accountId = process.env.R2_ACCOUNT_ID;
-  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-  const bucketName = process.env.R2_BUCKET_NAME || 'vialacteasuenoylactancia';
-
-  if (accountId && accessKeyId && secretAccessKey) {
-    try {
-      const { S3Client, GetObjectCommand } = await import('@aws-sdk/client-s3');
-      const s3 = new S3Client({
-        region: 'auto',
-        endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
-        credentials: { accessKeyId, secretAccessKey },
-      });
-      const response = await s3.send(new GetObjectCommand({ Bucket: bucketName, Key: 'blog_posts.json' }));
-      const body = await response.Body?.transformToString();
-      if (body) {
-        const data = JSON.parse(body);
-        cachedPosts = (data as any[]).map(processPostDates);
-        return cachedPosts!;
-      }
-    } catch (error) {
-      console.error('Error fetching from R2 via S3 client:', error);
-    }
-  }
-
-  // 3. Fallback to local file (Build time / Offline dev)
+  // 2. Fallback to local file (Build time / Local Development)
+  // The local file is populated by a separate sync script during build.
   try {
     const fs = await import('fs');
     const path = await import('path');
@@ -71,7 +46,7 @@ export async function getBlogPosts(): Promise<IBlogPost[]> {
       return cachedPosts!;
     }
   } catch (e) {
-    // environments without 'fs' support
+    // environments without 'fs' support (like Edge runtime)
   }
 
   return [];

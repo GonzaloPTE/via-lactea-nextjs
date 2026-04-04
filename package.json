@@ -7,6 +7,7 @@
     "lint": "next lint --no-cache",
     "lint:fix": "npx eslint --fix",
     "build": "next build",
+    "prebuild": "tsx src/scripts/sync-blog-data.ts",
     "start": "next start",
     "sass": "sass --no-source-map src/assets/scss:public/css",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
@@ -36,7 +37,6 @@
     "react-dom": "^18",
     "react-scroll": "^1.9.0",
     "scrollcue": "^2.0.0",
-    "sharp": "^0.33.5",
     "swiper": "^11.1.15",
     "typewriter-effect": "^2.21.0"
   },
@@ -57,6 +57,7 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "jest": "^29.7.0",
     "sass": "^1.69.5",
+    "sharp": "^0.34.5",
     "stripe": "^22.0.0",
     "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
