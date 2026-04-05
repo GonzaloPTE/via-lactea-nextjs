@@ -44,6 +44,8 @@ remove-app-dirs.ps1
 
 # dev.vars
 .env
+.env.local
+.dev.vars
 
 # Blog data (Synced from R2)
 src/data/blog_posts_merged.json
